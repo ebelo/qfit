@@ -1,0 +1,113 @@
+{
+  "mapbox_gl_version": "3.10.0",
+  "projection_anchors": [
+    {
+      "lnglat": [
+        6.719999999999999,
+        46.49000000000001
+      ],
+      "expected_pixel": [
+        640,
+        450
+      ],
+      "actual_pixel": [
+        640,
+        450.00000000004417
+      ]
+    },
+    {
+      "lnglat": [
+        6.546780676179119,
+        46.5694473891066
+      ],
+      "expected_pixel": [
+        340,
+        250
+      ],
+      "actual_pixel": [
+        340,
+        250
+      ]
+    },
+    {
+      "lnglat": [
+        6.893219323820878,
+        46.410436393913535
+      ],
+      "expected_pixel": [
+        940,
+        650
+      ],
+      "actual_pixel": [
+        940.0000000000883,
+        650.0000000000441
+      ]
+    },
+    {
+      "lnglat": [
+        6.546780676179119,
+        46.410436393913535
+      ],
+      "expected_pixel": [
+        340,
+        650
+      ],
+      "actual_pixel": [
+        340,
+        650.0000000000441
+      ]
+    },
+    {
+      "lnglat": [
+        6.893219323820878,
+        46.5694473891066
+      ],
+      "expected_pixel": [
+        940,
+        250
+      ],
+      "actual_pixel": [
+        940.0000000000883,
+        250
+      ]
+    }
+  ],
+  "reference_projection": "mercator",
+  "source_projection": {
+    "name": "globe"
+  },
+  "actual_projection": {
+    "name": "mercator",
+    "center": [
+      0,
+      0
+    ]
+  },
+  "center": [
+    6.72,
+    46.49
+  ],
+  "zoom": 10.25,
+  "bearing": 0,
+  "pitch": 0,
+  "bounds": [
+    [
+      6.350465442516736,
+      46.31081843134572
+    ],
+    [
+      7.089534557486445,
+      46.6685932216846
+    ]
+  ],
+  "canvas_size_pixels": [
+    1280,
+    900
+  ],
+  "device_pixel_ratio": 1,
+  "map_loaded": true,
+  "tiles_loaded": true,
+  "map_error_count": 0,
+  "rendered_feature_count": 423,
+  "browser_version": "152.0.7977.64"
+}

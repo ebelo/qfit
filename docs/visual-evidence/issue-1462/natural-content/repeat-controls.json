@@ -1,0 +1,2018 @@
+[
+  {
+    "a": "reference/switzerland-alps-z5-light/mapbox.png",
+    "b": "reference-repeat/switzerland-alps-z5-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+    "b_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803"
+  },
+  {
+    "a": "reference/zurich-region-z8-light/mapbox.png",
+    "b": "reference-repeat/zurich-region-z8-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7321fee09d01ca3e60184c8a6aed3cdae544514c2e8d49520502839d2da05ea7",
+    "b_sha256": "7321fee09d01ca3e60184c8a6aed3cdae544514c2e8d49520502839d2da05ea7"
+  },
+  {
+    "a": "reference/lausanne-lavaux-z10-light/mapbox.png",
+    "b": "reference-repeat/lausanne-lavaux-z10-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+    "b_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97"
+  },
+  {
+    "a": "reference/bern-urban-z12-light/mapbox.png",
+    "b": "reference-repeat/bern-urban-z12-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "14b1f911b2ab6303e6636f571a9f727f4cbda9b3e4a38875eb10abc4ba6f47fe",
+    "b_sha256": "14b1f911b2ab6303e6636f571a9f727f4cbda9b3e4a38875eb10abc4ba6f47fe"
+  },
+  {
+    "a": "reference/geneva-urban-z14-light/mapbox.png",
+    "b": "reference-repeat/geneva-urban-z14-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+    "b_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76"
+  },
+  {
+    "a": "reference/zurich-streets-z17-light/mapbox.png",
+    "b": "reference-repeat/zurich-streets-z17-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+    "b_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab"
+  },
+  {
+    "a": "reference/geneva-streets-z18-light/mapbox.png",
+    "b": "reference-repeat/geneva-streets-z18-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+    "b_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc"
+  },
+  {
+    "a": "reference/aletsch-z10/mapbox.png",
+    "b": "reference-repeat/aletsch-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d434681e96af079ed9876348473d6e154ec6fe95cc0eae6e41742d45478631bb",
+    "b_sha256": "d434681e96af079ed9876348473d6e154ec6fe95cc0eae6e41742d45478631bb"
+  },
+  {
+    "a": "reference/basodino-z12/mapbox.png",
+    "b": "reference-repeat/basodino-z12/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "82a49ccd5bc3ef9c495c107dbe4bfad1579015f265665652a194e26b46bbcf73",
+    "b_sha256": "82a49ccd5bc3ef9c495c107dbe4bfad1579015f265665652a194e26b46bbcf73"
+  },
+  {
+    "a": "reference/grand-combin-z10/mapbox.png",
+    "b": "reference-repeat/grand-combin-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "41968361bf62cf2102bb4ae1c159b9c13e2554bb93cabf66d1944367b2b04394",
+    "b_sha256": "41968361bf62cf2102bb4ae1c159b9c13e2554bb93cabf66d1944367b2b04394"
+  },
+  {
+    "a": "reference/aletsch-z8/mapbox.png",
+    "b": "reference-repeat/aletsch-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "2e3be9b71ebe718d11eb89d1850f9aa8b5991bfcd35402a645896e66f882580c",
+    "b_sha256": "2e3be9b71ebe718d11eb89d1850f9aa8b5991bfcd35402a645896e66f882580c"
+  },
+  {
+    "a": "reference/mont-blanc-z12/mapbox.png",
+    "b": "reference-repeat/mont-blanc-z12/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "dcd48869cc95dab039b264dbf9af566399e2bf7962d3817b9ead5d0533877361",
+    "b_sha256": "dcd48869cc95dab039b264dbf9af566399e2bf7962d3817b9ead5d0533877361"
+  },
+  {
+    "a": "reference/mont-blanc-z10/mapbox.png",
+    "b": "reference-repeat/mont-blanc-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "5b79d12a7217082ea406b836ded8d448d7a2415f57431da874674542f8203270",
+    "b_sha256": "5b79d12a7217082ea406b836ded8d448d7a2415f57431da874674542f8203270"
+  },
+  {
+    "a": "reference/cairo-nile-z14/mapbox.png",
+    "b": "reference-repeat/cairo-nile-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "558629eb80faca4f5c9ffe8a9997503af6829eac2885d3425bda32d380bfb781",
+    "b_sha256": "558629eb80faca4f5c9ffe8a9997503af6829eac2885d3425bda32d380bfb781"
+  },
+  {
+    "a": "reference-mercator/switzerland-alps-z5-light/mapbox.png",
+    "b": "reference-mercator-repeat/switzerland-alps-z5-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+    "b_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d"
+  },
+  {
+    "a": "reference-mercator/zurich-region-z8-light/mapbox.png",
+    "b": "reference-mercator-repeat/zurich-region-z8-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7321fee09d01ca3e60184c8a6aed3cdae544514c2e8d49520502839d2da05ea7",
+    "b_sha256": "7321fee09d01ca3e60184c8a6aed3cdae544514c2e8d49520502839d2da05ea7"
+  },
+  {
+    "a": "reference-mercator/lausanne-lavaux-z10-light/mapbox.png",
+    "b": "reference-mercator-repeat/lausanne-lavaux-z10-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+    "b_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97"
+  },
+  {
+    "a": "reference-mercator/bern-urban-z12-light/mapbox.png",
+    "b": "reference-mercator-repeat/bern-urban-z12-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "14b1f911b2ab6303e6636f571a9f727f4cbda9b3e4a38875eb10abc4ba6f47fe",
+    "b_sha256": "14b1f911b2ab6303e6636f571a9f727f4cbda9b3e4a38875eb10abc4ba6f47fe"
+  },
+  {
+    "a": "reference-mercator/geneva-urban-z14-light/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-urban-z14-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+    "b_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76"
+  },
+  {
+    "a": "reference-mercator/zurich-streets-z17-light/mapbox.png",
+    "b": "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+    "b_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab"
+  },
+  {
+    "a": "reference-mercator/geneva-streets-z18-light/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-streets-z18-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+    "b_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc"
+  },
+  {
+    "a": "reference-mercator/aletsch-z10/mapbox.png",
+    "b": "reference-mercator-repeat/aletsch-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d434681e96af079ed9876348473d6e154ec6fe95cc0eae6e41742d45478631bb",
+    "b_sha256": "d434681e96af079ed9876348473d6e154ec6fe95cc0eae6e41742d45478631bb"
+  },
+  {
+    "a": "reference-mercator/basodino-z12/mapbox.png",
+    "b": "reference-mercator-repeat/basodino-z12/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "82a49ccd5bc3ef9c495c107dbe4bfad1579015f265665652a194e26b46bbcf73",
+    "b_sha256": "82a49ccd5bc3ef9c495c107dbe4bfad1579015f265665652a194e26b46bbcf73"
+  },
+  {
+    "a": "reference-mercator/grand-combin-z10/mapbox.png",
+    "b": "reference-mercator-repeat/grand-combin-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "41968361bf62cf2102bb4ae1c159b9c13e2554bb93cabf66d1944367b2b04394",
+    "b_sha256": "41968361bf62cf2102bb4ae1c159b9c13e2554bb93cabf66d1944367b2b04394"
+  },
+  {
+    "a": "reference-mercator/aletsch-z8/mapbox.png",
+    "b": "reference-mercator-repeat/aletsch-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "2e3be9b71ebe718d11eb89d1850f9aa8b5991bfcd35402a645896e66f882580c",
+    "b_sha256": "2e3be9b71ebe718d11eb89d1850f9aa8b5991bfcd35402a645896e66f882580c"
+  },
+  {
+    "a": "reference-mercator/mont-blanc-z12/mapbox.png",
+    "b": "reference-mercator-repeat/mont-blanc-z12/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "dcd48869cc95dab039b264dbf9af566399e2bf7962d3817b9ead5d0533877361",
+    "b_sha256": "dcd48869cc95dab039b264dbf9af566399e2bf7962d3817b9ead5d0533877361"
+  },
+  {
+    "a": "reference-mercator/mont-blanc-z10/mapbox.png",
+    "b": "reference-mercator-repeat/mont-blanc-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "5b79d12a7217082ea406b836ded8d448d7a2415f57431da874674542f8203270",
+    "b_sha256": "5b79d12a7217082ea406b836ded8d448d7a2415f57431da874674542f8203270"
+  },
+  {
+    "a": "reference-mercator/cairo-nile-z14/mapbox.png",
+    "b": "reference-mercator-repeat/cairo-nile-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "558629eb80faca4f5c9ffe8a9997503af6829eac2885d3425bda32d380bfb781",
+    "b_sha256": "558629eb80faca4f5c9ffe8a9997503af6829eac2885d3425bda32d380bfb781"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before/qgis.png",
+    "b": "3/switzerland-alps-z5-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "53428514f708e979ac3003da3e7e7295b3cf5d7ea843c81ccedd7a12c8765ef2",
+    "b_sha256": "53428514f708e979ac3003da3e7e7295b3cf5d7ea843c81ccedd7a12c8765ef2"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before/labels.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before/runtime.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+    "b_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before/placed-labels.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0",
+    "b_sha256": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after/qgis.png",
+    "b": "3/switzerland-alps-z5-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "53428514f708e979ac3003da3e7e7295b3cf5d7ea843c81ccedd7a12c8765ef2",
+    "b_sha256": "53428514f708e979ac3003da3e7e7295b3cf5d7ea843c81ccedd7a12c8765ef2"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after/labels.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after/runtime.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+    "b_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after/placed-labels.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0",
+    "b_sha256": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before/qgis.png",
+    "b": "3/zurich-region-z8-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "cb0c45c082cc818882fac6bcea40b2ef12e1d3ec059bf97aacb18d1b44dc5938",
+    "b_sha256": "cb0c45c082cc818882fac6bcea40b2ef12e1d3ec059bf97aacb18d1b44dc5938"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before/labels.json",
+    "b": "3/zurich-region-z8-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before/runtime.json",
+    "b": "3/zurich-region-z8-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+    "b_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before/placed-labels.json",
+    "b": "3/zurich-region-z8-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d",
+    "b_sha256": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after/qgis.png",
+    "b": "3/zurich-region-z8-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "cb0c45c082cc818882fac6bcea40b2ef12e1d3ec059bf97aacb18d1b44dc5938",
+    "b_sha256": "cb0c45c082cc818882fac6bcea40b2ef12e1d3ec059bf97aacb18d1b44dc5938"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after/labels.json",
+    "b": "3/zurich-region-z8-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after/runtime.json",
+    "b": "3/zurich-region-z8-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+    "b_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after/placed-labels.json",
+    "b": "3/zurich-region-z8-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d",
+    "b_sha256": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before/qgis.png",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+    "b_sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before/labels.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before/runtime.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+    "b_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before/placed-labels.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6",
+    "b_sha256": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after/qgis.png",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "8162346c692a9c10ee4a2cfa3518624d8f02b53e1896542de91a08e64b2110ea",
+    "b_sha256": "8162346c692a9c10ee4a2cfa3518624d8f02b53e1896542de91a08e64b2110ea"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after/labels.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after/runtime.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+    "b_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after/placed-labels.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "d0244fce6c2e0ed161eac2edd47b9d05ea5f42932bf52735163e6d12bc4d3111",
+    "b_sha256": "d0244fce6c2e0ed161eac2edd47b9d05ea5f42932bf52735163e6d12bc4d3111"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before/qgis.png",
+    "b": "3/bern-urban-z12-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "94a07fe21c7f2cad4dc27edfca0c81c14630ed1fc0417e787ef3ab2bf774974c",
+    "b_sha256": "94a07fe21c7f2cad4dc27edfca0c81c14630ed1fc0417e787ef3ab2bf774974c"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before/labels.json",
+    "b": "3/bern-urban-z12-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before/runtime.json",
+    "b": "3/bern-urban-z12-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+    "b_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before/placed-labels.json",
+    "b": "3/bern-urban-z12-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "63a5d6df3ad656ef2d98941ae5d21e098a0b17efc31e94aa59ba82678b9bbaf5",
+    "b_sha256": "63a5d6df3ad656ef2d98941ae5d21e098a0b17efc31e94aa59ba82678b9bbaf5"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after/qgis.png",
+    "b": "3/bern-urban-z12-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "94a07fe21c7f2cad4dc27edfca0c81c14630ed1fc0417e787ef3ab2bf774974c",
+    "b_sha256": "94a07fe21c7f2cad4dc27edfca0c81c14630ed1fc0417e787ef3ab2bf774974c"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after/labels.json",
+    "b": "3/bern-urban-z12-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after/runtime.json",
+    "b": "3/bern-urban-z12-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+    "b_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after/placed-labels.json",
+    "b": "3/bern-urban-z12-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "63a5d6df3ad656ef2d98941ae5d21e098a0b17efc31e94aa59ba82678b9bbaf5",
+    "b_sha256": "63a5d6df3ad656ef2d98941ae5d21e098a0b17efc31e94aa59ba82678b9bbaf5"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before/qgis.png",
+    "b": "3/geneva-urban-z14-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "195f7e416faab35295cad80512cd27eb1b9c36d0f9c42894eac3e0eaa46e5083",
+    "b_sha256": "195f7e416faab35295cad80512cd27eb1b9c36d0f9c42894eac3e0eaa46e5083"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before/labels.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before/runtime.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+    "b_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before/placed-labels.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "1a5989e9de3efbdce2a40cabaf92c3507deb968307bc6c337cf4af3fedb9bc6a",
+    "b_sha256": "1a5989e9de3efbdce2a40cabaf92c3507deb968307bc6c337cf4af3fedb9bc6a"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after/qgis.png",
+    "b": "3/geneva-urban-z14-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "195f7e416faab35295cad80512cd27eb1b9c36d0f9c42894eac3e0eaa46e5083",
+    "b_sha256": "195f7e416faab35295cad80512cd27eb1b9c36d0f9c42894eac3e0eaa46e5083"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after/labels.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after/runtime.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+    "b_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after/placed-labels.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "1a5989e9de3efbdce2a40cabaf92c3507deb968307bc6c337cf4af3fedb9bc6a",
+    "b_sha256": "1a5989e9de3efbdce2a40cabaf92c3507deb968307bc6c337cf4af3fedb9bc6a"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before/qgis.png",
+    "b": "3/zurich-streets-z17-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+    "b_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before/labels.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before/runtime.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+    "b_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before/placed-labels.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801",
+    "b_sha256": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after/qgis.png",
+    "b": "3/zurich-streets-z17-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+    "b_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after/labels.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after/runtime.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+    "b_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after/placed-labels.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801",
+    "b_sha256": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/qgis.png",
+    "b": "3/geneva-streets-z18-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+    "b_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/labels.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/runtime.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+    "b_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/placed-labels.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7",
+    "b_sha256": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/qgis.png",
+    "b": "3/geneva-streets-z18-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+    "b_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/labels.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/runtime.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+    "b_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/placed-labels.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7",
+    "b_sha256": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7"
+  },
+  {
+    "a": "3/aletsch-z10/before/qgis.png",
+    "b": "3/aletsch-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "2a88c7fea92457038e82c7c2b626fe6b9a233b4f3d56ea243c5a7b608abba9f7",
+    "b_sha256": "2a88c7fea92457038e82c7c2b626fe6b9a233b4f3d56ea243c5a7b608abba9f7"
+  },
+  {
+    "a": "3/aletsch-z10/before/labels.json",
+    "b": "3/aletsch-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/aletsch-z10/before/runtime.json",
+    "b": "3/aletsch-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e954fb7b82c4717178a791e54f6f78f270d233682bb7b7814d4c0e0d039a26b3",
+    "b_sha256": "e954fb7b82c4717178a791e54f6f78f270d233682bb7b7814d4c0e0d039a26b3"
+  },
+  {
+    "a": "3/aletsch-z10/before/placed-labels.json",
+    "b": "3/aletsch-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "18019d92b5f72e38885319d5e24b410edc927f005147eccc9e553a7fa92075a9",
+    "b_sha256": "18019d92b5f72e38885319d5e24b410edc927f005147eccc9e553a7fa92075a9"
+  },
+  {
+    "a": "3/aletsch-z10/after/qgis.png",
+    "b": "3/aletsch-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b791762e1e89df3e3e1f5c194dc296b69e95c9a8d00daf07686935fdb415ca0a",
+    "b_sha256": "b791762e1e89df3e3e1f5c194dc296b69e95c9a8d00daf07686935fdb415ca0a"
+  },
+  {
+    "a": "3/aletsch-z10/after/labels.json",
+    "b": "3/aletsch-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/aletsch-z10/after/runtime.json",
+    "b": "3/aletsch-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e954fb7b82c4717178a791e54f6f78f270d233682bb7b7814d4c0e0d039a26b3",
+    "b_sha256": "e954fb7b82c4717178a791e54f6f78f270d233682bb7b7814d4c0e0d039a26b3"
+  },
+  {
+    "a": "3/aletsch-z10/after/placed-labels.json",
+    "b": "3/aletsch-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "da9c6c98b063214d80f3eee92002e51b419e08fbbea2e87908c8fb548c9e15d6",
+    "b_sha256": "da9c6c98b063214d80f3eee92002e51b419e08fbbea2e87908c8fb548c9e15d6"
+  },
+  {
+    "a": "3/basodino-z12/before/qgis.png",
+    "b": "3/basodino-z12/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "5712a01fd3b3946b1da72df23ec3a070fcdb91cc681aec07e68e7d3ce95f4986",
+    "b_sha256": "5712a01fd3b3946b1da72df23ec3a070fcdb91cc681aec07e68e7d3ce95f4986"
+  },
+  {
+    "a": "3/basodino-z12/before/labels.json",
+    "b": "3/basodino-z12/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/basodino-z12/before/runtime.json",
+    "b": "3/basodino-z12/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d962d9144bd412820e2b262faf44c1ecee4d9166ddf1a586eacc88f2fd0891a8",
+    "b_sha256": "d962d9144bd412820e2b262faf44c1ecee4d9166ddf1a586eacc88f2fd0891a8"
+  },
+  {
+    "a": "3/basodino-z12/before/placed-labels.json",
+    "b": "3/basodino-z12/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "1479e252eaf8637853ec28f384bdce151344d60f01f4439fef080235a33db3c6",
+    "b_sha256": "1479e252eaf8637853ec28f384bdce151344d60f01f4439fef080235a33db3c6"
+  },
+  {
+    "a": "3/basodino-z12/after/qgis.png",
+    "b": "3/basodino-z12/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ec1bb6ff00152e99f8b85160cf9167aa41b9508829ff7f828e9af2e8279605d0",
+    "b_sha256": "ec1bb6ff00152e99f8b85160cf9167aa41b9508829ff7f828e9af2e8279605d0"
+  },
+  {
+    "a": "3/basodino-z12/after/labels.json",
+    "b": "3/basodino-z12/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/basodino-z12/after/runtime.json",
+    "b": "3/basodino-z12/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d962d9144bd412820e2b262faf44c1ecee4d9166ddf1a586eacc88f2fd0891a8",
+    "b_sha256": "d962d9144bd412820e2b262faf44c1ecee4d9166ddf1a586eacc88f2fd0891a8"
+  },
+  {
+    "a": "3/basodino-z12/after/placed-labels.json",
+    "b": "3/basodino-z12/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "517ac802943d89d592a2c94e5544a791d8e542510ca7e4de6bf958fde6ad8e7b",
+    "b_sha256": "517ac802943d89d592a2c94e5544a791d8e542510ca7e4de6bf958fde6ad8e7b"
+  },
+  {
+    "a": "3/grand-combin-z10/before/qgis.png",
+    "b": "3/grand-combin-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "77d0017711dbcc9c2dcebbbddce6153c312d5b951fab1603356b6dd203a1e221",
+    "b_sha256": "77d0017711dbcc9c2dcebbbddce6153c312d5b951fab1603356b6dd203a1e221"
+  },
+  {
+    "a": "3/grand-combin-z10/before/labels.json",
+    "b": "3/grand-combin-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/grand-combin-z10/before/runtime.json",
+    "b": "3/grand-combin-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5",
+    "b_sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5"
+  },
+  {
+    "a": "3/grand-combin-z10/before/placed-labels.json",
+    "b": "3/grand-combin-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "1df126c20cf9931e3e4a32cd7668443fa286d45c91c6331d6a26eca5409f23ff",
+    "b_sha256": "1df126c20cf9931e3e4a32cd7668443fa286d45c91c6331d6a26eca5409f23ff"
+  },
+  {
+    "a": "3/grand-combin-z10/after/qgis.png",
+    "b": "3/grand-combin-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "8dfe474417da58f3f46607763e78b629ae360c707556ad706553af2417702507",
+    "b_sha256": "8dfe474417da58f3f46607763e78b629ae360c707556ad706553af2417702507"
+  },
+  {
+    "a": "3/grand-combin-z10/after/labels.json",
+    "b": "3/grand-combin-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/grand-combin-z10/after/runtime.json",
+    "b": "3/grand-combin-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5",
+    "b_sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5"
+  },
+  {
+    "a": "3/grand-combin-z10/after/placed-labels.json",
+    "b": "3/grand-combin-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "b06e25cc383688d92fc1158641f49cff1493e2176bd19166aae7fc2d29feef04",
+    "b_sha256": "b06e25cc383688d92fc1158641f49cff1493e2176bd19166aae7fc2d29feef04"
+  },
+  {
+    "a": "3/aletsch-z8/before/qgis.png",
+    "b": "3/aletsch-z8/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "4bc033d597772d66979ce75dbba95f7bae310a47d95f51f51185109057ab291c",
+    "b_sha256": "4bc033d597772d66979ce75dbba95f7bae310a47d95f51f51185109057ab291c"
+  },
+  {
+    "a": "3/aletsch-z8/before/labels.json",
+    "b": "3/aletsch-z8/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/aletsch-z8/before/runtime.json",
+    "b": "3/aletsch-z8/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0cd192c8c0d250fbb76d811bbac3275b13f23a70aca6260ddf071a56a710f4f7",
+    "b_sha256": "0cd192c8c0d250fbb76d811bbac3275b13f23a70aca6260ddf071a56a710f4f7"
+  },
+  {
+    "a": "3/aletsch-z8/before/placed-labels.json",
+    "b": "3/aletsch-z8/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "f5fe48c60984113070b76f63e6f55f9f7bca92f351db9bc1278dbf3e5c837e5b",
+    "b_sha256": "f5fe48c60984113070b76f63e6f55f9f7bca92f351db9bc1278dbf3e5c837e5b"
+  },
+  {
+    "a": "3/aletsch-z8/after/qgis.png",
+    "b": "3/aletsch-z8/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "4bc033d597772d66979ce75dbba95f7bae310a47d95f51f51185109057ab291c",
+    "b_sha256": "4bc033d597772d66979ce75dbba95f7bae310a47d95f51f51185109057ab291c"
+  },
+  {
+    "a": "3/aletsch-z8/after/labels.json",
+    "b": "3/aletsch-z8/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/aletsch-z8/after/runtime.json",
+    "b": "3/aletsch-z8/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0cd192c8c0d250fbb76d811bbac3275b13f23a70aca6260ddf071a56a710f4f7",
+    "b_sha256": "0cd192c8c0d250fbb76d811bbac3275b13f23a70aca6260ddf071a56a710f4f7"
+  },
+  {
+    "a": "3/aletsch-z8/after/placed-labels.json",
+    "b": "3/aletsch-z8/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "f5fe48c60984113070b76f63e6f55f9f7bca92f351db9bc1278dbf3e5c837e5b",
+    "b_sha256": "f5fe48c60984113070b76f63e6f55f9f7bca92f351db9bc1278dbf3e5c837e5b"
+  },
+  {
+    "a": "3/mont-blanc-z12/before/qgis.png",
+    "b": "3/mont-blanc-z12/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9c866b76f9d65689672c6ded3c59e41c5e96b3181025b43977f795f69fb9e3c6",
+    "b_sha256": "9c866b76f9d65689672c6ded3c59e41c5e96b3181025b43977f795f69fb9e3c6"
+  },
+  {
+    "a": "3/mont-blanc-z12/before/labels.json",
+    "b": "3/mont-blanc-z12/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/mont-blanc-z12/before/runtime.json",
+    "b": "3/mont-blanc-z12/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "17990c2afccf1ae8c032a4c403a41972314179f1f318fe470310b42305c341f5",
+    "b_sha256": "17990c2afccf1ae8c032a4c403a41972314179f1f318fe470310b42305c341f5"
+  },
+  {
+    "a": "3/mont-blanc-z12/before/placed-labels.json",
+    "b": "3/mont-blanc-z12/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "ff822aefef1143440afd03a5a799008229d6d37400e0f870f4c7bddae9b9c14c",
+    "b_sha256": "ff822aefef1143440afd03a5a799008229d6d37400e0f870f4c7bddae9b9c14c"
+  },
+  {
+    "a": "3/mont-blanc-z12/after/qgis.png",
+    "b": "3/mont-blanc-z12/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9c866b76f9d65689672c6ded3c59e41c5e96b3181025b43977f795f69fb9e3c6",
+    "b_sha256": "9c866b76f9d65689672c6ded3c59e41c5e96b3181025b43977f795f69fb9e3c6"
+  },
+  {
+    "a": "3/mont-blanc-z12/after/labels.json",
+    "b": "3/mont-blanc-z12/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/mont-blanc-z12/after/runtime.json",
+    "b": "3/mont-blanc-z12/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "17990c2afccf1ae8c032a4c403a41972314179f1f318fe470310b42305c341f5",
+    "b_sha256": "17990c2afccf1ae8c032a4c403a41972314179f1f318fe470310b42305c341f5"
+  },
+  {
+    "a": "3/mont-blanc-z12/after/placed-labels.json",
+    "b": "3/mont-blanc-z12/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "ff822aefef1143440afd03a5a799008229d6d37400e0f870f4c7bddae9b9c14c",
+    "b_sha256": "ff822aefef1143440afd03a5a799008229d6d37400e0f870f4c7bddae9b9c14c"
+  },
+  {
+    "a": "3/mont-blanc-z10/before/qgis.png",
+    "b": "3/mont-blanc-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "6536c7671616e982dbaf45e24e1dd2a4a86076a52983881442bd44fa6f474045",
+    "b_sha256": "6536c7671616e982dbaf45e24e1dd2a4a86076a52983881442bd44fa6f474045"
+  },
+  {
+    "a": "3/mont-blanc-z10/before/labels.json",
+    "b": "3/mont-blanc-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/mont-blanc-z10/before/runtime.json",
+    "b": "3/mont-blanc-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e3670aa8cc52cf9145d880326833488ca97925271b81216ee98a986a7cc8fa9b",
+    "b_sha256": "e3670aa8cc52cf9145d880326833488ca97925271b81216ee98a986a7cc8fa9b"
+  },
+  {
+    "a": "3/mont-blanc-z10/before/placed-labels.json",
+    "b": "3/mont-blanc-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "c4a787f7fb9087007f6616381debf6fde10cae52d325aadcfd70e65b110d4e8d",
+    "b_sha256": "c4a787f7fb9087007f6616381debf6fde10cae52d325aadcfd70e65b110d4e8d"
+  },
+  {
+    "a": "3/mont-blanc-z10/after/qgis.png",
+    "b": "3/mont-blanc-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7ccc1feffae1d4147361af15f2faf39993385a2e305e17beee0cd466e67e2d61",
+    "b_sha256": "7ccc1feffae1d4147361af15f2faf39993385a2e305e17beee0cd466e67e2d61"
+  },
+  {
+    "a": "3/mont-blanc-z10/after/labels.json",
+    "b": "3/mont-blanc-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/mont-blanc-z10/after/runtime.json",
+    "b": "3/mont-blanc-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e3670aa8cc52cf9145d880326833488ca97925271b81216ee98a986a7cc8fa9b",
+    "b_sha256": "e3670aa8cc52cf9145d880326833488ca97925271b81216ee98a986a7cc8fa9b"
+  },
+  {
+    "a": "3/mont-blanc-z10/after/placed-labels.json",
+    "b": "3/mont-blanc-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "431dab8dbac9f94e42b5d4514a3de0dec6d28ceed296b42c681a910b6e14791a",
+    "b_sha256": "431dab8dbac9f94e42b5d4514a3de0dec6d28ceed296b42c681a910b6e14791a"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/qgis.png",
+    "b": "3/cairo-nile-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "93d0e18b753cd3c20777676c979a4f3233ee7c21b2ab60ec6c60802183b5068c",
+    "b_sha256": "93d0e18b753cd3c20777676c979a4f3233ee7c21b2ab60ec6c60802183b5068c"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/labels.json",
+    "b": "3/cairo-nile-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436",
+    "b_sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/runtime.json",
+    "b": "3/cairo-nile-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810",
+    "b_sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/placed-labels.json",
+    "b": "3/cairo-nile-z14/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "2f44e1732ac4084ee33c7706cfeb84c3648cfb3597bb0b46aeafa64851fcfd3e",
+    "b_sha256": "2f44e1732ac4084ee33c7706cfeb84c3648cfb3597bb0b46aeafa64851fcfd3e"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/qgis.png",
+    "b": "3/cairo-nile-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "97750eb40a6570387a21197b4cf61a4d6ce53785a330b9343e0436f4faeeb2a7",
+    "b_sha256": "97750eb40a6570387a21197b4cf61a4d6ce53785a330b9343e0436f4faeeb2a7"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/labels.json",
+    "b": "3/cairo-nile-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865",
+    "b_sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/runtime.json",
+    "b": "3/cairo-nile-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810",
+    "b_sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/placed-labels.json",
+    "b": "3/cairo-nile-z14/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "d3c62dc45b9bb02bef5c6e77cfe1d31293cef42b217477b99eacc1fdc388ae62",
+    "b_sha256": "d3c62dc45b9bb02bef5c6e77cfe1d31293cef42b217477b99eacc1fdc388ae62"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before/qgis.png",
+    "b": "4/switzerland-alps-z5-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "6952e526941517b9ff82af35bdf943ed41178347179cc4593c2fbb88061d5b59",
+    "b_sha256": "6952e526941517b9ff82af35bdf943ed41178347179cc4593c2fbb88061d5b59"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before/labels.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before/runtime.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+    "b_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before/placed-labels.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9",
+    "b_sha256": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after/qgis.png",
+    "b": "4/switzerland-alps-z5-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "6952e526941517b9ff82af35bdf943ed41178347179cc4593c2fbb88061d5b59",
+    "b_sha256": "6952e526941517b9ff82af35bdf943ed41178347179cc4593c2fbb88061d5b59"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after/labels.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after/runtime.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+    "b_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after/placed-labels.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9",
+    "b_sha256": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before/qgis.png",
+    "b": "4/zurich-region-z8-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7ad41f7c58181b9d15ba2ee83922696d985db94f4b6a1d2c340ad22f1e7c5bd1",
+    "b_sha256": "7ad41f7c58181b9d15ba2ee83922696d985db94f4b6a1d2c340ad22f1e7c5bd1"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before/labels.json",
+    "b": "4/zurich-region-z8-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before/runtime.json",
+    "b": "4/zurich-region-z8-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+    "b_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before/placed-labels.json",
+    "b": "4/zurich-region-z8-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450",
+    "b_sha256": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after/qgis.png",
+    "b": "4/zurich-region-z8-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7ad41f7c58181b9d15ba2ee83922696d985db94f4b6a1d2c340ad22f1e7c5bd1",
+    "b_sha256": "7ad41f7c58181b9d15ba2ee83922696d985db94f4b6a1d2c340ad22f1e7c5bd1"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after/labels.json",
+    "b": "4/zurich-region-z8-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after/runtime.json",
+    "b": "4/zurich-region-z8-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+    "b_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after/placed-labels.json",
+    "b": "4/zurich-region-z8-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450",
+    "b_sha256": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before/qgis.png",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+    "b_sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before/labels.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before/runtime.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+    "b_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before/placed-labels.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46",
+    "b_sha256": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after/qgis.png",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d46ba26d662037825f51558160b308dc091931d46d4c7d9c9b799749b362930c",
+    "b_sha256": "d46ba26d662037825f51558160b308dc091931d46d4c7d9c9b799749b362930c"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after/labels.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after/runtime.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+    "b_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after/placed-labels.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "752d89a73607f6c5351b1caa80bbc715ee4a0a24c61808d36b714bbc9cf22a54",
+    "b_sha256": "752d89a73607f6c5351b1caa80bbc715ee4a0a24c61808d36b714bbc9cf22a54"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before/qgis.png",
+    "b": "4/bern-urban-z12-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "152bc43fda14812bd5921a348992720f986dfc06fc2019bf4064bee4b503029b",
+    "b_sha256": "152bc43fda14812bd5921a348992720f986dfc06fc2019bf4064bee4b503029b"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before/labels.json",
+    "b": "4/bern-urban-z12-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before/runtime.json",
+    "b": "4/bern-urban-z12-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+    "b_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before/placed-labels.json",
+    "b": "4/bern-urban-z12-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "099edfb149cbc9de72bc84216112702a2a6323cfb64e6b5717fbb2b3c0abd2fc",
+    "b_sha256": "099edfb149cbc9de72bc84216112702a2a6323cfb64e6b5717fbb2b3c0abd2fc"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after/qgis.png",
+    "b": "4/bern-urban-z12-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "152bc43fda14812bd5921a348992720f986dfc06fc2019bf4064bee4b503029b",
+    "b_sha256": "152bc43fda14812bd5921a348992720f986dfc06fc2019bf4064bee4b503029b"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after/labels.json",
+    "b": "4/bern-urban-z12-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after/runtime.json",
+    "b": "4/bern-urban-z12-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+    "b_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after/placed-labels.json",
+    "b": "4/bern-urban-z12-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "099edfb149cbc9de72bc84216112702a2a6323cfb64e6b5717fbb2b3c0abd2fc",
+    "b_sha256": "099edfb149cbc9de72bc84216112702a2a6323cfb64e6b5717fbb2b3c0abd2fc"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before/qgis.png",
+    "b": "4/geneva-urban-z14-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d42eb2e16b7b3fd81bf0ab1dfe53e800e4dbba6ea50f0b57dd4e02d2261a5d47",
+    "b_sha256": "d42eb2e16b7b3fd81bf0ab1dfe53e800e4dbba6ea50f0b57dd4e02d2261a5d47"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before/labels.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before/runtime.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+    "b_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before/placed-labels.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "612543d3ad643330090874e8e1d0451f62eefc810b7806f7ed20fa390f2dab3d",
+    "b_sha256": "612543d3ad643330090874e8e1d0451f62eefc810b7806f7ed20fa390f2dab3d"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after/qgis.png",
+    "b": "4/geneva-urban-z14-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "d42eb2e16b7b3fd81bf0ab1dfe53e800e4dbba6ea50f0b57dd4e02d2261a5d47",
+    "b_sha256": "d42eb2e16b7b3fd81bf0ab1dfe53e800e4dbba6ea50f0b57dd4e02d2261a5d47"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after/labels.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after/runtime.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+    "b_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after/placed-labels.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "612543d3ad643330090874e8e1d0451f62eefc810b7806f7ed20fa390f2dab3d",
+    "b_sha256": "612543d3ad643330090874e8e1d0451f62eefc810b7806f7ed20fa390f2dab3d"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before/qgis.png",
+    "b": "4/zurich-streets-z17-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+    "b_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before/labels.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before/runtime.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+    "b_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before/placed-labels.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd",
+    "b_sha256": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after/qgis.png",
+    "b": "4/zurich-streets-z17-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+    "b_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after/labels.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after/runtime.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+    "b_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after/placed-labels.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd",
+    "b_sha256": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/qgis.png",
+    "b": "4/geneva-streets-z18-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+    "b_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/labels.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/runtime.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+    "b_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/placed-labels.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e",
+    "b_sha256": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/qgis.png",
+    "b": "4/geneva-streets-z18-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+    "b_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/labels.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/runtime.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+    "b_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/placed-labels.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e",
+    "b_sha256": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e"
+  },
+  {
+    "a": "4/aletsch-z10/before/qgis.png",
+    "b": "4/aletsch-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "bc204b0be4026eff40b3d458f39075b0a53401ce95170f335ba5ab2d8cd4ba68",
+    "b_sha256": "bc204b0be4026eff40b3d458f39075b0a53401ce95170f335ba5ab2d8cd4ba68"
+  },
+  {
+    "a": "4/aletsch-z10/before/labels.json",
+    "b": "4/aletsch-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/aletsch-z10/before/runtime.json",
+    "b": "4/aletsch-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "68b6232bc05faadaba3c9693efba94c0ad2bdbdc52681e3f296d79685400e9e9",
+    "b_sha256": "68b6232bc05faadaba3c9693efba94c0ad2bdbdc52681e3f296d79685400e9e9"
+  },
+  {
+    "a": "4/aletsch-z10/before/placed-labels.json",
+    "b": "4/aletsch-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "7c34269c03eb6a44cff756e697af16b4bd3f9671cb0fadf352215205c9433cc5",
+    "b_sha256": "7c34269c03eb6a44cff756e697af16b4bd3f9671cb0fadf352215205c9433cc5"
+  },
+  {
+    "a": "4/aletsch-z10/after/qgis.png",
+    "b": "4/aletsch-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "93fd698ffb21e582a6aa8e2453f62c21983553e9ec1e29795858fe7125779da1",
+    "b_sha256": "93fd698ffb21e582a6aa8e2453f62c21983553e9ec1e29795858fe7125779da1"
+  },
+  {
+    "a": "4/aletsch-z10/after/labels.json",
+    "b": "4/aletsch-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/aletsch-z10/after/runtime.json",
+    "b": "4/aletsch-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "68b6232bc05faadaba3c9693efba94c0ad2bdbdc52681e3f296d79685400e9e9",
+    "b_sha256": "68b6232bc05faadaba3c9693efba94c0ad2bdbdc52681e3f296d79685400e9e9"
+  },
+  {
+    "a": "4/aletsch-z10/after/placed-labels.json",
+    "b": "4/aletsch-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "863eefe32e24d6ef51a2ce8edfb4773b0cb33bf35ea169a80524d3f45e74455d",
+    "b_sha256": "863eefe32e24d6ef51a2ce8edfb4773b0cb33bf35ea169a80524d3f45e74455d"
+  },
+  {
+    "a": "4/basodino-z12/before/qgis.png",
+    "b": "4/basodino-z12/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "0d6d527352c1398f0b30b5ee85d43714013e763d03ef50a20094128a74dedfd4",
+    "b_sha256": "0d6d527352c1398f0b30b5ee85d43714013e763d03ef50a20094128a74dedfd4"
+  },
+  {
+    "a": "4/basodino-z12/before/labels.json",
+    "b": "4/basodino-z12/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/basodino-z12/before/runtime.json",
+    "b": "4/basodino-z12/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "df379a52c105b6c53ab4a5aff47fffb05a8ac0ee667faf291ba1d70f3cd09071",
+    "b_sha256": "df379a52c105b6c53ab4a5aff47fffb05a8ac0ee667faf291ba1d70f3cd09071"
+  },
+  {
+    "a": "4/basodino-z12/before/placed-labels.json",
+    "b": "4/basodino-z12/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "18128817cf5d74f04c4d312d1870768c006f4c5359132284a4d76fcc1ce86cd6",
+    "b_sha256": "18128817cf5d74f04c4d312d1870768c006f4c5359132284a4d76fcc1ce86cd6"
+  },
+  {
+    "a": "4/basodino-z12/after/qgis.png",
+    "b": "4/basodino-z12/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "085527ba7a6b2aca044891ade9ac9541256f966853825fba0c4e3a1f94090f4d",
+    "b_sha256": "085527ba7a6b2aca044891ade9ac9541256f966853825fba0c4e3a1f94090f4d"
+  },
+  {
+    "a": "4/basodino-z12/after/labels.json",
+    "b": "4/basodino-z12/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/basodino-z12/after/runtime.json",
+    "b": "4/basodino-z12/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "df379a52c105b6c53ab4a5aff47fffb05a8ac0ee667faf291ba1d70f3cd09071",
+    "b_sha256": "df379a52c105b6c53ab4a5aff47fffb05a8ac0ee667faf291ba1d70f3cd09071"
+  },
+  {
+    "a": "4/basodino-z12/after/placed-labels.json",
+    "b": "4/basodino-z12/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "77c52b7e08e7d82ee1333a455a01da2acecf10b676c18e56d82985f37836d674",
+    "b_sha256": "77c52b7e08e7d82ee1333a455a01da2acecf10b676c18e56d82985f37836d674"
+  },
+  {
+    "a": "4/grand-combin-z10/before/qgis.png",
+    "b": "4/grand-combin-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "cc0d410ef441a971793f12f3eb66043c11d8ba5847ce85f20627c7acb451dfe4",
+    "b_sha256": "cc0d410ef441a971793f12f3eb66043c11d8ba5847ce85f20627c7acb451dfe4"
+  },
+  {
+    "a": "4/grand-combin-z10/before/labels.json",
+    "b": "4/grand-combin-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/grand-combin-z10/before/runtime.json",
+    "b": "4/grand-combin-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180",
+    "b_sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180"
+  },
+  {
+    "a": "4/grand-combin-z10/before/placed-labels.json",
+    "b": "4/grand-combin-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "76202ae20fabadbbc2b4f04a5e6c43260dce0014e6a1ec2fcf118baccd5ab745",
+    "b_sha256": "76202ae20fabadbbc2b4f04a5e6c43260dce0014e6a1ec2fcf118baccd5ab745"
+  },
+  {
+    "a": "4/grand-combin-z10/after/qgis.png",
+    "b": "4/grand-combin-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9d0d6e2568f01b6d11c0699d5803fa983d4cab2cdbd3f20aee0ee2562011fc3b",
+    "b_sha256": "9d0d6e2568f01b6d11c0699d5803fa983d4cab2cdbd3f20aee0ee2562011fc3b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/labels.json",
+    "b": "4/grand-combin-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/runtime.json",
+    "b": "4/grand-combin-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180",
+    "b_sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180"
+  },
+  {
+    "a": "4/grand-combin-z10/after/placed-labels.json",
+    "b": "4/grand-combin-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "15300ecb9579241a18427437a54609c4b3770a21214f1c769b4ff49f6cc54137",
+    "b_sha256": "15300ecb9579241a18427437a54609c4b3770a21214f1c769b4ff49f6cc54137"
+  },
+  {
+    "a": "4/aletsch-z8/before/qgis.png",
+    "b": "4/aletsch-z8/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "bd1ad03b251814473ac4164135e89236b810514a61e9b4dee51ca3f9e6f4ed03",
+    "b_sha256": "bd1ad03b251814473ac4164135e89236b810514a61e9b4dee51ca3f9e6f4ed03"
+  },
+  {
+    "a": "4/aletsch-z8/before/labels.json",
+    "b": "4/aletsch-z8/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/aletsch-z8/before/runtime.json",
+    "b": "4/aletsch-z8/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "f750aadd40ade96b9960b4a928ea83a14517156bdd8284cceabcf95b76656c32",
+    "b_sha256": "f750aadd40ade96b9960b4a928ea83a14517156bdd8284cceabcf95b76656c32"
+  },
+  {
+    "a": "4/aletsch-z8/before/placed-labels.json",
+    "b": "4/aletsch-z8/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "84ac55ed23b23c9d21d447c7a6969d4b9816201ee41eb13aa1e6d846e11dcff2",
+    "b_sha256": "84ac55ed23b23c9d21d447c7a6969d4b9816201ee41eb13aa1e6d846e11dcff2"
+  },
+  {
+    "a": "4/aletsch-z8/after/qgis.png",
+    "b": "4/aletsch-z8/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "bd1ad03b251814473ac4164135e89236b810514a61e9b4dee51ca3f9e6f4ed03",
+    "b_sha256": "bd1ad03b251814473ac4164135e89236b810514a61e9b4dee51ca3f9e6f4ed03"
+  },
+  {
+    "a": "4/aletsch-z8/after/labels.json",
+    "b": "4/aletsch-z8/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/aletsch-z8/after/runtime.json",
+    "b": "4/aletsch-z8/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "f750aadd40ade96b9960b4a928ea83a14517156bdd8284cceabcf95b76656c32",
+    "b_sha256": "f750aadd40ade96b9960b4a928ea83a14517156bdd8284cceabcf95b76656c32"
+  },
+  {
+    "a": "4/aletsch-z8/after/placed-labels.json",
+    "b": "4/aletsch-z8/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "84ac55ed23b23c9d21d447c7a6969d4b9816201ee41eb13aa1e6d846e11dcff2",
+    "b_sha256": "84ac55ed23b23c9d21d447c7a6969d4b9816201ee41eb13aa1e6d846e11dcff2"
+  },
+  {
+    "a": "4/mont-blanc-z12/before/qgis.png",
+    "b": "4/mont-blanc-z12/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ad6916b139d6b1a2f577a6d702f17ad69fdb405f910563a4df9469c69e2f2004",
+    "b_sha256": "ad6916b139d6b1a2f577a6d702f17ad69fdb405f910563a4df9469c69e2f2004"
+  },
+  {
+    "a": "4/mont-blanc-z12/before/labels.json",
+    "b": "4/mont-blanc-z12/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/mont-blanc-z12/before/runtime.json",
+    "b": "4/mont-blanc-z12/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "825ac17f63cf5194bf70c4f7df6d057261c55651a46ec9b4243543b2403e47f4",
+    "b_sha256": "825ac17f63cf5194bf70c4f7df6d057261c55651a46ec9b4243543b2403e47f4"
+  },
+  {
+    "a": "4/mont-blanc-z12/before/placed-labels.json",
+    "b": "4/mont-blanc-z12/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "4e3e2c889ae1ced92441806aca365f3327af6d1aa5085c48657a3917de717187",
+    "b_sha256": "4e3e2c889ae1ced92441806aca365f3327af6d1aa5085c48657a3917de717187"
+  },
+  {
+    "a": "4/mont-blanc-z12/after/qgis.png",
+    "b": "4/mont-blanc-z12/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ad6916b139d6b1a2f577a6d702f17ad69fdb405f910563a4df9469c69e2f2004",
+    "b_sha256": "ad6916b139d6b1a2f577a6d702f17ad69fdb405f910563a4df9469c69e2f2004"
+  },
+  {
+    "a": "4/mont-blanc-z12/after/labels.json",
+    "b": "4/mont-blanc-z12/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/mont-blanc-z12/after/runtime.json",
+    "b": "4/mont-blanc-z12/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "825ac17f63cf5194bf70c4f7df6d057261c55651a46ec9b4243543b2403e47f4",
+    "b_sha256": "825ac17f63cf5194bf70c4f7df6d057261c55651a46ec9b4243543b2403e47f4"
+  },
+  {
+    "a": "4/mont-blanc-z12/after/placed-labels.json",
+    "b": "4/mont-blanc-z12/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "4e3e2c889ae1ced92441806aca365f3327af6d1aa5085c48657a3917de717187",
+    "b_sha256": "4e3e2c889ae1ced92441806aca365f3327af6d1aa5085c48657a3917de717187"
+  },
+  {
+    "a": "4/mont-blanc-z10/before/qgis.png",
+    "b": "4/mont-blanc-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "ba59e604b4a2a75bf38a19d33c3b084c28e49fe0c92f3ab2f0b2c9ade1aeb5bf",
+    "b_sha256": "ba59e604b4a2a75bf38a19d33c3b084c28e49fe0c92f3ab2f0b2c9ade1aeb5bf"
+  },
+  {
+    "a": "4/mont-blanc-z10/before/labels.json",
+    "b": "4/mont-blanc-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/mont-blanc-z10/before/runtime.json",
+    "b": "4/mont-blanc-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "48ddb04325772f9ae5e0e84b76ed8e3ce4d5ca66b17764393d0f2abcbcae5195",
+    "b_sha256": "48ddb04325772f9ae5e0e84b76ed8e3ce4d5ca66b17764393d0f2abcbcae5195"
+  },
+  {
+    "a": "4/mont-blanc-z10/before/placed-labels.json",
+    "b": "4/mont-blanc-z10/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "27625ceebab82ee27c52617dba875132db267103f7f2a89409e2989f22d6e4ca",
+    "b_sha256": "27625ceebab82ee27c52617dba875132db267103f7f2a89409e2989f22d6e4ca"
+  },
+  {
+    "a": "4/mont-blanc-z10/after/qgis.png",
+    "b": "4/mont-blanc-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "56268c14132688956629f9a8971898fb9642bdd19936338565b3865c1d0ccfd4",
+    "b_sha256": "56268c14132688956629f9a8971898fb9642bdd19936338565b3865c1d0ccfd4"
+  },
+  {
+    "a": "4/mont-blanc-z10/after/labels.json",
+    "b": "4/mont-blanc-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/mont-blanc-z10/after/runtime.json",
+    "b": "4/mont-blanc-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "48ddb04325772f9ae5e0e84b76ed8e3ce4d5ca66b17764393d0f2abcbcae5195",
+    "b_sha256": "48ddb04325772f9ae5e0e84b76ed8e3ce4d5ca66b17764393d0f2abcbcae5195"
+  },
+  {
+    "a": "4/mont-blanc-z10/after/placed-labels.json",
+    "b": "4/mont-blanc-z10/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "6baece0ea9f574d8a00b9ed394fe56811032273254467e45c88f5ed67d891361",
+    "b_sha256": "6baece0ea9f574d8a00b9ed394fe56811032273254467e45c88f5ed67d891361"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/qgis.png",
+    "b": "4/cairo-nile-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "b532f56b61434f9c16a9937909656b5025ee1ad154cea55396f4d00c21435f72",
+    "b_sha256": "b532f56b61434f9c16a9937909656b5025ee1ad154cea55396f4d00c21435f72"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/labels.json",
+    "b": "4/cairo-nile-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2",
+    "b_sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/runtime.json",
+    "b": "4/cairo-nile-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35",
+    "b_sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/placed-labels.json",
+    "b": "4/cairo-nile-z14/before-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "8dafbc06d50a8a4458298286303e4ff95b79a5acccac80a3aa06244c7eed25b3",
+    "b_sha256": "8dafbc06d50a8a4458298286303e4ff95b79a5acccac80a3aa06244c7eed25b3"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/qgis.png",
+    "b": "4/cairo-nile-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "25a697cfb8da55400e44f44dbf6faadb7606ff721992713a48eb9a65db59797f",
+    "b_sha256": "25a697cfb8da55400e44f44dbf6faadb7606ff721992713a48eb9a65db59797f"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/labels.json",
+    "b": "4/cairo-nile-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b",
+    "b_sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/runtime.json",
+    "b": "4/cairo-nile-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "a_sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35",
+    "b_sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/placed-labels.json",
+    "b": "4/cairo-nile-z14/after-repeat/placed-labels.json",
+    "kind": "placement-records",
+    "identical": true,
+    "a_sha256": "76dcd8a0d01a851c6b5aad559bee8a0105ce58daf09365f454c40d79d10b8bb8",
+    "b_sha256": "76dcd8a0d01a851c6b5aad559bee8a0105ce58daf09365f454c40d79d10b8bb8"
+  }
+]

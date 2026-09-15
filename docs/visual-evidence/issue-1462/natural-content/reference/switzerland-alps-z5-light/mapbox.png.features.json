@@ -1,0 +1,3701 @@
+{
+  "features": [
+    {
+      "id": 1170576325295585,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "根息島",
+        "name_script": "Latin",
+        "name_ru": "Гернси",
+        "name_zh-Hans": "根西岛",
+        "name_pt": "Guernsey",
+        "name_ko": "건지 섬",
+        "symbolrank": 7,
+        "name_ja": "ガーンジー",
+        "name_it": "Guernsey",
+        "name_en": "Guernsey",
+        "name_de": "Guernsey",
+        "name_ar": "غيرنزي",
+        "name_fr": "Guernesey",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Guernsey",
+        "iso_3166_1": "GG",
+        "text_anchor": "right",
+        "name_es": "Guernsey",
+        "class": "country",
+        "name": "Guernsey",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.5762939453125,
+          49.45384259433075
+        ]
+      }
+    },
+    {
+      "id": 2549953495484205,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "澤西島",
+        "name_script": "Latin",
+        "name_ru": "Джерси",
+        "name_zh-Hans": "泽西岛",
+        "name_pt": "Jersey",
+        "name_ko": "저지 섬",
+        "symbolrank": 7,
+        "name_ja": "ジャージー",
+        "name_it": "Jersey",
+        "name_en": "Jersey",
+        "name_de": "Jersey",
+        "name_ar": "جيرزي",
+        "name_fr": "Jersey",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Jersey",
+        "iso_3166_1": "JE",
+        "text_anchor": "right",
+        "name_es": "Jersey",
+        "class": "country",
+        "name": "Jersey",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.142333984375,
+          49.21759710517597
+        ]
+      }
+    },
+    {
+      "id": 1939815093607765,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "荷蘭",
+        "name_script": "Latin",
+        "name_ru": "Нидерланды",
+        "name_zh-Hans": "荷兰",
+        "name_pt": "Países Baixos",
+        "name_ko": "네덜란드",
+        "symbolrank": 4,
+        "name_ja": "オランダ",
+        "name_it": "Paesi Bassi",
+        "name_en": "Netherlands",
+        "name_de": "Niederlande",
+        "name_ar": "هولندا",
+        "name_fr": "Pays-Bas",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Hà Lan",
+        "iso_3166_1": "NL",
+        "name_es": "Países Bajos",
+        "class": "country",
+        "name": "Nederland",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.614013671875,
+          51.97303782384611
+        ]
+      }
+    },
+    {
+      "id": 2628785922786965,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "盧森堡",
+        "name_script": "Latin",
+        "name_ru": "Люксембург",
+        "name_zh-Hans": "卢森堡",
+        "name_pt": "Luxemburgo",
+        "name_ko": "룩셈부르크",
+        "symbolrank": 6,
+        "name_ja": "ルクセンブルク",
+        "name_it": "Lussemburgo",
+        "name_en": "Luxembourg",
+        "name_de": "Luxemburg",
+        "name_ar": "لوكسمبورغ",
+        "name_fr": "Luxembourg",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Luxembourg",
+        "iso_3166_1": "LU",
+        "name_es": "Luxemburgo",
+        "class": "country",
+        "name": "Luxembourg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.08917236328125,
+          49.77062195931393
+        ]
+      }
+    },
+    {
+      "id": 3083075403349935,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "比利時",
+        "name_script": "Latin",
+        "name_ru": "Бельгия",
+        "name_zh-Hans": "比利时",
+        "name_pt": "Bélgica",
+        "name_ko": "벨기에",
+        "symbolrank": 4,
+        "name_ja": "ベルギー",
+        "name_it": "Belgio",
+        "name_en": "Belgium",
+        "name_de": "Belgien",
+        "name_ar": "بلجيكا",
+        "name_fr": "Belgique",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Bỉ",
+        "iso_3166_1": "BE",
+        "name_es": "Bélgica",
+        "class": "country",
+        "name": "Belgique - België - Belgien",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.63348388671875,
+          50.438265372826606
+        ]
+      }
+    },
+    {
+      "id": 2402473349643655,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "德國",
+        "name_script": "Latin",
+        "name_ru": "Германия",
+        "name_zh-Hans": "德国",
+        "name_pt": "Alemanha",
+        "name_ko": "독일",
+        "symbolrank": 3,
+        "name_ja": "ドイツ",
+        "name_it": "Germania",
+        "name_en": "Germany",
+        "name_de": "Deutschland",
+        "name_ar": "ألمانيا",
+        "name_fr": "Allemagne",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Đức",
+        "iso_3166_1": "DE",
+        "name_es": "Alemania",
+        "class": "country",
+        "name": "Deutschland",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.01953125,
+          51.13283119669276
+        ]
+      }
+    },
+    {
+      "id": 5067392206465545,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "捷克共和國",
+        "name_script": "Latin",
+        "name_ru": "Чехия",
+        "name_zh-Hans": "捷克",
+        "name_pt": "Chéquia",
+        "name_ko": "체코",
+        "symbolrank": 4,
+        "name_ja": "チェコ",
+        "name_it": "Repubblica Ceca",
+        "name_en": "Czechia",
+        "name_de": "Tschechien",
+        "name_ar": "التشيك",
+        "name_fr": "Tchéquie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Séc",
+        "iso_3166_1": "CZ",
+        "name_es": "Chequia",
+        "class": "country",
+        "name": "Česko",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.33966064453125,
+          49.742231602580716
+        ]
+      }
+    },
+    {
+      "id": 3867703259130445,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "安道爾",
+        "name_script": "Latin",
+        "name_ru": "Андорра",
+        "name_zh-Hans": "安道尔",
+        "name_pt": "Andorra",
+        "name_ko": "안도라",
+        "symbolrank": 7,
+        "name_ja": "アンドラ",
+        "name_it": "Andorra",
+        "name_en": "Andorra",
+        "name_de": "Andorra",
+        "name_ar": "أندورا",
+        "name_fr": "Andorre",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Andorra",
+        "iso_3166_1": "AD",
+        "text_anchor": "bottom",
+        "name_es": "Andorra",
+        "class": "country",
+        "name": "Andorra",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.5765380859375,
+          42.549033612225145
+        ]
+      }
+    },
+    {
+      "id": 1629054727396265,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "法國",
+        "name_script": "Latin",
+        "name_ru": "Франция",
+        "name_zh-Hans": "法国",
+        "name_pt": "França",
+        "name_ko": "프랑스",
+        "symbolrank": 3,
+        "name_ja": "フランス",
+        "name_it": "Francia",
+        "name_en": "France",
+        "name_de": "Frankreich",
+        "name_ar": "فرنسا",
+        "name_fr": "France",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Pháp",
+        "iso_3166_1": "FR",
+        "name_es": "Francia",
+        "class": "country",
+        "name": "France",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.61749267578125,
+          47.82422014935025
+        ]
+      }
+    },
+    {
+      "id": 4264458996446085,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "瑞士",
+        "name_script": "Latin",
+        "name_ru": "Швейцария",
+        "name_zh-Hans": "瑞士",
+        "name_pt": "Suíça",
+        "name_ko": "스위스",
+        "symbolrank": 4,
+        "name_ja": "スイス",
+        "name_it": "Svizzera",
+        "name_en": "Switzerland",
+        "name_de": "Schweiz",
+        "name_ar": "سويسرا",
+        "name_fr": "Suisse",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Thụy Sĩ",
+        "iso_3166_1": "CH",
+        "name_es": "Suiza",
+        "class": "country",
+        "name": "Switzerland",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.2342529296875,
+          46.801939576639995
+        ]
+      }
+    },
+    {
+      "id": 4163918005136225,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "列支敦斯登",
+        "name_script": "Latin",
+        "name_ru": "Лихтенштейн",
+        "name_zh-Hans": "列支敦斯登",
+        "name_pt": "Liechtenstein",
+        "name_ko": "리히텐슈타인",
+        "symbolrank": 7,
+        "name_ja": "リヒテンシュタイン",
+        "name_it": "Liechtenstein",
+        "name_en": "Liechtenstein",
+        "name_de": "Liechtenstein",
+        "name_ar": "ليختنشتاين",
+        "name_fr": "Liechtenstein",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Liechtenstein",
+        "iso_3166_1": "LI",
+        "text_anchor": "bottom",
+        "name_es": "Liechtenstein",
+        "class": "country",
+        "name": "Liechtenstein",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.55535888671875,
+          47.15236927446392
+        ]
+      }
+    },
+    {
+      "id": 3008947524838145,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "摩納哥",
+        "name_script": "Latin",
+        "name_ru": "Монако",
+        "name_zh-Hans": "摩纳哥",
+        "name_pt": "Mónaco",
+        "name_ko": "모나코",
+        "symbolrank": 7,
+        "name_ja": "モナコ",
+        "name_it": "Principato di Monaco",
+        "name_en": "Monaco",
+        "name_de": "Monaco",
+        "name_ar": "موناكو",
+        "name_fr": "Monaco",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Monaco",
+        "iso_3166_1": "MC",
+        "text_anchor": "top-left",
+        "name_es": "Monaco",
+        "class": "country",
+        "name": "Monaco",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.41302490234375,
+          43.74728909225908
+        ]
+      }
+    },
+    {
+      "id": 2710514219351215,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "斯洛伐克",
+        "name_script": "Latin",
+        "name_ru": "Словакия",
+        "name_zh-Hans": "斯洛伐克",
+        "name_pt": "Eslováquia",
+        "name_ko": "슬로바키아",
+        "symbolrank": 5,
+        "name_ja": "スロバキア",
+        "name_it": "Slovacchia",
+        "name_en": "Slovakia",
+        "name_de": "Slowakei",
+        "name_ar": "سلوفاكيا",
+        "name_fr": "Slovaquie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Slovakia",
+        "iso_3166_1": "SK",
+        "name_es": "Eslovaquia",
+        "class": "country",
+        "name": "Slovensko",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.49249267578125,
+          48.70727541512676
+        ]
+      }
+    },
+    {
+      "id": 1444219534730015,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "斯洛維尼亞",
+        "name_script": "Latin",
+        "name_ru": "Словения",
+        "name_zh-Hans": "斯洛文尼亚",
+        "name_pt": "Eslovénia",
+        "name_ko": "슬로베니아",
+        "symbolrank": 5,
+        "name_ja": "スロベニア",
+        "name_it": "Slovenia",
+        "name_en": "Slovenia",
+        "name_de": "Slowenien",
+        "name_ar": "سلوفينيا",
+        "name_fr": "Slovénie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Slovenia",
+        "iso_3166_1": "SI",
+        "name_es": "Eslovenia",
+        "class": "country",
+        "name": "Slovenija",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.6942138671875,
+          46.17032095673059
+        ]
+      }
+    },
+    {
+      "id": 4528612891828645,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "義大利",
+        "name_script": "Latin",
+        "name_ru": "Италия",
+        "name_zh-Hans": "意大利",
+        "name_pt": "Itália",
+        "name_ko": "이탈리아",
+        "symbolrank": 3,
+        "name_ja": "イタリア",
+        "name_it": "Italia",
+        "name_en": "Italy",
+        "name_de": "Italien",
+        "name_ar": "إيطاليا",
+        "name_fr": "Italie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Ý",
+        "iso_3166_1": "IT",
+        "name_es": "Italia",
+        "class": "country",
+        "name": "Italia",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.645263671875,
+          42.5045028529905
+        ]
+      }
+    },
+    {
+      "id": 2372135583783845,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "匈牙利",
+        "name_script": "Latin",
+        "name_ru": "Венгрия",
+        "name_zh-Hans": "匈牙利",
+        "name_pt": "Hungria",
+        "name_ko": "헝가리",
+        "symbolrank": 3,
+        "name_ja": "ハンガリー",
+        "name_it": "Ungheria",
+        "name_en": "Hungary",
+        "name_de": "Ungarn",
+        "name_ar": "المجر",
+        "name_fr": "Hongrie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Hungary",
+        "iso_3166_1": "HU",
+        "name_es": "Hungría",
+        "class": "country",
+        "name": "Magyarország",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.49798583984375,
+          47.06076747983349
+        ]
+      }
+    },
+    {
+      "id": 3773284135468555,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "克羅地亞",
+        "name_script": "Latin",
+        "name_ru": "Хорватия",
+        "name_zh-Hans": "克罗地亚",
+        "name_pt": "Croácia",
+        "name_ko": "크로아티아",
+        "symbolrank": 4,
+        "name_ja": "クロアチア",
+        "name_it": "Croazia",
+        "name_en": "Croatia",
+        "name_de": "Kroatien",
+        "name_ar": "كرواتيا",
+        "name_fr": "Croatie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Croatia",
+        "iso_3166_1": "HR",
+        "name_es": "Croacia",
+        "class": "country",
+        "name": "Hrvatska",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.67999267578125,
+          45.66588587365462
+        ]
+      }
+    },
+    {
+      "id": 2582753887744315,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "聖馬力諾",
+        "name_script": "Latin",
+        "name_ru": "Сан-Марино",
+        "name_zh-Hans": "圣马力诺",
+        "name_pt": "San Marino",
+        "name_ko": "산마리노",
+        "symbolrank": 7,
+        "name_ja": "サンマリノ",
+        "name_it": "San Marino",
+        "name_en": "San Marino",
+        "name_de": "San Marino",
+        "name_ar": "سان مارينو",
+        "name_fr": "Saint-Marin",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "San Marino",
+        "iso_3166_1": "SM",
+        "text_anchor": "left",
+        "name_es": "San Marino",
+        "class": "country",
+        "name": "San Marino",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.46124267578125,
+          43.94339481559038
+        ]
+      }
+    },
+    {
+      "id": 2705573567663645,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "蒙特內哥羅",
+        "name_script": "Latin",
+        "name_ru": "Черногория",
+        "name_zh-Hans": "黑山",
+        "name_pt": "Montenegro",
+        "name_ko": "몬테네그로",
+        "symbolrank": 6,
+        "name_ja": "モンテネグロ",
+        "name_it": "Montenegro",
+        "name_en": "Montenegro",
+        "name_de": "Montenegro",
+        "name_ar": "الجبل الأسود",
+        "name_fr": "Monténégro",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Montenegro",
+        "iso_3166_1": "ME",
+        "name_es": "Montenegro",
+        "class": "country",
+        "name": "Crna Gora",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.25079345703125,
+          42.79136972365012
+        ]
+      }
+    },
+    {
+      "id": 1917581820786475,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "奧地利",
+        "name_script": "Latin",
+        "name_ru": "Австрия",
+        "name_zh-Hans": "奥地利",
+        "name_pt": "Áustria",
+        "name_ko": "오스트리아",
+        "symbolrank": 4,
+        "name_ja": "オーストリア",
+        "name_it": "Austria",
+        "name_en": "Austria",
+        "name_de": "Österreich",
+        "name_ar": "النمسا",
+        "name_fr": "Autriche",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Áo",
+        "iso_3166_1": "AT",
+        "name_es": "Austria",
+        "class": "country",
+        "name": "Österreich",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.30145263671875,
+          47.608014819732716
+        ]
+      }
+    },
+    {
+      "id": 580419414438505,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "波士尼亞與赫塞哥維納",
+        "name_script": "Latin",
+        "name_ru": "Босния и Герцеговина",
+        "name_zh-Hans": "波斯尼亚和黑塞哥维那",
+        "name_pt": "Bósnia e Herzegovina",
+        "name_ko": "보스니아 헤르체고비나",
+        "symbolrank": 5,
+        "name_ja": "ボスニア・ヘルツェゴビナ",
+        "name_it": "Bosnia ed Erzegovina",
+        "name_en": "Bosnia and Herzegovina",
+        "name_de": "Bosnien und Herzegowina",
+        "name_ar": "البوسنة والهرسك",
+        "name_fr": "Bosnie-Herzégovine",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Bosna và Hercegovina",
+        "iso_3166_1": "BA",
+        "name_es": "Bosnia-Herzegovina",
+        "class": "country",
+        "name": "Bosna i Hercegovina",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.786865234375,
+          44.16841480642918
+        ]
+      }
+    },
+    {
+      "id": 1077750,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Londres",
+        "disputed": "false",
+        "name_vi": "Luân Đôn",
+        "iso_3166_1": "GB",
+        "capital": 2,
+        "iso_3166_2": "GB-ENG",
+        "filterrank": 1,
+        "name_fr": "Londres",
+        "name_ar": "لندن",
+        "name_de": "London",
+        "name_en": "London",
+        "name_ja": "ロンドン",
+        "symbolrank": 6,
+        "name_ko": "런던",
+        "name_pt": "Londres",
+        "text_anchor": "top-right",
+        "name_zh-Hans": "伦敦",
+        "name_ru": "Лондон",
+        "name_script": "Latin",
+        "name_zh-Hant": "倫敦",
+        "name_it": "Londra",
+        "class": "settlement",
+        "name": "London",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.12908935546875,
+          51.50703296721855
+        ]
+      }
+    },
+    {
+      "id": 178077530,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "París",
+        "disputed": "false",
+        "name_vi": "Paris",
+        "iso_3166_1": "FR",
+        "capital": 2,
+        "iso_3166_2": "FR-J",
+        "filterrank": 1,
+        "name_fr": "Paris",
+        "name_ar": "باريس",
+        "name_de": "Paris",
+        "name_en": "Paris",
+        "name_ja": "パリ",
+        "symbolrank": 6,
+        "name_ko": "파리",
+        "name_pt": "Paris",
+        "text_anchor": "bottom-left",
+        "name_zh-Hans": "巴黎",
+        "name_ru": "Париж",
+        "name_script": "Latin",
+        "name_zh-Hant": "巴黎",
+        "name_it": "Parigi",
+        "class": "settlement",
+        "name": "Paris",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.34832763671875,
+          48.853872731656566
+        ]
+      }
+    },
+    {
+      "id": 729596520,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Roma",
+        "disputed": "false",
+        "name_vi": "Rô-ma",
+        "iso_3166_1": "IT",
+        "capital": 2,
+        "iso_3166_2": "IT-62",
+        "filterrank": 1,
+        "name_fr": "Rome",
+        "name_ar": "روما",
+        "name_de": "Rom",
+        "name_en": "Rome",
+        "name_ja": "ローマ",
+        "symbolrank": 6,
+        "name_ko": "로마",
+        "name_pt": "Roma",
+        "text_anchor": "top-right",
+        "name_zh-Hans": "罗马",
+        "name_ru": "Рим",
+        "name_script": "Latin",
+        "name_zh-Hant": "羅馬",
+        "name_it": "Roma",
+        "class": "settlement",
+        "name": "Roma",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.48321533203125,
+          41.894099558113965
+        ]
+      }
+    },
+    {
+      "id": 13267624320,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "布萊頓",
+        "name_script": "Latin",
+        "name_ru": "Брайтон",
+        "name_zh-Hans": "布赖顿",
+        "name_pt": "Brighton",
+        "name_ko": "브라이턴",
+        "symbolrank": 10,
+        "name_ja": "ブライトン",
+        "name_it": "Brighton",
+        "name_en": "Brighton",
+        "name_de": "Brighton",
+        "name_ar": "برايتن",
+        "name_fr": "Brighton",
+        "filterrank": 2,
+        "iso_3166_2": "GB-ENG",
+        "disputed": "false",
+        "name_vi": "Brighton",
+        "iso_3166_1": "GB",
+        "name_es": "Brighton",
+        "class": "settlement",
+        "name": "Brighton",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.14007568359375,
+          50.821553413922544
+        ]
+      }
+    },
+    {
+      "id": 179862740,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "普利茅斯",
+        "name_script": "Latin",
+        "name_ru": "Плимут",
+        "name_zh-Hans": "普利茅斯",
+        "name_pt": "Plymouth",
+        "name_ko": "플리머스",
+        "symbolrank": 10,
+        "name_ja": "プリマス",
+        "name_it": "Plymouth",
+        "name_en": "Plymouth",
+        "name_de": "Plymouth",
+        "name_ar": "بليموث",
+        "name_fr": "Plymouth",
+        "filterrank": 2,
+        "iso_3166_1": "GB",
+        "disputed": "false",
+        "name_vi": "Plymouth",
+        "name_es": "Plymouth",
+        "iso_3166_2": "GB-ENG",
+        "class": "settlement",
+        "name": "Plymouth",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -4.141845703125,
+          50.37174439592903
+        ]
+      }
+    },
+    {
+      "id": 4124767140,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "康城",
+        "name_script": "Latin",
+        "name_ru": "Кан",
+        "name_zh-Hans": "卡昂",
+        "name_pt": "Caen",
+        "name_ko": "캉",
+        "symbolrank": 10,
+        "name_ja": "カーン",
+        "name_it": "Caen",
+        "name_en": "Caen",
+        "name_de": "Caen",
+        "name_ar": "كاين",
+        "name_fr": "Caen",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Caen",
+        "name_es": "Caen",
+        "capital": 6,
+        "class": "settlement",
+        "name": "Caen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.362548828125,
+          49.18170338770662
+        ]
+      }
+    },
+    {
+      "id": 7388852450,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Cardiff",
+        "disputed": "false",
+        "name_vi": "Cardiff",
+        "iso_3166_1": "GB",
+        "capital": 4,
+        "iso_3166_2": "GB-WLS",
+        "filterrank": 1,
+        "name_fr": "Cardiff",
+        "name_ar": "كارديف",
+        "name_de": "Cardiff",
+        "name_en": "Cardiff",
+        "name_ja": "カーディフ",
+        "symbolrank": 9,
+        "name_ko": "카디프",
+        "name_pt": "Cardiff",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "加地夫",
+        "name_ru": "Кардифф",
+        "name_script": "Latin",
+        "name_zh-Hant": "卡迪夫",
+        "name_it": "Cardiff",
+        "class": "settlement",
+        "name": "Cardiff",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.1805419921875,
+          51.48138289610097
+        ]
+      }
+    },
+    {
+      "id": 2400381300,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "埃爾福特",
+        "name_script": "Latin",
+        "name_ru": "Эрфурт",
+        "name_zh-Hans": "埃尔福特",
+        "name_pt": "Erfurt",
+        "name_ko": "에르푸르트",
+        "symbolrank": 9,
+        "name_ja": "エアフルト",
+        "name_it": "Erfurt",
+        "name_en": "Erfurt",
+        "name_de": "Erfurt",
+        "name_ar": "إرفورت",
+        "name_fr": "Erfurt",
+        "filterrank": 2,
+        "iso_3166_2": "DE-TH",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "DE",
+        "name_vi": "Erfurt",
+        "text_anchor": "bottom",
+        "name_es": "Érfurt",
+        "class": "settlement",
+        "name": "Erfurt",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.02752685546875,
+          50.977453138899335
+        ]
+      }
+    },
+    {
+      "id": 266865870,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "魯昂",
+        "name_script": "Latin",
+        "name_ru": "Руан",
+        "name_zh-Hans": "鲁昂",
+        "name_pt": "Ruão",
+        "name_ko": "루앙",
+        "symbolrank": 9,
+        "name_ja": "ルーアン",
+        "name_it": "Rouen",
+        "name_en": "Rouen",
+        "name_de": "Rouen",
+        "name_ar": "روان",
+        "name_fr": "Rouen",
+        "filterrank": 2,
+        "disputed": "false",
+        "capital": 4,
+        "iso_3166_1": "FR",
+        "name_vi": "Rouen",
+        "name_es": "Ruan",
+        "class": "settlement",
+        "name": "Rouen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.0931396484375,
+          49.44134289100634
+        ]
+      }
+    },
+    {
+      "id": 266865770,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "里爾",
+        "name_script": "Latin",
+        "name_ru": "Лилль",
+        "name_zh-Hans": "里尔",
+        "name_pt": "Lille",
+        "name_ko": "릴",
+        "symbolrank": 9,
+        "name_ja": "リール",
+        "name_it": "Lilla",
+        "name_en": "Lille",
+        "name_de": "Lille",
+        "name_ar": "ليل",
+        "name_fr": "Lille",
+        "filterrank": 2,
+        "disputed": "false",
+        "capital": 4,
+        "iso_3166_1": "FR",
+        "name_vi": "Lille",
+        "name_es": "Lille",
+        "class": "settlement",
+        "name": "Lille",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.06243896484375,
+          50.637268354996706
+        ]
+      }
+    },
+    {
+      "id": 209530830,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Colonia",
+        "disputed": "false",
+        "name_vi": "Köln",
+        "iso_3166_1": "DE",
+        "iso_3166_2": "DE-NW",
+        "filterrank": 1,
+        "name_fr": "Cologne",
+        "name_ar": "كولونيا",
+        "name_de": "Köln",
+        "name_en": "Cologne",
+        "name_ja": "ケルン",
+        "symbolrank": 8,
+        "name_ko": "쾰른",
+        "name_pt": "Colônia",
+        "text_anchor": "top",
+        "name_zh-Hans": "科隆",
+        "name_ru": "Кёльн",
+        "name_script": "Latin",
+        "name_zh-Hant": "科隆",
+        "name_it": "Colonia",
+        "class": "settlement",
+        "name": "Köln",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.9598388671875,
+          50.937661744713125
+        ]
+      }
+    },
+    {
+      "id": 16356513560,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Bruselas",
+        "disputed": "false",
+        "name_vi": "Bruxelles",
+        "iso_3166_1": "BE",
+        "capital": 2,
+        "iso_3166_2": "BE-BRU",
+        "filterrank": 1,
+        "name_fr": "Bruxelles",
+        "name_ar": "بروكسل",
+        "name_de": "Brüssel",
+        "name_en": "Brussels",
+        "name_ja": "ブリュッセル",
+        "symbolrank": 7,
+        "name_ko": "브뤼셀",
+        "name_pt": "Bruxelas",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "布鲁塞尔",
+        "name_ru": "Брюссель",
+        "name_script": "Latin",
+        "name_zh-Hant": "布魯塞爾",
+        "name_it": "Bruxelles",
+        "class": "settlement",
+        "name": "Bruxelles – Brussel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.35333251953125,
+          50.847572953653895
+        ]
+      }
+    },
+    {
+      "id": 2401267530,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "杜塞道夫",
+        "name_script": "Latin",
+        "name_ru": "Дюссельдорф",
+        "name_zh-Hans": "杜塞尔多夫",
+        "name_pt": "Düsseldorf",
+        "name_ko": "뒤셀도르프",
+        "symbolrank": 8,
+        "name_ja": "デュッセルドルフ",
+        "name_it": "Düsseldorf",
+        "name_en": "Dusseldorf",
+        "name_de": "Düsseldorf",
+        "name_ar": "دوسلدورف",
+        "name_fr": "Düsseldorf",
+        "filterrank": 1,
+        "iso_3166_2": "DE-NW",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "DE",
+        "name_vi": "Düsseldorf",
+        "text_anchor": "bottom",
+        "name_es": "Düsseldorf",
+        "class": "settlement",
+        "name": "Düsseldorf",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.77581787109375,
+          51.22580788296972
+        ]
+      }
+    },
+    {
+      "id": 274186640,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Fráncfort del Meno",
+        "disputed": "false",
+        "name_vi": "Frankfurt am Main",
+        "iso_3166_1": "DE",
+        "capital": 6,
+        "iso_3166_2": "DE-HE",
+        "filterrank": 1,
+        "name_fr": "Francfort-sur-le-Main",
+        "name_ar": "فرانكفورت",
+        "name_de": "Frankfurt am Main",
+        "name_en": "Frankfurt",
+        "name_ja": "フランクフルト・アム・マイン",
+        "symbolrank": 7,
+        "name_ko": "프랑크푸르트",
+        "name_pt": "Frankfurt am Main",
+        "text_anchor": "top-left",
+        "name_zh-Hans": "美因河畔法兰克福",
+        "name_ru": "Франкфурт-на-Майне",
+        "name_script": "Latin",
+        "name_zh-Hant": "美茵河畔法蘭克福",
+        "name_it": "Francoforte sul Meno",
+        "class": "settlement",
+        "name": "Frankfurt am Main",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.68194580078125,
+          50.11001070896015
+        ]
+      }
+    },
+    {
+      "id": 15983915870,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拉貝河畔烏斯季",
+        "name_script": "Latin",
+        "name_ru": "Усти-над-Лабем",
+        "name_zh-Hans": "拉贝河畔乌斯季",
+        "name_pt": "Ústí nad Labem",
+        "name_ko": "우스티나트라벰",
+        "symbolrank": 10,
+        "name_ja": "ウースチー・ナド・ラベム",
+        "name_it": "Ústí nad Labem",
+        "name_en": "Ústí nad Labem",
+        "name_de": "Aussig",
+        "name_ar": "أوستي ناد لابم",
+        "name_fr": "Ústí nad Labem",
+        "filterrank": 2,
+        "iso_3166_1": "CZ",
+        "disputed": "false",
+        "capital": 4,
+        "name_vi": "Ústí nad Labem",
+        "name_es": "Ústí nad Labem",
+        "class": "settlement",
+        "name": "Ústí nad Labem",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.03778076171875,
+          50.6599083609394
+        ]
+      }
+    },
+    {
+      "id": 319023850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "琴斯托霍瓦",
+        "name_script": "Latin",
+        "name_ru": "Ченстохова",
+        "name_zh-Hans": "琴斯托霍瓦",
+        "name_pt": "Czestochowa",
+        "name_ko": "쳉스토호바",
+        "symbolrank": 10,
+        "name_ja": "チェンストホヴァ",
+        "name_it": "Czestochowa",
+        "name_en": "Częstochowa",
+        "name_de": "Tschenstochau",
+        "name_ar": "تشيستوخوفا",
+        "name_fr": "Częstochowa",
+        "filterrank": 2,
+        "iso_3166_1": "PL",
+        "disputed": "false",
+        "name_vi": "Czestochowa",
+        "name_es": "Czestochowa",
+        "iso_3166_2": "PL-SL",
+        "class": "settlement",
+        "name": "Częstochowa",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.11346435546875,
+          50.812877010308966
+        ]
+      }
+    },
+    {
+      "id": 15991206290,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "捷克布傑約維采",
+        "name_script": "Latin",
+        "name_ru": "Ческе-Будеёвице",
+        "name_zh-Hans": "捷克布杰约维采",
+        "name_pt": "České Budějovice",
+        "name_ko": "체스케부데요비체",
+        "symbolrank": 10,
+        "name_ja": "チェスケー・ブジェヨヴィツェ",
+        "name_it": "České Budějovice",
+        "name_en": "České Budějovice",
+        "name_de": "Budweis",
+        "name_ar": "تشيسكي بوديوفيتسه",
+        "name_fr": "České Budějovice",
+        "filterrank": 2,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "CZ",
+        "name_vi": "České Budějovice",
+        "name_es": "České Budějovice",
+        "class": "settlement",
+        "name": "České Budějovice",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.4744873046875,
+          48.974808785331305
+        ]
+      }
+    },
+    {
+      "id": 16015232510,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "奧斯特拉瓦",
+        "name_script": "Latin",
+        "name_ru": "Острава",
+        "name_zh-Hans": "俄斯特拉发",
+        "name_pt": "Ostrava",
+        "name_ko": "오스트라바",
+        "symbolrank": 10,
+        "name_ja": "オストラヴァ",
+        "name_it": "Ostrava",
+        "name_en": "Ostrava",
+        "name_de": "Ostrau",
+        "name_ar": "أوسترافا",
+        "name_fr": "Ostrava",
+        "filterrank": 2,
+        "iso_3166_1": "CZ",
+        "disputed": "false",
+        "name_vi": "Ostrava",
+        "name_es": "Ostrava",
+        "class": "settlement",
+        "name": "Ostrava",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.292236328125,
+          49.8362110092298
+        ]
+      }
+    },
+    {
+      "id": 216871490,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "萊比錫",
+        "name_script": "Latin",
+        "name_ru": "Лейпциг",
+        "name_zh-Hans": "莱比锡",
+        "name_pt": "Leipzig",
+        "name_ko": "라이프치히",
+        "symbolrank": 9,
+        "name_ja": "ライプツィヒ",
+        "name_it": "Lipsia",
+        "name_en": "Leipzig",
+        "name_de": "Leipzig",
+        "name_ar": "لايبزيغ",
+        "name_fr": "Leipzig",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_1": "DE",
+        "name_vi": "Leipzig",
+        "name_es": "Leipzig",
+        "iso_3166_2": "DE-SN",
+        "class": "settlement",
+        "name": "Leipzig",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.3760986328125,
+          51.34090729023285
+        ]
+      }
+    },
+    {
+      "id": 339979950,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "馬德堡",
+        "name_script": "Latin",
+        "name_ru": "Магдебург",
+        "name_zh-Hans": "马德堡",
+        "name_pt": "Magdeburgo",
+        "name_ko": "마그데부르크",
+        "symbolrank": 9,
+        "name_ja": "マクデブルク",
+        "name_it": "Magdeburgo",
+        "name_en": "Magdeburg",
+        "name_de": "Magdeburg",
+        "name_ar": "مغدبورغ",
+        "name_fr": "Magdebourg",
+        "filterrank": 1,
+        "iso_3166_2": "DE-ST",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "DE",
+        "name_vi": "Magdeburg",
+        "text_anchor": "bottom",
+        "name_es": "Magdeburgo",
+        "class": "settlement",
+        "name": "Magdeburg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.6400146484375,
+          52.13180209119312
+        ]
+      }
+    },
+    {
+      "id": 300949690,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Lodz",
+        "iso_3166_1": "PL",
+        "disputed": "false",
+        "name_vi": "Łódź",
+        "capital": 4,
+        "iso_3166_2": "PL-LD",
+        "filterrank": 1,
+        "name_fr": "Łódź",
+        "name_ar": "وودج",
+        "name_de": "Lodz",
+        "name_en": "Łódź",
+        "name_ja": "ウッチ",
+        "symbolrank": 9,
+        "name_ko": "우치",
+        "name_pt": "Lódz",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "罗兹",
+        "name_ru": "Лодзь",
+        "name_script": "Latin",
+        "name_zh-Hant": "羅茲",
+        "name_it": "Łódź",
+        "type": "city",
+        "class": "settlement",
+        "name": "Łódź",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.456787109375,
+          51.769539575961005
+        ]
+      }
+    },
+    {
+      "id": 16015666990,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "布爾諾",
+        "name_script": "Latin",
+        "name_ru": "Брно",
+        "name_zh-Hans": "布尔诺",
+        "name_pt": "Brno",
+        "name_ko": "브르노",
+        "symbolrank": 9,
+        "name_ja": "ブルノ",
+        "name_it": "Brno",
+        "name_en": "Brno",
+        "name_de": "Brünn",
+        "name_ar": "برنو",
+        "name_fr": "Brno",
+        "filterrank": 1,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "CZ",
+        "name_vi": "Brno",
+        "text_anchor": "bottom",
+        "name_es": "Brno",
+        "class": "settlement",
+        "name": "Brno",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.611328125,
+          49.19247423824004
+        ]
+      }
+    },
+    {
+      "id": 4183920930,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "弗羅茨瓦夫",
+        "name_script": "Latin",
+        "name_ru": "Вроцлав",
+        "name_zh-Hans": "弗罗茨瓦夫",
+        "name_pt": "Breslávia",
+        "name_ko": "브로츠와프",
+        "symbolrank": 9,
+        "name_ja": "ヴロツワフ",
+        "name_it": "Breslavia",
+        "name_en": "Wrocław",
+        "name_de": "Breslau",
+        "name_ar": "فروتزواف",
+        "name_fr": "Wroclaw",
+        "filterrank": 1,
+        "iso_3166_2": "PL-DS",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "PL",
+        "name_vi": "Wrocław",
+        "name_es": "Breslavia",
+        "class": "settlement",
+        "name": "Wrocław",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.03155517578125,
+          51.10869551483188
+        ]
+      }
+    },
+    {
+      "id": 208336130,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "德累斯頓",
+        "name_script": "Latin",
+        "name_ru": "Дрезден",
+        "name_zh-Hans": "德累斯顿",
+        "name_pt": "Dresden",
+        "name_ko": "드레스덴",
+        "symbolrank": 9,
+        "name_ja": "ドレスデン",
+        "name_it": "Dresda",
+        "name_en": "Dresden",
+        "name_de": "Dresden",
+        "name_ar": "دريسدن",
+        "name_fr": "Dresde",
+        "filterrank": 1,
+        "iso_3166_2": "DE-SN",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "DE",
+        "name_vi": "Dresden",
+        "text_anchor": "bottom",
+        "name_es": "Dresde",
+        "class": "settlement",
+        "name": "Dresden",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.7384033203125,
+          51.050027781182706
+        ]
+      }
+    },
+    {
+      "id": 18386669750,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "克拉科夫",
+        "name_script": "Latin",
+        "name_ru": "Краков",
+        "name_zh-Hans": "克拉科夫",
+        "name_pt": "Cracóvia",
+        "name_ko": "크라쿠프",
+        "symbolrank": 8,
+        "name_ja": "クラクフ",
+        "name_it": "Cracovia",
+        "name_en": "Krakow",
+        "name_de": "Krakau",
+        "name_ar": "كراكوف",
+        "name_fr": "Cracovie",
+        "filterrank": 1,
+        "iso_3166_1": "PL",
+        "disputed": "false",
+        "iso_3166_2": "PL-MA",
+        "capital": 4,
+        "name_vi": "Kraków",
+        "name_es": "Cracovia",
+        "class": "settlement",
+        "name": "Kraków",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.93743896484375,
+          50.06242859370093
+        ]
+      }
+    },
+    {
+      "id": 16018379310,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Praga",
+        "disputed": "false",
+        "name_vi": "Praha",
+        "iso_3166_1": "CZ",
+        "capital": 2,
+        "filterrank": 1,
+        "name_fr": "Prague",
+        "name_ar": "براغ",
+        "name_de": "Prag",
+        "name_en": "Prague",
+        "name_ja": "プラハ",
+        "symbolrank": 8,
+        "name_ko": "프라하",
+        "name_pt": "Praga",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "布拉格",
+        "name_ru": "Прага",
+        "name_script": "Latin",
+        "name_zh-Hant": "布拉格",
+        "name_it": "Praga",
+        "class": "settlement",
+        "name": "Praha",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.42230224609375,
+          50.08710669808232
+        ]
+      }
+    },
+    {
+      "id": 288497600,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "潘普洛納",
+        "name_zh-Hans": "潘普洛纳",
+        "name_script": "Latin",
+        "name_ru": "Памплона",
+        "name_ko": "팜플로냐",
+        "symbolrank": 10,
+        "name_ja": "パンプローナ",
+        "name_it": "Pamplona",
+        "name_es": "Pamplona",
+        "name_ar": "بنبلونة",
+        "name_de": "Pamplona",
+        "iso_3166_1": "ES",
+        "filterrank": 2,
+        "disputed": "false",
+        "capital": 4,
+        "iso_3166_2": "ES-NC",
+        "name_fr": "Pampelune",
+        "name_en": "Pamplona",
+        "class": "settlement",
+        "name": "Pamplona / Iruña",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.64520263671875,
+          42.81756607158161
+        ]
+      }
+    },
+    {
+      "id": 270007620,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "畢爾巴鄂",
+        "name_script": "Latin",
+        "name_ru": "Бильбао",
+        "name_zh-Hans": "毕尔巴鄂",
+        "name_pt": "Bilbau",
+        "name_ko": "빌바오",
+        "symbolrank": 9,
+        "name_ja": "ビルバオ",
+        "name_it": "Bilbao",
+        "name_en": "Bilbao",
+        "name_de": "Bilbao",
+        "name_ar": "بلباو",
+        "name_fr": "Bilbao",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "ES-PV",
+        "capital": 6,
+        "iso_3166_1": "ES",
+        "name_vi": "Bilbao",
+        "name_es": "Bilbao",
+        "class": "settlement",
+        "name": "Bilbao",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.93609619140625,
+          43.26320625445308
+        ]
+      }
+    },
+    {
+      "id": 266916940,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拉羅歇爾",
+        "name_script": "Latin",
+        "name_ru": "Ла Рошель",
+        "name_zh-Hans": "拉罗歇尔",
+        "name_pt": "La Rochelle",
+        "name_ko": "라로셸",
+        "symbolrank": 10,
+        "name_ja": "ラ・ロシェル",
+        "name_it": "La Rochelle",
+        "name_en": "La Rochelle",
+        "name_de": "La Rochelle",
+        "name_ar": "لا روشيل هي",
+        "name_fr": "La Rochelle",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_1": "FR",
+        "name_vi": "La Rochelle",
+        "name_es": "La Rochela",
+        "iso_3166_2": "FR-R",
+        "capital": 6,
+        "class": "settlement",
+        "name": "La Rochelle",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.15081787109375,
+          46.15890744507132
+        ]
+      }
+    },
+    {
+      "id": 2573520790,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "洛格羅尼奧",
+        "name_script": "Latin",
+        "name_ru": "Логроньо",
+        "name_zh-Hans": "洛格罗尼奥",
+        "name_pt": "Logroño",
+        "name_ko": "로그로뇨",
+        "symbolrank": 9,
+        "name_ja": "ログローニョ",
+        "name_it": "Logroño",
+        "name_en": "Logroño",
+        "name_de": "Logroño",
+        "name_ar": "الكروني",
+        "name_fr": "Logrogne",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "ES-RI",
+        "capital": 4,
+        "iso_3166_1": "ES",
+        "name_vi": "Logroño",
+        "name_es": "Logroño",
+        "class": "settlement",
+        "name": "Logroño",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.43896484375,
+          42.466018925787495
+        ]
+      }
+    },
+    {
+      "id": 266865720,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "昂熱",
+        "name_script": "Latin",
+        "name_ru": "Анже",
+        "name_zh-Hans": "昂热",
+        "name_pt": "Angers",
+        "name_ko": "앙제",
+        "symbolrank": 10,
+        "name_ja": "アンジェ",
+        "name_it": "Angers",
+        "name_en": "Angers",
+        "name_de": "Angers",
+        "name_ar": "أنجيه",
+        "name_fr": "Angers",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "FR-R",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Angers",
+        "name_es": "Angers",
+        "class": "settlement",
+        "name": "Angers",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.55206298828125,
+          47.47451936570431
+        ]
+      }
+    },
+    {
+      "id": 16916758730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "波爾多",
+        "name_script": "Latin",
+        "name_ru": "Бордо",
+        "name_zh-Hans": "波尔多",
+        "name_pt": "Bordéus",
+        "name_ko": "보르도",
+        "symbolrank": 9,
+        "name_ja": "ボルドー",
+        "name_it": "Bordeaux",
+        "name_en": "Bordeaux",
+        "name_de": "Bordeaux",
+        "name_ar": "بوردو",
+        "name_fr": "Bordeaux",
+        "filterrank": 1,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "FR",
+        "name_vi": "Bordeaux",
+        "text_anchor": "bottom",
+        "name_es": "Burdeos",
+        "class": "settlement",
+        "name": "Bordeaux",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.57952880859375,
+          44.84029065139799
+        ]
+      }
+    },
+    {
+      "id": 266865260,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "雷恩",
+        "name_script": "Latin",
+        "name_ru": "Ренн",
+        "name_zh-Hans": "雷恩",
+        "name_pt": "Rennes",
+        "name_ko": "렌",
+        "symbolrank": 9,
+        "name_ja": "レンヌ",
+        "name_it": "Rennes",
+        "name_en": "Rennes",
+        "name_de": "Rennes",
+        "name_ar": "رين",
+        "name_fr": "Rennes",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "FR-E",
+        "capital": 4,
+        "iso_3166_1": "FR",
+        "name_vi": "Rennes",
+        "name_es": "Rennes",
+        "class": "settlement",
+        "name": "Rennes",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.680908203125,
+          48.11109904106536
+        ]
+      }
+    },
+    {
+      "id": 2667762490,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "札拉哥沙",
+        "name_script": "Latin",
+        "name_ru": "Сарагоса",
+        "name_zh-Hans": "萨拉戈萨",
+        "name_pt": "Saragoça",
+        "name_ko": "사라고사",
+        "symbolrank": 9,
+        "name_ja": "サラゴサ",
+        "name_it": "Saragozza",
+        "name_en": "Zaragoza",
+        "name_de": "Saragossa",
+        "name_ar": "سرقسطة",
+        "name_fr": "Saragosse",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_1": "ES",
+        "name_es": "Zaragoza",
+        "iso_3166_2": "ES-AR",
+        "capital": 4,
+        "class": "settlement",
+        "name": "Zaragoza",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.88165283203125,
+          41.65239288426815
+        ]
+      }
+    },
+    {
+      "id": 266865480,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "南特",
+        "name_script": "Latin",
+        "name_ru": "Нант",
+        "name_zh-Hans": "南特",
+        "name_pt": "Nantes",
+        "name_ko": "낭트",
+        "symbolrank": 9,
+        "name_ja": "ナント",
+        "name_it": "Nante",
+        "name_en": "Nantes",
+        "name_de": "Nantes",
+        "name_ar": "نانت",
+        "name_fr": "Nantes",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "FR-R",
+        "capital": 4,
+        "iso_3166_1": "FR",
+        "name_vi": "Nantes",
+        "name_es": "Nantes",
+        "class": "settlement",
+        "name": "Nantes",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.5545654296875,
+          47.2195681123155
+        ]
+      }
+    },
+    {
+      "id": 308945450,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "吉隆納",
+        "name_script": "Latin",
+        "name_ru": "Жирона",
+        "name_zh-Hans": "赫罗纳",
+        "name_pt": "Gerunda",
+        "name_ko": "지로나",
+        "symbolrank": 10,
+        "name_ja": "ジローナ",
+        "name_it": "Gerona",
+        "name_en": "Girona",
+        "name_de": "Girona",
+        "name_ar": "جرندة",
+        "name_fr": "Gérone",
+        "filterrank": 2,
+        "iso_3166_1": "ES",
+        "disputed": "false",
+        "name_vi": "Girona",
+        "name_es": "Gerona",
+        "iso_3166_2": "ES-CT",
+        "capital": 6,
+        "class": "settlement",
+        "name": "Girona",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.82073974609375,
+          41.97991089691237
+        ]
+      }
+    },
+    {
+      "id": 5607191990,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "盧塞恩",
+        "name_script": "Latin",
+        "name_ru": "Люцерн",
+        "name_zh-Hans": "卢塞恩",
+        "name_pt": "Lucerna",
+        "name_ko": "루체른",
+        "symbolrank": 9,
+        "name_ja": "ルツェルン",
+        "name_it": "Lucerna",
+        "name_en": "Lucerne",
+        "name_de": "Luzern",
+        "name_ar": "لوسرن",
+        "name_fr": "Lucerne",
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_es": "Lucerna",
+        "name_vi": "Lucerne",
+        "iso_3166_2": "CH-LU",
+        "capital": 4,
+        "filterrank": 2,
+        "class": "settlement",
+        "name": "Luzern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.3056640625,
+          47.05141149430736
+        ]
+      }
+    },
+    {
+      "id": 266864680,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "圖爾",
+        "name_script": "Latin",
+        "name_ru": "Тур",
+        "name_zh-Hans": "图尔",
+        "name_pt": "Tours",
+        "name_ko": "투르",
+        "symbolrank": 10,
+        "name_ja": "トゥール",
+        "name_it": "Tours",
+        "name_en": "Tours",
+        "name_de": "Tours",
+        "name_ar": "تور",
+        "name_fr": "Tours",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "FR-F",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Tours",
+        "name_es": "Tours",
+        "class": "settlement",
+        "name": "Tours",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.68939208984375,
+          47.3909120610478
+        ]
+      }
+    },
+    {
+      "id": 16641426740,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "佩皮尼昂",
+        "name_script": "Latin",
+        "name_ru": "Перпиньян",
+        "name_zh-Hans": "佩皮尼昂",
+        "name_pt": "Perpinhã",
+        "name_ko": "페르피냥",
+        "symbolrank": 10,
+        "name_ja": "ペルピニャン",
+        "name_it": "Perpignano",
+        "name_en": "Perpignan",
+        "name_de": "Perpignan",
+        "name_ar": "بيربينيا",
+        "name_fr": "Perpignan",
+        "filterrank": 2,
+        "disputed": "false",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Perpignan",
+        "name_es": "Perpiñán",
+        "class": "settlement",
+        "name": "Perpignan",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.8948974609375,
+          42.69858589169843
+        ]
+      }
+    },
+    {
+      "id": 647764840,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "特倫托",
+        "name_script": "Latin",
+        "name_ru": "Тренто",
+        "name_zh-Hans": "特伦托",
+        "name_pt": "Trento",
+        "name_ko": "트렌토",
+        "symbolrank": 9,
+        "name_ja": "トレント",
+        "name_it": "Trento",
+        "name_en": "Trento",
+        "name_de": "Trient",
+        "name_ar": "ترينتو",
+        "name_fr": "Trente",
+        "filterrank": 2,
+        "iso_3166_2": "IT-32",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "IT",
+        "name_vi": "Trento",
+        "name_es": "Trento",
+        "class": "settlement",
+        "name": "Trento",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.12640380859375,
+          46.065608461386915
+        ]
+      }
+    },
+    {
+      "id": 266864730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "克萊蒙費朗",
+        "name_script": "Latin",
+        "name_ru": "Клермон-Ферран",
+        "name_zh-Hans": "克莱蒙费朗",
+        "name_pt": "Clermont-Ferrand",
+        "name_ko": "클레르몽페랑",
+        "symbolrank": 10,
+        "name_ja": "クレルモン＝フェラン",
+        "name_it": "Clermont-Ferrand",
+        "name_en": "Clermont-Ferrand",
+        "name_de": "Clermont-Ferrand",
+        "name_ar": "كليرمون-فيران",
+        "name_fr": "Clermont-Ferrand",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "FR-F",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Clermont-Ferrand",
+        "name_es": "Clermont-Ferrand",
+        "class": "settlement",
+        "name": "Clermont-Ferrand",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.0816650390625,
+          45.77710182434549
+        ]
+      }
+    },
+    {
+      "id": 1240836580,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "filterrank": 2,
+        "symbolrank": 10,
+        "disputed": "false",
+        "name_ar": "لاردة",
+        "name_ru": "Льейда",
+        "iso_3166_1": "ES",
+        "name_es": "Lérida",
+        "capital": 6,
+        "iso_3166_2": "ES-CT",
+        "name_en": "Lleida",
+        "name_fr": "Lérida",
+        "name_script": "Latin",
+        "type": "city",
+        "text_anchor": "bottom",
+        "class": "settlement",
+        "name": "Lleida",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.626220703125,
+          41.615442324681084
+        ]
+      }
+    },
+    {
+      "id": 693000070,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "帕爾馬",
+        "name_script": "Latin",
+        "name_ru": "Парма",
+        "name_zh-Hans": "帕尔马",
+        "name_pt": "Parma",
+        "name_ko": "파르마",
+        "symbolrank": 10,
+        "name_ja": "パルマ",
+        "name_it": "Parma",
+        "name_en": "Parma",
+        "name_de": "Parma",
+        "name_ar": "برمة",
+        "name_fr": "Parme",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "IT-45",
+        "capital": 6,
+        "iso_3166_1": "IT",
+        "name_vi": "Parma",
+        "name_es": "Parma",
+        "class": "settlement",
+        "name": "Parma",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.3271484375,
+          44.80132682904855
+        ]
+      }
+    },
+    {
+      "id": 336229040,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Ginebra",
+        "disputed": "false",
+        "name_vi": "Genève",
+        "iso_3166_1": "CH",
+        "capital": 4,
+        "iso_3166_2": "CH-GE",
+        "filterrank": 2,
+        "name_fr": "Genève",
+        "name_ar": "جنيف",
+        "name_de": "Genf",
+        "name_en": "Geneva",
+        "name_ja": "ジュネーヴ",
+        "symbolrank": 9,
+        "name_ko": "제네바",
+        "name_pt": "Genebra",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "日内瓦",
+        "name_ru": "Женева",
+        "name_script": "Latin",
+        "name_zh-Hant": "日內瓦",
+        "name_it": "Ginevra",
+        "class": "settlement",
+        "name": "Genève",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1468505859375,
+          46.20264638061019
+        ]
+      }
+    },
+    {
+      "id": 266865590,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "勒芒",
+        "name_script": "Latin",
+        "name_ru": "Ле Ман",
+        "name_zh-Hans": "勒芒",
+        "name_pt": "Le Mans",
+        "name_ko": "르망",
+        "symbolrank": 10,
+        "name_ja": "ル・マン",
+        "name_it": "Le Mans",
+        "name_en": "Le Mans",
+        "name_de": "Le Mans",
+        "name_ar": "لو مان",
+        "name_fr": "Le Mans",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "FR-R",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Le Mans",
+        "name_es": "Le Mans",
+        "class": "settlement",
+        "name": "Le Mans",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.19775390625,
+          48.008300204859296
+        ]
+      }
+    },
+    {
+      "id": 266865850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "尼姆",
+        "name_script": "Latin",
+        "name_ru": "Ним",
+        "name_zh-Hans": "尼姆",
+        "name_pt": "Nîmes",
+        "name_ko": "님",
+        "symbolrank": 10,
+        "name_ja": "ニーム",
+        "name_it": "Nîmes",
+        "name_en": "Nîmes",
+        "name_de": "Nîmes",
+        "name_ar": "نيم",
+        "name_fr": "Nîmes",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Nîmes",
+        "name_es": "Nimes",
+        "iso_3166_2": "FR-U",
+        "capital": 6,
+        "class": "settlement",
+        "name": "Nîmes",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.35882568359375,
+          43.836507977090946
+        ]
+      }
+    },
+    {
+      "id": 266865630,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "史特拉斯堡",
+        "name_script": "Latin",
+        "name_ru": "Страсбург",
+        "name_zh-Hans": "史特拉斯堡",
+        "name_pt": "Estrasburgo",
+        "name_ko": "스트라스부르",
+        "symbolrank": 9,
+        "name_ja": "ストラスブール",
+        "name_it": "Strasburgo",
+        "name_en": "Strasbourg",
+        "name_de": "Straßburg",
+        "name_ar": "ستراسبورغ",
+        "name_fr": "Strasbourg",
+        "filterrank": 2,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "FR",
+        "name_vi": "Strasbourg",
+        "text_anchor": "bottom",
+        "name_es": "Estrasburgo",
+        "class": "settlement",
+        "name": "Strasbourg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.7508544921875,
+          48.58387536252087
+        ]
+      }
+    },
+    {
+      "id": 266865390,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "聖艾蒂安",
+        "name_script": "Latin",
+        "name_ru": "Сент-Этьен",
+        "name_zh-Hans": "圣艾蒂安",
+        "name_pt": "Saint-Étienne",
+        "name_ko": "생테티엔",
+        "symbolrank": 10,
+        "name_ja": "サン＝テティエンヌ",
+        "name_it": "Saint-Étienne",
+        "name_en": "Saint-Étienne",
+        "name_de": "Saint-Étienne",
+        "name_ar": "سانت إتيان",
+        "name_fr": "Saint-Étienne",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Saint-Étienne",
+        "name_es": "Saint-Étienne",
+        "iso_3166_2": "FR-F",
+        "capital": 6,
+        "class": "settlement",
+        "name": "Saint-Étienne",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.38629150390625,
+          45.44086267178173
+        ]
+      }
+    },
+    {
+      "id": 654422610,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "蒙佩利爾",
+        "name_script": "Latin",
+        "name_ru": "Монпелье",
+        "name_zh-Hans": "蒙彼利埃",
+        "name_pt": "Montpellier",
+        "name_ko": "몽펠리에",
+        "symbolrank": 10,
+        "name_ja": "モンペリエ",
+        "name_it": "Montpellier",
+        "name_en": "Montpellier",
+        "name_de": "Montpellier",
+        "name_ar": "مونبيلييه",
+        "name_fr": "Montpellier",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "FR-U",
+        "capital": 6,
+        "iso_3166_1": "FR",
+        "name_vi": "Montpellier",
+        "name_es": "Montpellier",
+        "class": "settlement",
+        "name": "Montpellier",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.87542724609375,
+          43.61221676817573
+        ]
+      }
+    },
+    {
+      "id": 16740261390,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Stuttgart",
+        "iso_3166_1": "DE",
+        "disputed": "false",
+        "name_vi": "Stuttgart",
+        "capital": 4,
+        "iso_3166_2": "DE-BW",
+        "filterrank": 1,
+        "name_fr": "Stuttgart",
+        "name_ar": "شتوتغارت",
+        "name_de": "Stuttgart",
+        "name_en": "Stuttgart",
+        "name_ja": "シュトゥットガルト",
+        "symbolrank": 9,
+        "name_ko": "슈투트가르트",
+        "name_pt": "Estugarda",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "斯图加特",
+        "name_ru": "Штутгарт",
+        "name_script": "Latin",
+        "name_zh-Hant": "斯圖加特",
+        "name_it": "Stoccarda",
+        "type": "city",
+        "class": "settlement",
+        "name": "Stuttgart",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1790771484375,
+          48.77791275550183
+        ]
+      }
+    },
+    {
+      "id": 266865180,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "圖盧茲",
+        "name_script": "Latin",
+        "name_ru": "Тулуза",
+        "name_zh-Hans": "图卢兹",
+        "name_pt": "Toulouse",
+        "name_ko": "툴루즈",
+        "symbolrank": 9,
+        "name_ja": "トゥールーズ",
+        "name_it": "Tolosa",
+        "name_en": "Toulouse",
+        "name_de": "Toulouse",
+        "name_ar": "تولوز",
+        "name_fr": "Toulouse",
+        "filterrank": 1,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "FR",
+        "name_vi": "Toulouse",
+        "text_anchor": "bottom",
+        "name_es": "Toulouse",
+        "class": "settlement",
+        "name": "Toulouse",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.4447021484375,
+          43.60426186809619
+        ]
+      }
+    },
+    {
+      "id": 513411150,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "阿雅克肖",
+        "name_script": "Latin",
+        "name_ru": "Аяччо",
+        "name_zh-Hans": "阿雅克肖",
+        "name_pt": "Ajaccio",
+        "name_ko": "아작시오",
+        "symbolrank": 9,
+        "name_ja": "アジャクシオ",
+        "name_it": "Aiaccio",
+        "name_en": "Ajaccio",
+        "name_de": "Ajaccio",
+        "name_ar": "أجكسية",
+        "name_fr": "Ajaccio",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Ajaccio",
+        "name_es": "Ayacio",
+        "iso_3166_2": "FR-H",
+        "capital": 4,
+        "class": "settlement",
+        "name": "Ajaccio",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.73687744140625,
+          41.926803206487904
+        ]
+      }
+    },
+    {
+      "id": 266865040,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "第戎",
+        "name_script": "Latin",
+        "name_ru": "Дижон",
+        "name_zh-Hans": "第戎",
+        "name_pt": "Dijon",
+        "name_ko": "디종",
+        "symbolrank": 9,
+        "name_ja": "ディジョン",
+        "name_it": "Digione",
+        "name_en": "Dijon",
+        "name_de": "Dijon",
+        "name_ar": "ديجون",
+        "name_fr": "Dijon",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Dijon",
+        "name_es": "Dijon",
+        "capital": 4,
+        "class": "settlement",
+        "name": "Dijon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.042724609375,
+          47.32206876021351
+        ]
+      }
+    },
+    {
+      "id": 267614000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Marsella",
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_vi": "Mạc Xây",
+        "capital": 4,
+        "iso_3166_2": "FR-U",
+        "filterrank": 1,
+        "name_fr": "Marseille",
+        "name_ar": "مرسيليا",
+        "name_de": "Marseille",
+        "name_en": "Marseille",
+        "name_ja": "マルセイユ",
+        "symbolrank": 8,
+        "name_ko": "마르세유",
+        "name_pt": "Marselha",
+        "text_anchor": "top-right",
+        "name_zh-Hans": "马赛",
+        "name_ru": "Марсель",
+        "name_script": "Latin",
+        "name_zh-Hant": "馬賽",
+        "name_it": "Marsiglia",
+        "type": "city",
+        "class": "settlement",
+        "name": "Marseille",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.3778076171875,
+          43.297198404646366
+        ]
+      }
+    },
+    {
+      "id": 665863220,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Génova",
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "Genova",
+        "capital": 4,
+        "iso_3166_2": "IT-42",
+        "filterrank": 1,
+        "name_fr": "Gênes",
+        "name_ar": "جنوة",
+        "name_de": "Genua",
+        "name_en": "Genoa",
+        "name_ja": "ジェノヴァ",
+        "symbolrank": 9,
+        "name_ko": "제노바",
+        "name_pt": "Génova",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "热那亚",
+        "name_ru": "Генуя",
+        "name_script": "Latin",
+        "name_zh-Hant": "熱那亞",
+        "name_it": "Genova",
+        "type": "city",
+        "class": "settlement",
+        "name": "Genova",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.93463134765625,
+          44.406316252661355
+        ]
+      }
+    },
+    {
+      "id": 206263190,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "里昂",
+        "name_script": "Latin",
+        "name_ru": "Лион",
+        "name_zh-Hans": "里昂",
+        "name_pt": "Lião",
+        "name_ko": "리옹",
+        "symbolrank": 9,
+        "name_ja": "リヨン",
+        "name_it": "Lione",
+        "name_en": "Lyon",
+        "name_de": "Lyon",
+        "name_ar": "ليون",
+        "name_fr": "Lyon",
+        "filterrank": 1,
+        "iso_3166_2": "FR-F",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "FR",
+        "name_vi": "Lyon",
+        "text_anchor": "bottom",
+        "name_es": "Lyon",
+        "class": "settlement",
+        "name": "Lyon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.83123779296875,
+          45.757942454762116
+        ]
+      }
+    },
+    {
+      "id": 1523641650,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom-left",
+        "name_zh-Hant": "巴塞隆納",
+        "name_script": "Latin",
+        "name_ru": "Барселона",
+        "name_zh-Hans": "巴塞罗那",
+        "name_pt": "Barcelona",
+        "name_ko": "바르셀로나",
+        "symbolrank": 7,
+        "name_ja": "バルセロナ",
+        "name_it": "Barcellona",
+        "name_en": "Barcelona",
+        "name_de": "Barcelona",
+        "name_ar": "برشلونة",
+        "name_fr": "Barcelone",
+        "filterrank": 1,
+        "iso_3166_2": "ES-CT",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "ES",
+        "name_vi": "Barcelona",
+        "name_es": "Barcelona",
+        "class": "settlement",
+        "name": "Barcelona",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.17803955078125,
+          41.382991201666044
+        ]
+      }
+    },
+    {
+      "id": 636215890,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "杜林",
+        "name_script": "Latin",
+        "name_ru": "Турин",
+        "name_zh-Hans": "都灵",
+        "name_pt": "Turim",
+        "name_ko": "토리노",
+        "symbolrank": 8,
+        "name_ja": "トリノ",
+        "name_it": "Torino",
+        "name_en": "Turin",
+        "name_de": "Turin",
+        "name_ar": "تورينو",
+        "name_fr": "Turin",
+        "filterrank": 1,
+        "iso_3166_2": "IT-21",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "IT",
+        "name_vi": "Torino",
+        "name_es": "Turín",
+        "class": "settlement",
+        "name": "Torino",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.68218994140625,
+          45.067701411201426
+        ]
+      }
+    },
+    {
+      "id": 625055810,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "米蘭",
+        "name_script": "Latin",
+        "name_ru": "Милан",
+        "name_zh-Hans": "米兰",
+        "name_pt": "Milão",
+        "name_ko": "밀라노",
+        "symbolrank": 7,
+        "name_ja": "ミラノ",
+        "name_it": "Milano",
+        "name_en": "Milan",
+        "name_de": "Mailand",
+        "name_ar": "ميلان",
+        "name_fr": "Milan",
+        "filterrank": 1,
+        "iso_3166_2": "IT-25",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "IT",
+        "name_vi": "Milano",
+        "name_es": "Milán",
+        "class": "settlement",
+        "name": "Milano",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1900634765625,
+          45.46398344127272
+        ]
+      }
+    },
+    {
+      "id": 685075050,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "翁布里亞",
+        "name_script": "Latin",
+        "name_ru": "Перуджа",
+        "name_zh-Hans": "翁布里亚",
+        "name_pt": "Perúgia",
+        "name_ko": "페루자",
+        "symbolrank": 9,
+        "name_ja": "ペルージャ",
+        "name_it": "Perugia",
+        "name_en": "Perugia",
+        "name_de": "Perugia",
+        "name_ar": "بيروجيا",
+        "name_fr": "Pérouse",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "Perugia",
+        "name_es": "Perugia",
+        "iso_3166_2": "IT-55",
+        "capital": 4,
+        "class": "settlement",
+        "name": "Perugia",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.38983154296875,
+          43.11100914707512
+        ]
+      }
+    },
+    {
+      "id": 349643140,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "薩爾茨堡",
+        "name_script": "Latin",
+        "name_ru": "Зальцбург",
+        "name_zh-Hans": "萨尔茨堡",
+        "name_pt": "Salzburgo",
+        "name_ko": "잘츠부르크",
+        "symbolrank": 9,
+        "name_ja": "ザルツブルク",
+        "name_it": "Salisburgo",
+        "name_en": "Salzburg",
+        "name_de": "Salzburg",
+        "name_ar": "زالتسبورغ",
+        "name_fr": "Salzbourg",
+        "filterrank": 2,
+        "iso_3166_2": "AT-5",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "AT",
+        "name_vi": "Salzburg",
+        "name_es": "Salzburgo",
+        "class": "settlement",
+        "name": "Salzburg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.0462646484375,
+          47.79839667295525
+        ]
+      }
+    },
+    {
+      "id": 709901930,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拉奎拉",
+        "name_script": "Latin",
+        "name_ru": "Л'Акуила",
+        "name_zh-Hans": "拉奎拉",
+        "name_pt": "Áquila",
+        "name_ko": "라퀼라",
+        "symbolrank": 9,
+        "name_ja": "ラクイラ",
+        "name_it": "L'Aquila",
+        "name_en": "L’Aquila",
+        "name_de": "L’Aquila",
+        "name_ar": "لاكويلا",
+        "name_fr": "L'Aquila",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "L'Aquila",
+        "name_es": "L'Aquila",
+        "iso_3166_2": "IT-65",
+        "capital": 4,
+        "class": "settlement",
+        "name": "L'Aquila",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.3978271484375,
+          42.348395259792994
+        ]
+      }
+    },
+    {
+      "id": 57153093980,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Mostar",
+        "iso_3166_1": "BA",
+        "disputed": "false",
+        "name_vi": "Mostar",
+        "capital": 4,
+        "iso_3166_2": "BA-BIH",
+        "filterrank": 2,
+        "name_fr": "Mostar",
+        "name_ar": "موستار",
+        "name_de": "Mostar",
+        "name_en": "Mostar",
+        "name_ja": "モスタル",
+        "symbolrank": 10,
+        "name_ko": "모스타르",
+        "name_pt": "Mostar",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "莫斯塔尔",
+        "name_ru": "Мостар",
+        "name_script": "Latin",
+        "name_zh-Hant": "莫斯塔爾",
+        "name_it": "Mostar",
+        "class": "settlement",
+        "name": "Mostar",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.808837890625,
+          43.34315755514771
+        ]
+      }
+    },
+    {
+      "id": 665026480,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Trieste",
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "Trieste",
+        "capital": 4,
+        "iso_3166_2": "IT-36",
+        "filterrank": 2,
+        "name_fr": "Trieste",
+        "name_ar": "ترييستي",
+        "name_de": "Triest",
+        "name_en": "Trieste",
+        "name_ja": "トリエステ",
+        "symbolrank": 9,
+        "name_ko": "트리에스테",
+        "name_pt": "Trieste",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "的里雅斯特",
+        "name_ru": "Триест",
+        "name_script": "Latin",
+        "name_zh-Hant": "的里雅斯特",
+        "name_it": "Trieste",
+        "class": "settlement",
+        "name": "Trieste",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.77685546875,
+          45.65052836822275
+        ]
+      }
+    },
+    {
+      "id": 709788000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "安科納",
+        "name_script": "Latin",
+        "name_ru": "Анкона",
+        "name_zh-Hans": "安科纳",
+        "name_pt": "Ancona",
+        "name_ko": "안코나",
+        "symbolrank": 9,
+        "name_ja": "アンコーナ",
+        "name_it": "Ancona",
+        "name_en": "Ancona",
+        "name_de": "Ancona",
+        "name_ar": "أنكونا",
+        "name_fr": "Ancône",
+        "filterrank": 2,
+        "iso_3166_2": "IT-57",
+        "capital": 4,
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "Ancona",
+        "text_anchor": "bottom",
+        "name_es": "Ancona",
+        "class": "settlement",
+        "name": "Ancona",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.51593017578125,
+          43.61619382369187
+        ]
+      }
+    },
+    {
+      "id": 251813260,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "林茨",
+        "name_script": "Latin",
+        "name_ru": "Линц",
+        "name_zh-Hans": "林茨",
+        "name_pt": "Linz",
+        "name_ko": "린츠",
+        "symbolrank": 9,
+        "name_ja": "リンツ",
+        "name_it": "Linz",
+        "name_en": "Linz",
+        "name_de": "Linz",
+        "name_ar": "لنتس",
+        "name_fr": "Linz",
+        "filterrank": 2,
+        "iso_3166_2": "AT-4",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "AT",
+        "name_vi": "Linz",
+        "text_anchor": "bottom",
+        "name_es": "Linz",
+        "class": "settlement",
+        "name": "Linz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.28497314453125,
+          48.30512072140391
+        ]
+      }
+    },
+    {
+      "id": 14676042750,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "史普利特",
+        "name_script": "Latin",
+        "name_ru": "Сплит",
+        "name_zh-Hans": "斯普利特",
+        "name_pt": "Split",
+        "name_ko": "스플리트",
+        "symbolrank": 9,
+        "name_ja": "スプリト",
+        "name_it": "Spalato",
+        "name_en": "Split",
+        "name_de": "Split",
+        "name_ar": "سبليت",
+        "name_fr": "Split",
+        "filterrank": 2,
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "HR",
+        "name_vi": "Split",
+        "name_es": "Split",
+        "class": "settlement",
+        "name": "Split",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.4410400390625,
+          43.5107129908437
+        ]
+      }
+    },
+    {
+      "id": 1238608830,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "波德里查",
+        "name_script": "Latin",
+        "name_ru": "Подгорица",
+        "name_zh-Hans": "波德戈里察",
+        "name_pt": "Podgoritza",
+        "name_ko": "포드고리차",
+        "symbolrank": 8,
+        "name_ja": "ポドゴリツァ",
+        "name_it": "Podgorizza",
+        "name_en": "Podgorica",
+        "name_de": "Podgorica",
+        "name_ar": "بودغوريتسا",
+        "name_fr": "Podgorica",
+        "filterrank": 2,
+        "capital": 2,
+        "disputed": "false",
+        "iso_3166_1": "ME",
+        "name_vi": "Podgorica",
+        "text_anchor": "bottom",
+        "name_es": "Podgorica",
+        "class": "settlement",
+        "name": "Podgorica",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.26177978515625,
+          42.441701090621564
+        ]
+      }
+    },
+    {
+      "id": 210154890,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Graz",
+        "iso_3166_1": "AT",
+        "disputed": "false",
+        "name_vi": "Graz",
+        "capital": 4,
+        "iso_3166_2": "AT-6",
+        "filterrank": 2,
+        "name_fr": "Graz",
+        "name_ar": "غراتس",
+        "name_de": "Graz",
+        "name_en": "Graz",
+        "name_ja": "グラーツ",
+        "symbolrank": 9,
+        "name_ko": "그라츠",
+        "name_pt": "Graz",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "格拉茨",
+        "name_ru": "Грац",
+        "name_script": "Latin",
+        "name_zh-Hant": "格拉茨",
+        "name_it": "Graz",
+        "type": "city",
+        "class": "settlement",
+        "name": "Graz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.43853759765625,
+          47.07012182383309
+        ]
+      }
+    },
+    {
+      "id": 685285850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "巴里",
+        "name_script": "Latin",
+        "name_ru": "Бари",
+        "name_zh-Hans": "巴里",
+        "name_pt": "Bari",
+        "name_ko": "바리",
+        "symbolrank": 9,
+        "name_ja": "バーリ",
+        "name_it": "Bari",
+        "name_en": "Bari",
+        "name_de": "Bari",
+        "name_ar": "باري",
+        "name_fr": "Bari",
+        "filterrank": 1,
+        "iso_3166_2": "IT-75",
+        "capital": 4,
+        "disputed": "false",
+        "iso_3166_1": "IT",
+        "name_vi": "Bari",
+        "text_anchor": "bottom",
+        "name_es": "Bari",
+        "class": "settlement",
+        "name": "Bari",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.86126708984375,
+          41.12488359929122
+        ]
+      }
+    },
+    {
+      "id": 17005348080,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Múnich",
+        "iso_3166_1": "DE",
+        "disputed": "false",
+        "name_vi": "München",
+        "capital": 4,
+        "iso_3166_2": "DE-BY",
+        "filterrank": 1,
+        "name_fr": "Munich",
+        "name_ar": "ميونخ",
+        "name_de": "München",
+        "name_en": "Munich",
+        "name_ja": "ミュンヘン",
+        "symbolrank": 8,
+        "name_ko": "뮌헨",
+        "name_pt": "Munique",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "慕尼黑",
+        "name_ru": "Мюнхен",
+        "name_script": "Latin",
+        "name_zh-Hant": "慕尼黑",
+        "name_it": "Monaco di Baviera",
+        "type": "city",
+        "class": "settlement",
+        "name": "München",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.5740966796875,
+          48.1367666796927
+        ]
+      }
+    },
+    {
+      "id": 617533600,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "佛羅倫薩",
+        "name_script": "Latin",
+        "name_ru": "Флоренция",
+        "name_zh-Hans": "佛罗伦萨",
+        "name_pt": "Florença",
+        "name_ko": "피렌체",
+        "symbolrank": 9,
+        "name_ja": "フィレンツェ",
+        "name_it": "Firenze",
+        "name_en": "Florence",
+        "name_de": "Florenz",
+        "name_ar": "فلورنسا",
+        "name_fr": "Florence",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "iso_3166_2": "IT-52",
+        "capital": 4,
+        "name_vi": "Firenze",
+        "name_es": "Florencia",
+        "class": "settlement",
+        "name": "Firenze",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.2554931640625,
+          43.76911045236619
+        ]
+      }
+    },
+    {
+      "id": 6673503990,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Bolonia",
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "name_vi": "Bologna",
+        "capital": 4,
+        "iso_3166_2": "IT-45",
+        "filterrank": 1,
+        "name_fr": "Bologne",
+        "name_ar": "بولونيا",
+        "name_de": "Bologna",
+        "name_en": "Bologna",
+        "name_ja": "ボローニャ",
+        "symbolrank": 9,
+        "name_ko": "볼로냐",
+        "name_pt": "Bolonha",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "博洛尼亚",
+        "name_ru": "Болонья",
+        "name_script": "Latin",
+        "name_zh-Hant": "博洛尼亞",
+        "name_it": "Bologna",
+        "type": "city",
+        "class": "settlement",
+        "name": "Bologna",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.3433837890625,
+          44.49454617990028
+        ]
+      }
+    },
+    {
+      "id": 857882930,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_es": "Budapest",
+        "iso_3166_1": "HU",
+        "disputed": "false",
+        "name_vi": "Budapest",
+        "capital": 2,
+        "filterrank": 1,
+        "name_fr": "Budapest",
+        "name_ar": "بودابست",
+        "name_de": "Budapest",
+        "name_en": "Budapest",
+        "name_ja": "ブダペスト",
+        "symbolrank": 7,
+        "name_ko": "부다페스트",
+        "name_pt": "Budapeste",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "布达佩斯",
+        "name_ru": "Будапешт",
+        "name_script": "Latin",
+        "name_zh-Hant": "布達佩斯",
+        "name_it": "Budapest",
+        "type": "city",
+        "class": "settlement",
+        "name": "Budapest",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.039306640625,
+          47.49864785970502
+        ]
+      }
+    },
+    {
+      "id": 173286590,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Viena",
+        "disputed": "false",
+        "name_vi": "Viên",
+        "iso_3166_1": "AT",
+        "capital": 2,
+        "iso_3166_2": "AT-9",
+        "filterrank": 1,
+        "name_fr": "Vienne",
+        "name_ar": "فيينا",
+        "name_de": "Wien",
+        "name_en": "Vienna",
+        "name_ja": "ウィーン",
+        "symbolrank": 7,
+        "name_ko": "빈",
+        "name_pt": "Viena",
+        "text_anchor": "bottom-right",
+        "name_zh-Hans": "维也纳",
+        "name_ru": "Вена",
+        "name_script": "Latin",
+        "name_zh-Hant": "維也納",
+        "name_it": "Vienna",
+        "class": "settlement",
+        "name": "Wien",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.37237548828125,
+          48.208201762059105
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "owner": "water-line-label",
+      "properties": {
+        "sizerank": 10,
+        "name_zh-Hant": "英倫海峽",
+        "name_script": "Latin",
+        "name_ru": "Ла-Манш",
+        "name_zh-Hans": "英伦海峡",
+        "name_pt": "Canal da Mancha",
+        "name_ko": "영국 해협",
+        "name_ja": "イギリス海峡",
+        "name_it": "Canale della Manica",
+        "name_en": "English Channel",
+        "name_de": "Ärmelkanal",
+        "name_ar": "بحر المانش",
+        "name_fr": "Manche",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Eo biển Manche",
+        "name_es": "Canal de la Mancha",
+        "class": "sea",
+        "name": "English Channel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -5.4217529296875,
+            49.196064000723794
+          ],
+          [
+            -4.801025390625,
+            49.40203735979645
+          ],
+          [
+            -4.163818359375,
+            49.58756804188786
+          ],
+          [
+            -3.51287841796875,
+            49.75110537454435
+          ],
+          [
+            -2.8509521484375,
+            49.894634395734215
+          ],
+          [
+            -2.17803955078125,
+            50.01656412776063
+          ],
+          [
+            -1.49688720703125,
+            50.115294694991064
+          ],
+          [
+            -0.81024169921875,
+            50.19448452893175
+          ],
+          [
+            0,
+            50.255985965714785
+          ]
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "owner": "water-line-label",
+      "properties": {
+        "sizerank": 9,
+        "name_zh-Hant": "亞德里亞海",
+        "name_script": "Latin",
+        "name_ru": "Адриатическое море",
+        "name_zh-Hans": "亚德里亚海",
+        "name_pt": "Mar Adriático",
+        "name_ko": "아드리아 해",
+        "name_ja": "アドリア海",
+        "name_it": "Mare Adriatico",
+        "name_en": "Adriatic Sea",
+        "name_de": "Adriatisches Meer",
+        "name_ar": "البحر الأدرياتيكي",
+        "name_fr": "Mer Adriatique",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Biển Adriatic",
+        "name_es": "Mar Adriático",
+        "class": "sea",
+        "name": "Adriatic Sea",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            13.6285400390625,
+            44.22158376545795
+          ],
+          [
+            14.06524658203125,
+            43.87017822557581
+          ],
+          [
+            14.52667236328125,
+            43.5346116174328
+          ],
+          [
+            15.01007080078125,
+            43.21118152841771
+          ],
+          [
+            15.51544189453125,
+            42.90614831626672
+          ],
+          [
+            16.0400390625,
+            42.61779143282345
+          ],
+          [
+            16.5838623046875,
+            42.34636533160187
+          ],
+          [
+            17.1441650390625,
+            42.09414637092277
+          ],
+          [
+            17.720947265625,
+            41.863424671810066
+          ],
+          [
+            18.27850341796875,
+            41.66265316924904
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

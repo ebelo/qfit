@@ -1,0 +1,598 @@
+{
+  "features": [
+    {
+      "id": 11988919140,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "name_it": "Grovella",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Grovella / Gurfälu",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.42327356338501,
+          46.38758627824612
+        ]
+      }
+    },
+    {
+      "id": 18398386400,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Latin",
+        "name_fr": "Frua",
+        "name_en": "Frua",
+        "name_it": "Frua",
+        "disputed": "false",
+        "symbolrank": 18,
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "class": "settlement",
+        "name": "Frua",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.4100341796875,
+          46.41046382260632
+        ]
+      }
+    },
+    {
+      "id": 11988921890,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Latin",
+        "name_fr": "Canza",
+        "name_en": "Canza",
+        "name_it": "Canza",
+        "disputed": "false",
+        "symbolrank": 18,
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "class": "settlement",
+        "name": "Canza / Früttwald",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.419797420501709,
+          46.392810779929675
+        ]
+      }
+    },
+    {
+      "id": 2901574260,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Latin",
+        "name_fr": "Riale",
+        "name_en": "Riale",
+        "name_it": "Riale",
+        "disputed": "false",
+        "symbolrank": 18,
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "class": "settlement",
+        "name": "Riale / Chärbäch",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.416557312011719,
+          46.422801283409456
+        ]
+      }
+    },
+    {
+      "id": 13273725940,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Sonlerto",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.537707328796387,
+          46.39445350855371
+        ]
+      }
+    },
+    {
+      "id": 13273725920,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Fontanellata",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.541741371154785,
+          46.385780526817825
+        ]
+      }
+    },
+    {
+      "id": 13273726300,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_it": "San Carlo",
+        "name_fr": "San Carlo",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "San Carlo",
+        "iso_3166_2": "CH-TI",
+        "name_en": "San Carlo",
+        "class": "settlement",
+        "name": "San Carlo",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.527836799621582,
+          46.40880678073816
+        ]
+      }
+    },
+    {
+      "id": 4489418900,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "hamlet",
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "name_script": "Latin",
+        "name_pt": "Valdo",
+        "name_it": "Valdo",
+        "disputed": "false",
+        "name_es": "Valdo",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "name_fr": "Valdo",
+        "name_en": "Valdo",
+        "class": "settlement",
+        "name": "Valdo / Wald",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.426792621612549,
+          46.37296093499856
+        ]
+      }
+    },
+    {
+      "id": 18398386420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_fr": "Ponte",
+        "name_en": "Ponte",
+        "name_it": "Ponte",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_ja": "ポンテ",
+        "name_de": "Ponte",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "class": "settlement",
+        "name": "Ponte / Zum Schtäg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.425719738006592,
+          46.37685450109899
+        ]
+      }
+    },
+    {
+      "id": 16665540680,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Puntìd",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.542556762695312,
+          46.36955568767465
+        ]
+      }
+    },
+    {
+      "id": 13273725790,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Fontana",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.579206466674805,
+          46.361322995434904
+        ]
+      }
+    },
+    {
+      "id": 13273725420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Foroglio",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.547449111938477,
+          46.373893639615034
+        ]
+      }
+    },
+    {
+      "id": 12449294020,
+      "owner": "natural-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Piccolo Corno Gries",
+        "name_fr": "Klein Grieshorn",
+        "sizerank": 16,
+        "name_ar": "كلاين غريشورن",
+        "name_es": "Klein Grieshorn",
+        "name_de": "Klein Grieshorn",
+        "disputed": "false",
+        "name_en": "Klein Grieshorn",
+        "elevation_ft": 9613,
+        "elevation_m": 2930,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Piccolo Corno Gries",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.387417793273926,
+          46.452080478237065
+        ]
+      }
+    },
+    {
+      "id": 13729583030,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "Punta del Termine",
+        "name_de": "Markhorn",
+        "disputed": "false",
+        "elevation_ft": 9718,
+        "elevation_m": 2962,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Marchhorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.462541103363037,
+          46.44850275389393
+        ]
+      }
+    },
+    {
+      "id": 12449331590,
+      "owner": "natural-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Pizzo Cristallina",
+        "sizerank": 16,
+        "name_ar": "كريستيلينا",
+        "maki": "mountain",
+        "iso_3166_2": "CH-TI",
+        "name_es": "Cristallina",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_en": "Cristallina",
+        "elevation_ft": 9554,
+        "elevation_m": 2912,
+        "class": "landform",
+        "name": "Pizzo Cristallina",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.536698818206787,
+          46.46474846355312
+        ]
+      }
+    },
+    {
+      "id": 51331998180,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "Corno di Ban",
+        "name_de": "Bannhorn",
+        "disputed": "false",
+        "elevation_ft": 9932,
+        "elevation_m": 3027,
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Corno di Ban / Bannhorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.361067771911621,
+          46.417816338561295
+        ]
+      }
+    },
+    {
+      "id": 268625340,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 3273,
+        "elevation_ft": 10739,
+        "name_en": "Basòdino",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_de": "Monte Basòdino",
+        "name_es": "Basòdino",
+        "iso_3166_2": "CH-TI",
+        "maki": "mountain",
+        "name_fr": "Monte Basòdino",
+        "iso_3166_1": "CH",
+        "name_ar": "باسودينو",
+        "sizerank": 16,
+        "name_it": "Basòdino",
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Basodino",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.4684419631958,
+          46.41160300968892
+        ]
+      }
+    },
+    {
+      "id": 20899000620,
+      "owner": "natural-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Poncione di Braga",
+        "sizerank": 16,
+        "name_ar": "بونشيوني دي براغا",
+        "disputed": "false",
+        "name_en": "Poncione di Braga",
+        "elevation_ft": 9397,
+        "elevation_m": 2864,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Poncione di Braga",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.542943000793457,
+          46.434396542974326
+        ]
+      }
+    },
+    {
+      "id": 32014426010,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "Monte Giove",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "disputed": "false",
+        "elevation_ft": 9873,
+        "elevation_m": 3009,
+        "iso_3166_2": "IT-21",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Monte Giove",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.387911319732666,
+          46.361411844059745
+        ]
+      }
+    },
+    {
+      "id": 50230599160,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "disputed": "false",
+        "elevation_ft": 9584,
+        "elevation_m": 2921,
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Pizzo Fiorèra",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.466188907623291,
+          46.377002539959136
+        ]
+      }
+    },
+    {
+      "id": 1179469081,
+      "owner": "natural-line-label",
+      "properties": {
+        "sizerank": 13,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-TI",
+        "maki": "marker",
+        "name_script": "Latin",
+        "class": "glacier",
+        "name": "Ghiacciaio del Basòdino",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            8.470888137817383,
+            46.415567786994444
+          ],
+          [
+            8.473527431488037,
+            46.41494646034363
+          ],
+          [
+            8.476231098175049,
+            46.41447306385811
+          ],
+          [
+            8.479857444763184,
+            46.41414760139054
+          ],
+          [
+            8.482604026794434,
+            46.41411801379718
+          ],
+          [
+            8.485350608825684,
+            46.41428074536208
+          ],
+          [
+            8.488054275512695,
+            46.414606207035035
+          ],
+          [
+            8.490757942199707,
+            46.41513877649203
+          ],
+          [
+            8.492968082427979,
+            46.41570092749859
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

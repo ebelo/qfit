@@ -1,0 +1,993 @@
+{
+  "features": [
+    {
+      "id": 17662127210,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "庫馬約爾",
+        "name_script": "Latin",
+        "name_ru": "Курмайёр",
+        "name_zh-Hans": "库马约尔",
+        "name_pt": "Courmayeur",
+        "name_ko": "쿠마이어",
+        "symbolrank": 14,
+        "name_ja": "クールマイユール",
+        "name_it": "Courmayeur",
+        "name_en": "Courmayeur",
+        "name_de": "Courmayeur",
+        "name_ar": "كورمايور",
+        "name_fr": "Courmayeur",
+        "disputed": "false",
+        "name_vi": "Courmayeur",
+        "name_es": "Courmayeur",
+        "iso_3166_1": "IT",
+        "filterrank": 1,
+        "iso_3166_2": "IT-23",
+        "class": "settlement",
+        "name": "Courmayeur",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.973056793212891,
+          45.787427192158276
+        ]
+      }
+    },
+    {
+      "id": 111589293850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Latin",
+        "name_fr": "Bionnassay",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_en": "Bionnassay",
+        "symbolrank": 18,
+        "name_de": "Bionnassay",
+        "name_es": "Bionnassay",
+        "class": "settlement",
+        "name": "Bionnassay",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.757793426513672,
+          45.865523716497535
+        ]
+      }
+    },
+    {
+      "id": 10396525590,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Les Champs",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.797897815704346,
+          45.887902233596776
+        ]
+      }
+    },
+    {
+      "id": 16106935590,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Rochefort",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.97282075881958,
+          45.833523822103956
+        ]
+      }
+    },
+    {
+      "id": 14999529180,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "La Visaille",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.9040703773498535,
+          45.78687356153628
+        ]
+      }
+    },
+    {
+      "id": 14999529160,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Dzerottaz Damon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.926021575927734,
+          45.79785536862255
+        ]
+      }
+    },
+    {
+      "id": 11287043990,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Peindein",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.934947967529297,
+          45.803779259631085
+        ]
+      }
+    },
+    {
+      "id": 16107787500,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Chapy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.9658684730529785,
+          45.8229677421202
+        ]
+      }
+    },
+    {
+      "id": 17345101390,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Latin",
+        "name_fr": "Entrèves",
+        "name_en": "Entrèves",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "name_it": "Entrèves",
+        "disputed": "false",
+        "symbolrank": 18,
+        "name_ja": "エントレヴェス",
+        "iso_3166_2": "IT-23",
+        "class": "settlement",
+        "name": "Entrèves",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.962649822235107,
+          45.81584948183934
+        ]
+      }
+    },
+    {
+      "id": 138696585060,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Verrand",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.977090835571289,
+          45.78004998672222
+        ]
+      }
+    },
+    {
+      "id": 2463990161,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Alpine Hut",
+        "name_script": "Latin",
+        "name_it": "Rifugio Goûter",
+        "category_en": "Alpine Hut",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "category_zh-Hans": "高山小屋",
+        "name_en": "Goûter Refuge",
+        "class": "lodging",
+        "name": "Refuge du Goûter"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.830599308013916,
+          45.85108793044043
+        ]
+      }
+    },
+    {
+      "id": 2813990250,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Viewpoint",
+        "sizerank": 16,
+        "category_zh-Hans": "观景点",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "viewpoint",
+        "category_en": "Viewpoint",
+        "name_es": "Mont Blanc",
+        "name_ja": "モンブラン",
+        "name_fr": "Mont Blanc",
+        "name_it": "Monte Bianco",
+        "name_ru": "Монблан",
+        "name_zh-Hans": "勃朗峰",
+        "name_script": "Latin",
+        "name_zh-Hant": "勃朗峰",
+        "class": "sport_and_leisure",
+        "name": "Mont Blanc / Monte Bianco"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.865167617797852,
+          45.83270153650065
+        ]
+      }
+    },
+    {
+      "id": 10237684,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 1,
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "park",
+        "name_script": "Latin",
+        "type": "Protected Area",
+        "class": "park_like",
+        "name": "Réserve naturelle des Contamines-Montjoie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.74635648727417,
+          45.781097519575354
+        ]
+      }
+    },
+    {
+      "id": 27130743530,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "monte Truc",
+        "disputed": "false",
+        "name_en": "Mont Truc",
+        "elevation_ft": 5942,
+        "elevation_m": 1811,
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Mont Truc",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.752514839172363,
+          45.83914494006689
+        ]
+      }
+    },
+    {
+      "id": 35590718170,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 4304,
+        "name_de": "Dôme du Goûter",
+        "filterrank": 1,
+        "name_es": "Dôme du Goûter",
+        "elevation_ft": 14121,
+        "name_en": "Dôme du Goûter",
+        "disputed": "false",
+        "maki": "mountain",
+        "iso_3166_1": "FR",
+        "name_fr": "Dôme du Goûter",
+        "name_it": "Dôme du Goûter",
+        "name_pt": "Cúpula do Goûter",
+        "name_script": "Latin",
+        "sizerank": 16,
+        "class": "landform",
+        "name": "Dôme du Goûter",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.843430995941162,
+          45.84262795427941
+        ]
+      }
+    },
+    {
+      "id": 1062394,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 7,
+        "name_script": "Latin",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "marker",
+        "name_fr": "Glacier des Bossons",
+        "name_it": "Ghiacciaio dei Bossons",
+        "class": "glacier",
+        "name": "Glacier des Bossons",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.861433982849121,
+          45.85533238071304
+        ]
+      }
+    },
+    {
+      "id": 1670754930,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "南針峰",
+        "name_vi": "Aiguille du Midi",
+        "name_ru": "Эгюий-дю-Миди",
+        "name_zh-Hans": "南针峰",
+        "name_pt": "Agulha do Midi",
+        "name_ja": "エギーユ・デュ・ミディ",
+        "name_it": "Aiguille du Midi",
+        "name_en": "Aiguille du Midi",
+        "name_es": "Aiguille du Midi",
+        "elevation_m": 3842,
+        "name_de": "Aiguille du Midi",
+        "elevation_ft": 12606,
+        "filterrank": 1,
+        "disputed": "false",
+        "maki": "mountain",
+        "name_fr": "Aiguille du Midi",
+        "iso_3166_1": "FR",
+        "class": "landform",
+        "name": "Aiguille du Midi",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.887397766113281,
+          45.87870094374213
+        ]
+      }
+    },
+    {
+      "id": 3402359980,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 4001,
+        "elevation_ft": 13127,
+        "name_en": "Aiguille de Rochefort",
+        "name_de": "Aiguille de Rochefort",
+        "filterrank": 1,
+        "name_es": "Aiguille de Rochefort",
+        "disputed": "false",
+        "iso_3166_2": "IT-23",
+        "maki": "mountain",
+        "iso_3166_1": "IT",
+        "name_fr": "Aiguille de Rochefort",
+        "name_it": "Aiguille de Rochefort",
+        "name_pt": "Agulha de Rochefort",
+        "name_script": "Latin",
+        "sizerank": 16,
+        "class": "landform",
+        "name": "Aiguille de Rochefort",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.960010528564453,
+          45.86187776405288
+        ]
+      }
+    },
+    {
+      "id": 3679453300,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_pt": "Cúpula de Miage",
+        "name_it": "Dômes de Miage",
+        "name_fr": "Dômes de Miage",
+        "name_de": "Dômes de Miage",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_en": "Dômes de Miage",
+        "elevation_ft": 12051,
+        "elevation_m": 3673,
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Dômes de Miage",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.800343990325928,
+          45.81529613357392
+        ]
+      }
+    },
+    {
+      "id": 32998164,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 10,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "marker",
+        "name_script": "Latin",
+        "class": "glacier",
+        "name": "Glacier de Tré-la-Tête",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.7905592918396,
+          45.794997913206515
+        ]
+      }
+    },
+    {
+      "id": 8085440510,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 4460,
+        "elevation_ft": 14633,
+        "name_en": "Picco Luigi Amedeo",
+        "name_de": "Picco Luigi Amedeo",
+        "filterrank": 1,
+        "name_es": "Picco Luigi Amedeo",
+        "disputed": "false",
+        "iso_3166_2": "IT-23",
+        "maki": "mountain",
+        "name_fr": "Pic Louis Amédée",
+        "iso_3166_1": "IT",
+        "name_it": "Picco Luigi Amedeo",
+        "name_pt": "Pico Luigi Amedeo",
+        "name_ru": "Пикко Луиджи Амедео",
+        "sizerank": 16,
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Picco Luigi Amedeo",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.86521053314209,
+          45.82190604255487
+        ]
+      }
+    },
+    {
+      "id": 326684211,
+      "owner": "natural-line-label",
+      "properties": {
+        "sizerank": 13,
+        "name_script": "Latin",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "maki": "marker",
+        "name_fr": "Glacier du Brouillard",
+        "class": "glacier",
+        "name": "Ghiacciaio del Brouillard",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.872313022613525,
+            45.81789831808575
+          ],
+          [
+            6.871905326843262,
+            45.81510171260777
+          ],
+          [
+            6.871862411499023,
+            45.81261904675304
+          ],
+          [
+            6.872098445892334,
+            45.81016618385107
+          ],
+          [
+            6.872870922088623,
+            45.806950376773585
+          ],
+          [
+            6.873428821563721,
+            45.805394756958066
+          ],
+          [
+            6.8749308586120605,
+            45.80246289383791
+          ],
+          [
+            6.876347064971924,
+            45.80042844916085
+          ],
+          [
+            6.8782782554626465,
+            45.798319130288235
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-2",
+        "len": 3960,
+        "name_de": "Mont Blanc Tunnel",
+        "ref": "T1",
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "shield_text_color": "black",
+        "name_en": "Mont Blanc Tunnel",
+        "name_fr": "Tunnel du Mont Blanc",
+        "name_it": "Traforo del Monte Bianco",
+        "name_ru": "Монбланский тоннель",
+        "reflen": 2,
+        "oneway": "false",
+        "structure": "none",
+        "shield": "default",
+        "surface": "paved",
+        "name_script": "Latin",
+        "toll": "true",
+        "type": "trunk",
+        "class": "trunk",
+        "name": "Traforo del Monte Bianco"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.92138671875,
+            45.84673852742611
+          ],
+          [
+            6.942393779754639,
+            45.826885387845635
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "motorway",
+        "toll": "true",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(0, 0%, 100%)",
+        "shield_image": "it-motorway-2",
+        "shield": "default",
+        "ref": "A5",
+        "shield_text_color": "black",
+        "shield_beta": "it-motorway",
+        "reflen": 2,
+        "iso_3166_1": "IT",
+        "len": 17660,
+        "iso_3166_2": "IT-23",
+        "name_en": "Aosta Valley Toll Motorway",
+        "shield_text_color_beta": "white",
+        "name_fr": "Autoroute de la Vallée d'Aoste",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "motorway",
+        "name": "Autostrada della Valle d'Aosta"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.95559024810791,
+              45.81653742066413
+            ],
+            [
+              6.954195499420166,
+              45.81604390019481
+            ],
+            [
+              6.953916549682617,
+              45.815655062805064
+            ],
+            [
+              6.953916549682617,
+              45.81522135635959
+            ],
+            [
+              6.954238414764404,
+              45.8147726909649
+            ],
+            [
+              6.955869197845459,
+              45.81366596753628
+            ],
+            [
+              6.9582295417785645,
+              45.81231992291447
+            ],
+            [
+              6.959517002105713,
+              45.81133280284865
+            ],
+            [
+              6.960310935974121,
+              45.810330708523054
+            ],
+            [
+              6.960783004760742,
+              45.809029454657036
+            ],
+            [
+              6.9606757164001465,
+              45.807099953312616
+            ],
+            [
+              6.958765983581543,
+              45.796703427784706
+            ],
+            [
+              6.958143711090088,
+              45.79209542629647
+            ],
+            [
+              6.958250999450684,
+              45.79021022495982
+            ],
+            [
+              6.958873271942139,
+              45.788444661124686
+            ],
+            [
+              6.959517002105713,
+              45.7872925257563
+            ],
+            [
+              6.960740089416504,
+              45.785871027227245
+            ],
+            [
+              6.962392330169678,
+              45.78467394771877
+            ],
+            [
+              6.963443756103516,
+              45.78407539832486
+            ],
+            [
+              6.9650959968566895,
+              45.78334216655932
+            ],
+            [
+              6.969773769378662,
+              45.7819504960751
+            ],
+            [
+              6.971275806427002,
+              45.78106759033841
+            ],
+            [
+              6.973764896392822,
+              45.778463685221254
+            ],
+            [
+              6.975889205932617,
+              45.77602428447909
+            ],
+            [
+              6.977498531341553,
+              45.77469229670103
+            ],
+            [
+              6.978721618652344,
+              45.77416847256674
+            ],
+            [
+              6.979579925537109,
+              45.77392900846661
+            ],
+            [
+              6.981768608093262,
+              45.77371947653552
+            ],
+            [
+              6.994128227233887,
+              45.77427323778721
+            ],
+            [
+              6.996917724609375,
+              45.77407867364968
+            ],
+            [
+              7.000136375427246,
+              45.773375243796806
+            ],
+            [
+              7.002260684967041,
+              45.772611937536055
+            ],
+            [
+              7.003719806671143,
+              45.77192345626153
+            ],
+            [
+              7.005758285522461,
+              45.77057640309948
+            ],
+            [
+              7.010929584503174,
+              45.765606992288184
+            ]
+          ],
+          [
+            [
+              7.0113372802734375,
+              45.765606992288184
+            ],
+            [
+              7.007260322570801,
+              45.76963344652822
+            ],
+            [
+              7.005887031555176,
+              45.770800914219166
+            ],
+            [
+              7.00427770614624,
+              45.77195339040671
+            ],
+            [
+              7.002561092376709,
+              45.77288134093865
+            ],
+            [
+              7.000157833099365,
+              45.77374940971674
+            ],
+            [
+              6.996939182281494,
+              45.77437800281089
+            ],
+            [
+              6.994321346282959,
+              45.77455759953642
+            ],
+            [
+              6.989321708679199,
+              45.77436303639098
+            ],
+            [
+              6.9837212562561035,
+              45.77395894153537
+            ],
+            [
+              6.98106050491333,
+              45.77386914228089
+            ],
+            [
+              6.979150772094727,
+              45.77415350609061
+            ],
+            [
+              6.978099346160889,
+              45.774512700409275
+            ],
+            [
+              6.976726055145264,
+              45.775365777643856
+            ],
+            [
+              6.975975036621094,
+              45.77608414835126
+            ],
+            [
+              6.9713616371154785,
+              45.78121723636258
+            ],
+            [
+              6.9705891609191895,
+              45.78174099428412
+            ],
+            [
+              6.969795227050781,
+              45.78217496140607
+            ],
+            [
+              6.9687652587890625,
+              45.78253410405594
+            ],
+            [
+              6.9647955894470215,
+              45.783701301690286
+            ],
+            [
+              6.963250637054443,
+              45.7844195650116
+            ],
+            [
+              6.962156295776367,
+              45.78507796492667
+            ],
+            [
+              6.96058988571167,
+              45.78636481503571
+            ],
+            [
+              6.9594526290893555,
+              45.78787607781521
+            ],
+            [
+              6.958787441253662,
+              45.789177825778296
+            ],
+            [
+              6.958572864532471,
+              45.78995586751648
+            ],
+            [
+              6.958465576171875,
+              45.791930847767844
+            ],
+            [
+              6.96108341217041,
+              45.80871535434164
+            ],
+            [
+              6.960868835449219,
+              45.80986704683866
+            ],
+            [
+              6.959989070892334,
+              45.81113836804599
+            ],
+            [
+              6.959216594696045,
+              45.811781495956524
+            ],
+            [
+              6.955633163452148,
+              45.813905260952026
+            ],
+            [
+              6.954195499420166,
+              45.81493720202934
+            ],
+            [
+              6.953980922698975,
+              45.81532604443154
+            ],
+            [
+              6.954002380371094,
+              45.815640107466635
+            ],
+            [
+              6.954238414764404,
+              45.81596912398456
+            ],
+            [
+              6.954646110534668,
+              45.81620840750389
+            ],
+            [
+              6.955611705780029,
+              45.81647760023415
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

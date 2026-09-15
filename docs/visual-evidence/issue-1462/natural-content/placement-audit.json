@@ -1,0 +1,4426 @@
+[
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Tour d'Aï",
+        "provider_id": "8",
+        "feature_id": 21350349537282,
+        "unplaced": false,
+        "corners": [
+          [
+            778406.536594872,
+            5839846.294087559
+          ],
+          [
+            780507.5460242227,
+            5839846.294087559
+          ],
+          [
+            780507.5460242227,
+            5840553.325941413
+          ],
+          [
+            778406.536594872,
+            5840553.325941413
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Tour d’Aï",
+        "provider_id": "8",
+        "feature_id": 21350349537282,
+        "unplaced": false,
+        "corners": [
+          [
+            778399.0042952925,
+            5839846.294087559
+          ],
+          [
+            780515.0783238021,
+            5839846.294087559
+          ],
+          [
+            780515.0783238021,
+            5840553.325941413
+          ],
+          [
+            778399.0042952925,
+            5840553.325941413
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Tour d'Aï"
+    ],
+    "after_natural_texts": [
+      "Tour d’Aï"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Bawartenhubel",
+        "provider_id": "8",
+        "feature_id": 93050533576704,
+        "unplaced": false,
+        "corners": [
+          [
+            825969.278763919,
+            5936402.977415005
+          ],
+          [
+            826919.3528175355,
+            5936402.977415005
+          ],
+          [
+            826919.3528175355,
+            5936579.735378468
+          ],
+          [
+            825969.278763919,
+            5936579.735378468
+          ]
+        ]
+      },
+      {
+        "text": "Säuhoger",
+        "provider_id": "8",
+        "feature_id": 93054811766785,
+        "unplaced": false,
+        "corners": [
+          [
+            831531.4576866766,
+            5926389.726709646
+          ],
+          [
+            832134.7948829876,
+            5926389.726709646
+          ],
+          [
+            832134.7948829876,
+            5926566.48467311
+          ],
+          [
+            831531.4576866766,
+            5926566.48467311
+          ]
+        ]
+      },
+      {
+        "text": "Bantiger",
+        "provider_id": "8",
+        "feature_id": 94145767014401,
+        "unplaced": false,
+        "corners": [
+          [
+            837713.2577731012,
+            5938373.619550481
+          ],
+          [
+            838254.5790362083,
+            5938373.619550481
+          ],
+          [
+            838254.5790362083,
+            5938550.377513945
+          ],
+          [
+            837713.2577731012,
+            5938550.377513945
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Bawartenhubel",
+        "provider_id": "8",
+        "feature_id": 93050533576704,
+        "unplaced": false,
+        "corners": [
+          [
+            825969.278763919,
+            5936402.977415005
+          ],
+          [
+            826919.3528175355,
+            5936402.977415005
+          ],
+          [
+            826919.3528175355,
+            5936579.735378468
+          ],
+          [
+            825969.278763919,
+            5936579.735378468
+          ]
+        ]
+      },
+      {
+        "text": "Säuhoger",
+        "provider_id": "8",
+        "feature_id": 93054811766785,
+        "unplaced": false,
+        "corners": [
+          [
+            831531.4576866766,
+            5926389.726709646
+          ],
+          [
+            832134.7948829876,
+            5926389.726709646
+          ],
+          [
+            832134.7948829876,
+            5926566.48467311
+          ],
+          [
+            831531.4576866766,
+            5926566.48467311
+          ]
+        ]
+      },
+      {
+        "text": "Bantiger",
+        "provider_id": "8",
+        "feature_id": 94145767014401,
+        "unplaced": false,
+        "corners": [
+          [
+            837713.2577731012,
+            5938373.619550481
+          ],
+          [
+            838254.5790362083,
+            5938373.619550481
+          ],
+          [
+            838254.5790362083,
+            5938550.377513945
+          ],
+          [
+            837713.2577731012,
+            5938550.377513945
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Bantiger",
+      "Bawartenhubel",
+      "Säuhoger"
+    ],
+    "after_natural_texts": [
+      "Bantiger",
+      "Bawartenhubel",
+      "Säuhoger"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "aletsch-z10",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Fieschergletscher",
+        "provider_id": "8",
+        "feature_id": 24644572676098,
+        "unplaced": false,
+        "corners": [
+          [
+            899755.1890518953,
+            5863455.775870251
+          ],
+          [
+            905190.5783601115,
+            5863455.775870251
+          ],
+          [
+            905190.5783601115,
+            5864296.583181388
+          ],
+          [
+            899755.1890518953,
+            5864296.583181388
+          ]
+        ]
+      },
+      {
+        "text": "Finsteraarhorn",
+        "provider_id": "8",
+        "feature_id": 24640294486017,
+        "unplaced": false,
+        "corners": [
+          [
+            902357.0338350087,
+            5866465.48385898
+          ],
+          [
+            906830.9886468254,
+            5866465.48385898
+          ],
+          [
+            906830.9886468254,
+            5867306.291170117
+          ],
+          [
+            902357.0338350087,
+            5867306.291170117
+          ]
+        ]
+      },
+      {
+        "text": "Aletschhorn",
+        "provider_id": "8",
+        "feature_id": 24644572676096,
+        "unplaced": false,
+        "corners": [
+          [
+            887977.31788886,
+            5854789.7277884185
+          ],
+          [
+            891629.5746466111,
+            5854789.7277884185
+          ],
+          [
+            891629.5746466111,
+            5855630.535099556
+          ],
+          [
+            887977.31788886,
+            5855630.535099556
+          ]
+        ]
+      },
+      {
+        "text": "Helsenhorn",
+        "provider_id": "8",
+        "feature_id": 25748396048385,
+        "unplaced": false,
+        "corners": [
+          [
+            910182.2746057027,
+            5828906.239085352
+          ],
+          [
+            913605.2202785983,
+            5828906.239085352
+          ],
+          [
+            913605.2202785983,
+            5829747.046396489
+          ],
+          [
+            910182.2746057027,
+            5829747.046396489
+          ]
+        ]
+      },
+      {
+        "text": "Ritzlihorn",
+        "provider_id": "8",
+        "feature_id": 25739806113795,
+        "unplaced": false,
+        "corners": [
+          [
+            917920.3293910098,
+            5882020.419115013
+          ],
+          [
+            920791.4952659716,
+            5882020.419115013
+          ],
+          [
+            920791.4952659716,
+            5882861.226426151
+          ],
+          [
+            917920.3293910098,
+            5882861.226426151
+          ]
+        ]
+      },
+      {
+        "text": "Basodino",
+        "provider_id": "8",
+        "feature_id": 26843612708865,
+        "unplaced": false,
+        "corners": [
+          [
+            941298.1167606032,
+            5846133.234335123
+          ],
+          [
+            944097.6229215477,
+            5846133.234335123
+          ],
+          [
+            944097.6229215477,
+            5846974.04164626
+          ],
+          [
+            941298.1167606032,
+            5846974.04164626
+          ]
+        ]
+      },
+      {
+        "text": "Niesen",
+        "provider_id": "8",
+        "feature_id": 23540782858240,
+        "unplaced": false,
+        "corners": [
+          [
+            850806.2298994933,
+            5884093.773507249
+          ],
+          [
+            852879.5842917287,
+            5884093.773507249
+          ],
+          [
+            852879.5842917287,
+            5884934.580818386
+          ],
+          [
+            850806.2298994933,
+            5884934.580818386
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Fieschergletscher",
+        "provider_id": "8",
+        "feature_id": 24644572676098,
+        "unplaced": false,
+        "corners": [
+          [
+            899755.1890518953,
+            5863455.775870251
+          ],
+          [
+            905190.5783601115,
+            5863455.775870251
+          ],
+          [
+            905190.5783601115,
+            5864296.583181388
+          ],
+          [
+            899755.1890518953,
+            5864296.583181388
+          ]
+        ]
+      },
+      {
+        "text": "Finsteraarhorn",
+        "provider_id": "8",
+        "feature_id": 24640294486017,
+        "unplaced": false,
+        "corners": [
+          [
+            902357.0338350087,
+            5866465.48385898
+          ],
+          [
+            906830.9886468254,
+            5866465.48385898
+          ],
+          [
+            906830.9886468254,
+            5867306.291170117
+          ],
+          [
+            902357.0338350087,
+            5867306.291170117
+          ]
+        ]
+      },
+      {
+        "text": "Aletschhorn",
+        "provider_id": "8",
+        "feature_id": 24644572676096,
+        "unplaced": false,
+        "corners": [
+          [
+            887977.31788886,
+            5854789.7277884185
+          ],
+          [
+            891629.5746466111,
+            5854789.7277884185
+          ],
+          [
+            891629.5746466111,
+            5855630.535099556
+          ],
+          [
+            887977.31788886,
+            5855630.535099556
+          ]
+        ]
+      },
+      {
+        "text": "Helsenhorn",
+        "provider_id": "8",
+        "feature_id": 25748396048385,
+        "unplaced": false,
+        "corners": [
+          [
+            910182.2746057027,
+            5828906.239085352
+          ],
+          [
+            913605.2202785983,
+            5828906.239085352
+          ],
+          [
+            913605.2202785983,
+            5829747.046396489
+          ],
+          [
+            910182.2746057027,
+            5829747.046396489
+          ]
+        ]
+      },
+      {
+        "text": "Ritzlihorn",
+        "provider_id": "8",
+        "feature_id": 25739806113795,
+        "unplaced": false,
+        "corners": [
+          [
+            917920.3293910098,
+            5882020.419115013
+          ],
+          [
+            920791.4952659716,
+            5882020.419115013
+          ],
+          [
+            920791.4952659716,
+            5882861.226426151
+          ],
+          [
+            917920.3293910098,
+            5882861.226426151
+          ]
+        ]
+      },
+      {
+        "text": "Basòdino",
+        "provider_id": "8",
+        "feature_id": 26843612708865,
+        "unplaced": false,
+        "corners": [
+          [
+            941302.894074871,
+            5846133.234335123
+          ],
+          [
+            944092.8456072799,
+            5846133.234335123
+          ],
+          [
+            944092.8456072799,
+            5846974.04164626
+          ],
+          [
+            941302.894074871,
+            5846974.04164626
+          ]
+        ]
+      },
+      {
+        "text": "Niesen",
+        "provider_id": "8",
+        "feature_id": 23540782858240,
+        "unplaced": false,
+        "corners": [
+          [
+            850806.2298994933,
+            5884093.773507249
+          ],
+          [
+            852879.5842917287,
+            5884093.773507249
+          ],
+          [
+            852879.5842917287,
+            5884934.580818386
+          ],
+          [
+            850806.2298994933,
+            5884934.580818386
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aletschhorn",
+      "Basodino",
+      "Fieschergletscher",
+      "Finsteraarhorn",
+      "Helsenhorn",
+      "Niesen",
+      "Ritzlihorn"
+    ],
+    "after_natural_texts": [
+      "Aletschhorn",
+      "Basòdino",
+      "Fieschergletscher",
+      "Finsteraarhorn",
+      "Helsenhorn",
+      "Niesen",
+      "Ritzlihorn"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "basodino-z12",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Ghiacciaio del Basòdino",
+        "provider_id": "6",
+        "feature_id": 106283311038469,
+        "unplaced": false,
+        "corners": [
+          [
+            943628.8218313693,
+            5847030.818163829
+          ],
+          [
+            944788.7600146775,
+            5847041.952385648
+          ],
+          [
+            944784.357913078,
+            5847500.553428006
+          ],
+          [
+            943624.4197297698,
+            5847489.419206187
+          ]
+        ]
+      },
+      {
+        "text": "Corno di Ban / Bannhorn",
+        "provider_id": "8",
+        "feature_id": 105183782633472,
+        "unplaced": false,
+        "corners": [
+          [
+            930223.2572502925,
+            5847349.060816284
+          ],
+          [
+            931276.3564642058,
+            5847349.060816284
+          ],
+          [
+            931276.3564642058,
+            5847769.464471852
+          ],
+          [
+            930223.2572502925,
+            5847769.464471852
+          ]
+        ]
+      },
+      {
+        "text": "Piccolo Corno Gries",
+        "provider_id": "8",
+        "feature_id": 105183782633473,
+        "unplaced": false,
+        "corners": [
+          [
+            932952.5966079283,
+            5852988.680309449
+          ],
+          [
+            934413.559027457,
+            5852988.680309449
+          ],
+          [
+            934413.559027457,
+            5853198.882137233
+          ],
+          [
+            932952.5966079283,
+            5853198.882137233
+          ]
+        ]
+      },
+      {
+        "text": "Poncione di Braga",
+        "provider_id": "8",
+        "feature_id": 106283311038466,
+        "unplaced": false,
+        "corners": [
+          [
+            950322.7619946634,
+            5850131.846377291
+          ],
+          [
+            951669.3674539061,
+            5850131.846377291
+          ],
+          [
+            951669.3674539061,
+            5850342.048205075
+          ],
+          [
+            950322.7619946634,
+            5850342.048205075
+          ]
+        ]
+      },
+      {
+        "text": "Pizzo Fiorèra",
+        "provider_id": "8",
+        "feature_id": 106283311038467,
+        "unplaced": false,
+        "corners": [
+          [
+            941966.0450116732,
+            5840866.245354847
+          ],
+          [
+            942937.6313008919,
+            5840866.245354847
+          ],
+          [
+            942937.6313008919,
+            5841076.447182631
+          ],
+          [
+            941966.0450116732,
+            5841076.447182631
+          ]
+        ]
+      },
+      {
+        "text": "Monte Giove",
+        "provider_id": "8",
+        "feature_id": 105188077600768,
+        "unplaced": false,
+        "corners": [
+          [
+            933282.3805834791,
+            5838350.989392838
+          ],
+          [
+            934193.6532800664,
+            5838350.989392838
+          ],
+          [
+            934193.6532800664,
+            5838561.1912206225
+          ],
+          [
+            933282.3805834791,
+            5838561.1912206225
+          ]
+        ]
+      },
+      {
+        "text": "Marchhorn",
+        "provider_id": "8",
+        "feature_id": 106283311038464,
+        "unplaced": false,
+        "corners": [
+          [
+            941645.3677914456,
+            5852410.625283042
+          ],
+          [
+            942446.1650955895,
+            5852410.625283042
+          ],
+          [
+            942446.1650955895,
+            5852620.827110826
+          ],
+          [
+            941645.3677914456,
+            5852620.827110826
+          ]
+        ]
+      },
+      {
+        "text": "Basodino",
+        "provider_id": "8",
+        "feature_id": 106283311038465,
+        "unplaced": false,
+        "corners": [
+          [
+            942352.7088852251,
+            5846450.925733932
+          ],
+          [
+            943052.5854254613,
+            5846450.925733932
+          ],
+          [
+            943052.5854254613,
+            5846661.127561716
+          ],
+          [
+            942352.7088852251,
+            5846661.127561716
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Ghiacciaio del Basòdino",
+        "provider_id": "6",
+        "feature_id": 106283311038469,
+        "unplaced": false,
+        "corners": [
+          [
+            943628.8218313693,
+            5847030.818163829
+          ],
+          [
+            944788.7600146775,
+            5847041.952385648
+          ],
+          [
+            944784.357913078,
+            5847500.553428006
+          ],
+          [
+            943624.4197297698,
+            5847489.419206187
+          ]
+        ]
+      },
+      {
+        "text": "Corno di Ban / Bannhorn",
+        "provider_id": "8",
+        "feature_id": 105183782633472,
+        "unplaced": false,
+        "corners": [
+          [
+            930223.2572502925,
+            5847349.060816284
+          ],
+          [
+            931276.3564642058,
+            5847349.060816284
+          ],
+          [
+            931276.3564642058,
+            5847769.464471852
+          ],
+          [
+            930223.2572502925,
+            5847769.464471852
+          ]
+        ]
+      },
+      {
+        "text": "Poncione di Braga",
+        "provider_id": "8",
+        "feature_id": 106283311038466,
+        "unplaced": false,
+        "corners": [
+          [
+            950322.7619946634,
+            5850131.846377291
+          ],
+          [
+            951669.3674539061,
+            5850131.846377291
+          ],
+          [
+            951669.3674539061,
+            5850342.048205075
+          ],
+          [
+            950322.7619946634,
+            5850342.048205075
+          ]
+        ]
+      },
+      {
+        "text": "Klein Grieshorn",
+        "provider_id": "8",
+        "feature_id": 105183782633473,
+        "unplaced": false,
+        "corners": [
+          [
+            933113.084509113,
+            5852988.680309449
+          ],
+          [
+            934253.0711262723,
+            5852988.680309449
+          ],
+          [
+            934253.0711262723,
+            5853198.882137233
+          ],
+          [
+            933113.084509113,
+            5853198.882137233
+          ]
+        ]
+      },
+      {
+        "text": "Pizzo Fiorèra",
+        "provider_id": "8",
+        "feature_id": 106283311038467,
+        "unplaced": false,
+        "corners": [
+          [
+            941966.0450116732,
+            5840866.245354847
+          ],
+          [
+            942937.6313008919,
+            5840866.245354847
+          ],
+          [
+            942937.6313008919,
+            5841076.447182631
+          ],
+          [
+            941966.0450116732,
+            5841076.447182631
+          ]
+        ]
+      },
+      {
+        "text": "Monte Giove",
+        "provider_id": "8",
+        "feature_id": 105188077600768,
+        "unplaced": false,
+        "corners": [
+          [
+            933282.3805834791,
+            5838350.989392838
+          ],
+          [
+            934193.6532800664,
+            5838350.989392838
+          ],
+          [
+            934193.6532800664,
+            5838561.1912206225
+          ],
+          [
+            933282.3805834791,
+            5838561.1912206225
+          ]
+        ]
+      },
+      {
+        "text": "Marchhorn",
+        "provider_id": "8",
+        "feature_id": 106283311038464,
+        "unplaced": false,
+        "corners": [
+          [
+            941645.3677914456,
+            5852410.625283042
+          ],
+          [
+            942446.1650955895,
+            5852410.625283042
+          ],
+          [
+            942446.1650955895,
+            5852620.827110826
+          ],
+          [
+            941645.3677914456,
+            5852620.827110826
+          ]
+        ]
+      },
+      {
+        "text": "Basòdino",
+        "provider_id": "8",
+        "feature_id": 106283311038465,
+        "unplaced": false,
+        "corners": [
+          [
+            942353.9032137921,
+            5846450.925733932
+          ],
+          [
+            943051.3910968944,
+            5846450.925733932
+          ],
+          [
+            943051.3910968944,
+            5846661.127561716
+          ],
+          [
+            942353.9032137921,
+            5846661.127561716
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Basodino",
+      "Corno di Ban / Bannhorn",
+      "Ghiacciaio del Basòdino",
+      "Marchhorn",
+      "Monte Giove",
+      "Piccolo Corno Gries",
+      "Pizzo Fiorèra",
+      "Poncione di Braga"
+    ],
+    "after_natural_texts": [
+      "Basòdino",
+      "Corno di Ban / Bannhorn",
+      "Ghiacciaio del Basòdino",
+      "Klein Grieshorn",
+      "Marchhorn",
+      "Monte Giove",
+      "Pizzo Fiorèra",
+      "Poncione di Braga"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "grand-combin-z10",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Grand Combin de Grafeneire",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810000.2029165926,
+            5769514.6681077685
+          ],
+          [
+            815089.2369403916,
+            5769514.6681077685
+          ],
+          [
+            815089.2369403916,
+            5771196.282730042
+          ],
+          [
+            810000.2029165926,
+            5771196.282730042
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5761355.015338327
+          ],
+          [
+            764473.5922728025,
+            5761355.015338327
+          ]
+        ]
+      },
+      {
+        "text": "Dent Blanche",
+        "provider_id": "8",
+        "feature_id": 23549372792833,
+        "unplaced": false,
+        "corners": [
+          [
+            845369.0490984266,
+            5785404.015362551
+          ],
+          [
+            849335.414269287,
+            5785404.015362551
+          ],
+          [
+            849335.414269287,
+            5786244.822673689
+          ],
+          [
+            845369.0490984266,
+            5786244.822673689
+          ]
+        ]
+      },
+      {
+        "text": "Mont Ruan",
+        "provider_id": "8",
+        "feature_id": 21350349537281,
+        "unplaced": false,
+        "corners": [
+          [
+            766586.9566720309,
+            5799812.395194307
+          ],
+          [
+            769739.9840887943,
+            5799812.395194307
+          ],
+          [
+            769739.9840887943,
+            5800653.202505444
+          ],
+          [
+            766586.9566720309,
+            5800653.202505444
+          ]
+        ]
+      },
+      {
+        "text": "Besso",
+        "provider_id": "8",
+        "feature_id": 23553667760129,
+        "unplaced": false,
+        "corners": [
+          [
+            851653.008853465,
+            5792398.003450644
+          ],
+          [
+            853485.1088751752,
+            5792398.003450644
+          ],
+          [
+            853485.1088751752,
+            5793238.810761781
+          ],
+          [
+            851653.008853465,
+            5793238.810761781
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5761355.015338327
+          ],
+          [
+            764473.5922728025,
+            5761355.015338327
+          ]
+        ]
+      },
+      {
+        "text": "Grand Combin",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810442.7016506498,
+            5769935.071763338
+          ],
+          [
+            814646.7382063344,
+            5769935.071763338
+          ],
+          [
+            814646.7382063344,
+            5770775.879074475
+          ],
+          [
+            810442.7016506498,
+            5770775.879074475
+          ]
+        ]
+      },
+      {
+        "text": "Dent Blanche",
+        "provider_id": "8",
+        "feature_id": 23549372792833,
+        "unplaced": false,
+        "corners": [
+          [
+            845369.0490984266,
+            5785404.015362551
+          ],
+          [
+            849335.414269287,
+            5785404.015362551
+          ],
+          [
+            849335.414269287,
+            5786244.822673689
+          ],
+          [
+            845369.0490984266,
+            5786244.822673689
+          ]
+        ]
+      },
+      {
+        "text": "Mont Ruan",
+        "provider_id": "8",
+        "feature_id": 21350349537281,
+        "unplaced": false,
+        "corners": [
+          [
+            766586.9566720309,
+            5799812.395194307
+          ],
+          [
+            769739.9840887943,
+            5799812.395194307
+          ],
+          [
+            769739.9840887943,
+            5800653.202505444
+          ],
+          [
+            766586.9566720309,
+            5800653.202505444
+          ]
+        ]
+      },
+      {
+        "text": "Besso",
+        "provider_id": "8",
+        "feature_id": 23553667760129,
+        "unplaced": false,
+        "corners": [
+          [
+            851653.008853465,
+            5792398.003450644
+          ],
+          [
+            853485.1088751752,
+            5792398.003450644
+          ],
+          [
+            853485.1088751752,
+            5793238.810761781
+          ],
+          [
+            851653.008853465,
+            5793238.810761781
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille du Midi",
+      "Besso",
+      "Dent Blanche",
+      "Grand Combin de Grafeneire",
+      "Mont Ruan"
+    ],
+    "after_natural_texts": [
+      "Aiguille du Midi",
+      "Besso",
+      "Dent Blanche",
+      "Grand Combin",
+      "Mont Ruan"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "aletsch-z8",
+    "runtime": "3",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "mont-blanc-z12",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Ghiacciaio del Brouillard",
+        "provider_id": "6",
+        "feature_id": 86535051411459,
+        "unplaced": false,
+        "corners": [
+          [
+            765005.0679303897,
+            5750165.3757666275
+          ],
+          [
+            765233.9120837447,
+            5749028.181450133
+          ],
+          [
+            765683.5209563663,
+            5749118.658829683
+          ],
+          [
+            765454.6768030113,
+            5750255.853146178
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Bionnassay",
+        "provider_id": "6",
+        "feature_id": 85431244816391,
+        "unplaced": false,
+        "corners": [
+          [
+            757599.8215906081,
+            5756386.236352786
+          ],
+          [
+            758542.5097333561,
+            5756270.306562976
+          ],
+          [
+            758598.4884058329,
+            5756725.499580034
+          ],
+          [
+            757655.8002630849,
+            5756841.4293698445
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Tré-la-Tête",
+        "provider_id": "8",
+        "feature_id": 85435539783682,
+        "unplaced": false,
+        "corners": [
+          [
+            755505.5283546014,
+            5747347.929905069
+          ],
+          [
+            756337.6767836278,
+            5747347.929905069
+          ],
+          [
+            756337.6767836278,
+            5747768.333560637
+          ],
+          [
+            755505.5283546014,
+            5747768.333560637
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille de Rochefort",
+        "provider_id": "8",
+        "feature_id": 86530756444161,
+        "unplaced": false,
+        "corners": [
+          [
+            774397.5669177801,
+            5758032.393265056
+          ],
+          [
+            775172.088993451,
+            5758032.393265056
+          ],
+          [
+            775172.088993451,
+            5758452.796920625
+          ],
+          [
+            774397.5669177801,
+            5758452.796920625
+          ]
+        ]
+      },
+      {
+        "text": "Glacier des Bossons",
+        "provider_id": "8",
+        "feature_id": 85431244816386,
+        "unplaced": false,
+        "corners": [
+          [
+            763060.8508691643,
+            5757091.262354294
+          ],
+          [
+            764561.8232956862,
+            5757091.262354294
+          ],
+          [
+            764561.8232956862,
+            5757301.464182078
+          ],
+          [
+            763060.8508691643,
+            5757301.464182078
+          ]
+        ]
+      },
+      {
+        "text": "Picco Luigi Amedeo",
+        "provider_id": "8",
+        "feature_id": 86530756444160,
+        "unplaced": false,
+        "corners": [
+          [
+            763490.6598621972,
+            5751750.225002867
+          ],
+          [
+            764972.8216137895,
+            5751750.225002867
+          ],
+          [
+            764972.8216137895,
+            5751960.426830651
+          ],
+          [
+            763490.6598621972,
+            5751960.426830651
+          ]
+        ]
+      },
+      {
+        "text": "Dômes de Miage",
+        "provider_id": "8",
+        "feature_id": 85435539783683,
+        "unplaced": false,
+        "corners": [
+          [
+            756406.0520940862,
+            5750694.438549679
+          ],
+          [
+            757615.6083502708,
+            5750694.438549679
+          ],
+          [
+            757615.6083502708,
+            5750904.640377463
+          ],
+          [
+            756406.0520940862,
+            5750904.640377463
+          ]
+        ]
+      },
+      {
+        "text": "Dôme du Goûter",
+        "provider_id": "8",
+        "feature_id": 86535051411457,
+        "unplaced": false,
+        "corners": [
+          [
+            761208.4472618155,
+            5755060.903790469
+          ],
+          [
+            762406.0602323306,
+            5755060.903790469
+          ],
+          [
+            762406.0602323306,
+            5755271.105618253
+          ],
+          [
+            761208.4472618155,
+            5755271.105618253
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 86530756444163,
+        "unplaced": false,
+        "corners": [
+          [
+            766144.6072290441,
+            5760827.122111732
+          ],
+          [
+            767258.6171998722,
+            5760827.122111732
+          ],
+          [
+            767258.6171998722,
+            5761037.323939516
+          ],
+          [
+            766144.6072290441,
+            5761037.323939516
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Ghiacciaio del Brouillard",
+        "provider_id": "6",
+        "feature_id": 86535051411459,
+        "unplaced": false,
+        "corners": [
+          [
+            765005.0679303897,
+            5750165.3757666275
+          ],
+          [
+            765233.9120837447,
+            5749028.181450133
+          ],
+          [
+            765683.5209563663,
+            5749118.658829683
+          ],
+          [
+            765454.6768030113,
+            5750255.853146178
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Bionnassay",
+        "provider_id": "6",
+        "feature_id": 85431244816391,
+        "unplaced": false,
+        "corners": [
+          [
+            757599.8215906081,
+            5756386.236352786
+          ],
+          [
+            758542.5097333561,
+            5756270.306562976
+          ],
+          [
+            758598.4884058329,
+            5756725.499580034
+          ],
+          [
+            757655.8002630849,
+            5756841.4293698445
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Tré-la-Tête",
+        "provider_id": "8",
+        "feature_id": 85435539783682,
+        "unplaced": false,
+        "corners": [
+          [
+            755505.5283546014,
+            5747347.929905069
+          ],
+          [
+            756337.6767836278,
+            5747347.929905069
+          ],
+          [
+            756337.6767836278,
+            5747768.333560637
+          ],
+          [
+            755505.5283546014,
+            5747768.333560637
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille de Rochefort",
+        "provider_id": "8",
+        "feature_id": 86530756444161,
+        "unplaced": false,
+        "corners": [
+          [
+            774397.5669177801,
+            5758032.393265056
+          ],
+          [
+            775172.088993451,
+            5758032.393265056
+          ],
+          [
+            775172.088993451,
+            5758452.796920625
+          ],
+          [
+            774397.5669177801,
+            5758452.796920625
+          ]
+        ]
+      },
+      {
+        "text": "Glacier des Bossons",
+        "provider_id": "8",
+        "feature_id": 85431244816386,
+        "unplaced": false,
+        "corners": [
+          [
+            763060.8508691643,
+            5757091.262354294
+          ],
+          [
+            764561.8232956862,
+            5757091.262354294
+          ],
+          [
+            764561.8232956862,
+            5757301.464182078
+          ],
+          [
+            763060.8508691643,
+            5757301.464182078
+          ]
+        ]
+      },
+      {
+        "text": "Picco Luigi Amedeo",
+        "provider_id": "8",
+        "feature_id": 86530756444160,
+        "unplaced": false,
+        "corners": [
+          [
+            763490.6598621972,
+            5751750.225002867
+          ],
+          [
+            764972.8216137895,
+            5751750.225002867
+          ],
+          [
+            764972.8216137895,
+            5751960.426830651
+          ],
+          [
+            763490.6598621972,
+            5751960.426830651
+          ]
+        ]
+      },
+      {
+        "text": "Dômes de Miage",
+        "provider_id": "8",
+        "feature_id": 85435539783683,
+        "unplaced": false,
+        "corners": [
+          [
+            756406.0520940862,
+            5750694.438549679
+          ],
+          [
+            757615.6083502708,
+            5750694.438549679
+          ],
+          [
+            757615.6083502708,
+            5750904.640377463
+          ],
+          [
+            756406.0520940862,
+            5750904.640377463
+          ]
+        ]
+      },
+      {
+        "text": "Dôme du Goûter",
+        "provider_id": "8",
+        "feature_id": 86535051411457,
+        "unplaced": false,
+        "corners": [
+          [
+            761208.4472618155,
+            5755060.903790469
+          ],
+          [
+            762406.0602323306,
+            5755060.903790469
+          ],
+          [
+            762406.0602323306,
+            5755271.105618253
+          ],
+          [
+            761208.4472618155,
+            5755271.105618253
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 86530756444163,
+        "unplaced": false,
+        "corners": [
+          [
+            766144.6072290441,
+            5760827.122111732
+          ],
+          [
+            767258.6171998722,
+            5760827.122111732
+          ],
+          [
+            767258.6171998722,
+            5761037.323939516
+          ],
+          [
+            766144.6072290441,
+            5761037.323939516
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille de Rochefort",
+      "Aiguille du Midi",
+      "Dôme du Goûter",
+      "Dômes de Miage",
+      "Ghiacciaio del Brouillard",
+      "Glacier de Bionnassay",
+      "Glacier de Tré-la-Tête",
+      "Glacier des Bossons",
+      "Picco Luigi Amedeo"
+    ],
+    "after_natural_texts": [
+      "Aiguille de Rochefort",
+      "Aiguille du Midi",
+      "Dôme du Goûter",
+      "Dômes de Miage",
+      "Ghiacciaio del Brouillard",
+      "Glacier de Bionnassay",
+      "Glacier de Tré-la-Tête",
+      "Glacier des Bossons",
+      "Picco Luigi Amedeo"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "mont-blanc-z10",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "Grand Combin de Grafeneire",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810000.2029165926,
+            5769514.6681077685
+          ],
+          [
+            815089.2369403916,
+            5769514.6681077685
+          ],
+          [
+            815089.2369403916,
+            5771196.282730042
+          ],
+          [
+            810000.2029165926,
+            5771196.282730042
+          ]
+        ]
+      },
+      {
+        "text": "Testa del Rutor",
+        "provider_id": "8",
+        "feature_id": 21358922694657,
+        "unplaced": false,
+        "corners": [
+          [
+            778621.0113126783,
+            5720938.936632541
+          ],
+          [
+            783121.2413529682,
+            5720938.936632541
+          ],
+          [
+            783121.2413529682,
+            5721779.743943678
+          ],
+          [
+            778621.0113126783,
+            5721779.743943678
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5761355.015338327
+          ],
+          [
+            764473.5922728025,
+            5761355.015338327
+          ]
+        ]
+      },
+      {
+        "text": "Le Grand Mont",
+        "provider_id": "8",
+        "feature_id": 20259427844096,
+        "unplaced": false,
+        "corners": [
+          [
+            725516.3859115532,
+            5721082.256060575
+          ],
+          [
+            729825.52338113,
+            5721082.256060575
+          ],
+          [
+            729825.52338113,
+            5721923.063371712
+          ],
+          [
+            725516.3859115532,
+            5721923.063371712
+          ]
+        ]
+      },
+      {
+        "text": "Pointe Percée",
+        "provider_id": "8",
+        "feature_id": 20255132876801,
+        "unplaced": false,
+        "corners": [
+          [
+            727715.1448033189,
+            5772839.678838175
+          ],
+          [
+            731888.1288162627,
+            5772839.678838175
+          ],
+          [
+            731888.1288162627,
+            5773680.486149312
+          ],
+          [
+            727715.1448033189,
+            5773680.486149312
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Testa del Rutor",
+        "provider_id": "8",
+        "feature_id": 21358922694657,
+        "unplaced": false,
+        "corners": [
+          [
+            778621.0113126783,
+            5720938.936632541
+          ],
+          [
+            783121.2413529682,
+            5720938.936632541
+          ],
+          [
+            783121.2413529682,
+            5721779.743943678
+          ],
+          [
+            778621.0113126783,
+            5721779.743943678
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5760514.20802719
+          ],
+          [
+            768929.6321561149,
+            5761355.015338327
+          ],
+          [
+            764473.5922728025,
+            5761355.015338327
+          ]
+        ]
+      },
+      {
+        "text": "Grand Combin",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810442.7016506498,
+            5769935.071763338
+          ],
+          [
+            814646.7382063345,
+            5769935.071763338
+          ],
+          [
+            814646.7382063345,
+            5770775.879074475
+          ],
+          [
+            810442.7016506498,
+            5770775.879074475
+          ]
+        ]
+      },
+      {
+        "text": "Pointe Percée",
+        "provider_id": "8",
+        "feature_id": 20255132876801,
+        "unplaced": false,
+        "corners": [
+          [
+            727715.1448033189,
+            5772839.678838175
+          ],
+          [
+            731888.1288162627,
+            5772839.678838175
+          ],
+          [
+            731888.1288162627,
+            5773680.486149312
+          ],
+          [
+            727715.1448033189,
+            5773680.486149312
+          ]
+        ]
+      },
+      {
+        "text": "Grand Mont",
+        "provider_id": "8",
+        "feature_id": 20259427844096,
+        "unplaced": false,
+        "corners": [
+          [
+            725964.8562884452,
+            5721082.256060575
+          ],
+          [
+            729377.0530042382,
+            5721082.256060575
+          ],
+          [
+            729377.0530042382,
+            5721923.063371712
+          ],
+          [
+            725964.8562884452,
+            5721923.063371712
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille du Midi",
+      "Grand Combin de Grafeneire",
+      "Le Grand Mont",
+      "Pointe Percée",
+      "Testa del Rutor"
+    ],
+    "after_natural_texts": [
+      "Aiguille du Midi",
+      "Grand Combin",
+      "Grand Mont",
+      "Pointe Percée",
+      "Testa del Rutor"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "cairo-nile-z14",
+    "runtime": "3",
+    "before_naturals": [
+      {
+        "text": "جزيرة الزمالك",
+        "provider_id": "6",
+        "feature_id": 155464998322176,
+        "unplaced": false,
+        "corners": [
+          [
+            3475657.8120355257,
+            3510432.4282616153
+          ],
+          [
+            3475704.5544828638,
+            3510157.346272684
+          ],
+          [
+            3475761.07213067,
+            3510166.94985737
+          ],
+          [
+            3475714.329683332,
+            3510442.031846301
+          ]
+        ]
+      },
+      {
+        "text": "جزيرة الزمالك",
+        "provider_id": "6",
+        "feature_id": 154361191727104,
+        "unplaced": false,
+        "corners": [
+          [
+            3475499.2600601977,
+            3511350.501809428
+          ],
+          [
+            3475548.397643628,
+            3511075.837550901
+          ],
+          [
+            3475604.829465605,
+            3511085.933234174
+          ],
+          [
+            3475555.6918821745,
+            3511360.597492701
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Gezira-Zamalek",
+        "provider_id": "6",
+        "feature_id": 155464998322176,
+        "unplaced": false,
+        "corners": [
+          [
+            3475653.891822246,
+            3510455.4989420674
+          ],
+          [
+            3475708.4746961435,
+            3510134.275592232
+          ],
+          [
+            3475764.9923439496,
+            3510143.879176918
+          ],
+          [
+            3475710.409470052,
+            3510465.102526753
+          ]
+        ]
+      },
+      {
+        "text": "Gezira-Zamalek",
+        "provider_id": "6",
+        "feature_id": 154361191727104,
+        "unplaced": false,
+        "corners": [
+          [
+            3475495.097225971,
+            3511373.5284594945
+          ],
+          [
+            3475552.3200198463,
+            3511052.764866698
+          ],
+          [
+            3475608.756775692,
+            3511062.8329321495
+          ],
+          [
+            3475551.533981817,
+            3511383.596524946
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "جزيرة الزمالك"
+    ],
+    "after_natural_texts": [
+      "Gezira-Zamalek"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Tour d'Aï",
+        "provider_id": "8",
+        "feature_id": 21350349537282,
+        "unplaced": false,
+        "corners": [
+          [
+            778406.536594872,
+            5839852.822080528
+          ],
+          [
+            780507.5460242227,
+            5839852.822080528
+          ],
+          [
+            780507.5460242227,
+            5840546.797948445
+          ],
+          [
+            778406.536594872,
+            5840546.797948445
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Tour d’Aï",
+        "provider_id": "8",
+        "feature_id": 21350349537282,
+        "unplaced": false,
+        "corners": [
+          [
+            778399.0042952925,
+            5839852.822080528
+          ],
+          [
+            780515.0783238021,
+            5839852.822080528
+          ],
+          [
+            780515.0783238021,
+            5840546.797948445
+          ],
+          [
+            778399.0042952925,
+            5840546.797948445
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Tour d'Aï"
+    ],
+    "after_natural_texts": [
+      "Tour d’Aï"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Bawartenhubel",
+        "provider_id": "8",
+        "feature_id": 93050533576704,
+        "unplaced": false,
+        "corners": [
+          [
+            825969.278763919,
+            5936404.609413247
+          ],
+          [
+            826919.3528175355,
+            5936404.609413247
+          ],
+          [
+            826919.3528175355,
+            5936578.103380226
+          ],
+          [
+            825969.278763919,
+            5936578.103380226
+          ]
+        ]
+      },
+      {
+        "text": "Säuhoger",
+        "provider_id": "8",
+        "feature_id": 93054811766785,
+        "unplaced": false,
+        "corners": [
+          [
+            831531.4576866766,
+            5926391.358707888
+          ],
+          [
+            832134.7948829876,
+            5926391.358707888
+          ],
+          [
+            832134.7948829876,
+            5926564.852674867
+          ],
+          [
+            831531.4576866766,
+            5926564.852674867
+          ]
+        ]
+      },
+      {
+        "text": "Bantiger",
+        "provider_id": "8",
+        "feature_id": 94150078758913,
+        "unplaced": false,
+        "corners": [
+          [
+            837713.2577731012,
+            5938375.251548723
+          ],
+          [
+            838254.5790362083,
+            5938375.251548723
+          ],
+          [
+            838254.5790362083,
+            5938548.745515702
+          ],
+          [
+            837713.2577731012,
+            5938548.745515702
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Bawartenhubel",
+        "provider_id": "8",
+        "feature_id": 93050533576704,
+        "unplaced": false,
+        "corners": [
+          [
+            825969.278763919,
+            5936404.609413247
+          ],
+          [
+            826919.3528175355,
+            5936404.609413247
+          ],
+          [
+            826919.3528175355,
+            5936578.103380226
+          ],
+          [
+            825969.278763919,
+            5936578.103380226
+          ]
+        ]
+      },
+      {
+        "text": "Säuhoger",
+        "provider_id": "8",
+        "feature_id": 93054811766785,
+        "unplaced": false,
+        "corners": [
+          [
+            831531.4576866766,
+            5926391.358707888
+          ],
+          [
+            832134.7948829876,
+            5926391.358707888
+          ],
+          [
+            832134.7948829876,
+            5926564.852674867
+          ],
+          [
+            831531.4576866766,
+            5926564.852674867
+          ]
+        ]
+      },
+      {
+        "text": "Bantiger",
+        "provider_id": "8",
+        "feature_id": 94150078758913,
+        "unplaced": false,
+        "corners": [
+          [
+            837713.2577731012,
+            5938375.251548723
+          ],
+          [
+            838254.5790362083,
+            5938375.251548723
+          ],
+          [
+            838254.5790362083,
+            5938548.745515702
+          ],
+          [
+            837713.2577731012,
+            5938548.745515702
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Bantiger",
+      "Bawartenhubel",
+      "Säuhoger"
+    ],
+    "after_natural_texts": [
+      "Bantiger",
+      "Bawartenhubel",
+      "Säuhoger"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "aletsch-z10",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Fieschergletscher",
+        "provider_id": "8",
+        "feature_id": 24644572676098,
+        "unplaced": false,
+        "corners": [
+          [
+            899755.1890518953,
+            5863463.539005935
+          ],
+          [
+            905190.5783601115,
+            5863463.539005935
+          ],
+          [
+            905190.5783601115,
+            5864288.820045702
+          ],
+          [
+            899755.1890518953,
+            5864288.820045702
+          ]
+        ]
+      },
+      {
+        "text": "Finsteraarhorn",
+        "provider_id": "8",
+        "feature_id": 24640294486017,
+        "unplaced": false,
+        "corners": [
+          [
+            902357.0338350087,
+            5866473.246994665
+          ],
+          [
+            906830.9886468254,
+            5866473.246994665
+          ],
+          [
+            906830.9886468254,
+            5867298.528034432
+          ],
+          [
+            902357.0338350087,
+            5867298.528034432
+          ]
+        ]
+      },
+      {
+        "text": "Aletschhorn",
+        "provider_id": "8",
+        "feature_id": 24644572676096,
+        "unplaced": false,
+        "corners": [
+          [
+            887977.31788886,
+            5854797.490924103
+          ],
+          [
+            891629.5746466111,
+            5854797.490924103
+          ],
+          [
+            891629.5746466111,
+            5855622.77196387
+          ],
+          [
+            887977.31788886,
+            5855622.77196387
+          ]
+        ]
+      },
+      {
+        "text": "Helsenhorn",
+        "provider_id": "8",
+        "feature_id": 25748396048385,
+        "unplaced": false,
+        "corners": [
+          [
+            910182.2746057027,
+            5828914.002221037
+          ],
+          [
+            913605.2202785983,
+            5828914.002221037
+          ],
+          [
+            913605.2202785983,
+            5829739.283260804
+          ],
+          [
+            910182.2746057027,
+            5829739.283260804
+          ]
+        ]
+      },
+      {
+        "text": "Ritzlihorn",
+        "provider_id": "8",
+        "feature_id": 25739806113795,
+        "unplaced": false,
+        "corners": [
+          [
+            917920.3293910098,
+            5882028.182250698
+          ],
+          [
+            920791.4952659716,
+            5882028.182250698
+          ],
+          [
+            920791.4952659716,
+            5882853.463290465
+          ],
+          [
+            917920.3293910098,
+            5882853.463290465
+          ]
+        ]
+      },
+      {
+        "text": "Basodino",
+        "provider_id": "8",
+        "feature_id": 26843612708865,
+        "unplaced": false,
+        "corners": [
+          [
+            941298.1167606032,
+            5846140.997470807
+          ],
+          [
+            944097.6229215477,
+            5846140.997470807
+          ],
+          [
+            944097.6229215477,
+            5846966.278510574
+          ],
+          [
+            941298.1167606032,
+            5846966.278510574
+          ]
+        ]
+      },
+      {
+        "text": "Niesen",
+        "provider_id": "8",
+        "feature_id": 23540782858240,
+        "unplaced": false,
+        "corners": [
+          [
+            850806.2298994933,
+            5884101.536642933
+          ],
+          [
+            852879.5842917287,
+            5884101.536642933
+          ],
+          [
+            852879.5842917287,
+            5884926.8176827
+          ],
+          [
+            850806.2298994933,
+            5884926.8176827
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Fieschergletscher",
+        "provider_id": "8",
+        "feature_id": 24644572676098,
+        "unplaced": false,
+        "corners": [
+          [
+            899755.1890518953,
+            5863463.539005935
+          ],
+          [
+            905190.5783601115,
+            5863463.539005935
+          ],
+          [
+            905190.5783601115,
+            5864288.820045702
+          ],
+          [
+            899755.1890518953,
+            5864288.820045702
+          ]
+        ]
+      },
+      {
+        "text": "Finsteraarhorn",
+        "provider_id": "8",
+        "feature_id": 24640294486017,
+        "unplaced": false,
+        "corners": [
+          [
+            902357.0338350087,
+            5866473.246994665
+          ],
+          [
+            906830.9886468254,
+            5866473.246994665
+          ],
+          [
+            906830.9886468254,
+            5867298.528034432
+          ],
+          [
+            902357.0338350087,
+            5867298.528034432
+          ]
+        ]
+      },
+      {
+        "text": "Aletschhorn",
+        "provider_id": "8",
+        "feature_id": 24644572676096,
+        "unplaced": false,
+        "corners": [
+          [
+            887977.31788886,
+            5854797.490924103
+          ],
+          [
+            891629.5746466111,
+            5854797.490924103
+          ],
+          [
+            891629.5746466111,
+            5855622.77196387
+          ],
+          [
+            887977.31788886,
+            5855622.77196387
+          ]
+        ]
+      },
+      {
+        "text": "Helsenhorn",
+        "provider_id": "8",
+        "feature_id": 25748396048385,
+        "unplaced": false,
+        "corners": [
+          [
+            910182.2746057027,
+            5828914.002221037
+          ],
+          [
+            913605.2202785983,
+            5828914.002221037
+          ],
+          [
+            913605.2202785983,
+            5829739.283260804
+          ],
+          [
+            910182.2746057027,
+            5829739.283260804
+          ]
+        ]
+      },
+      {
+        "text": "Ritzlihorn",
+        "provider_id": "8",
+        "feature_id": 25739806113795,
+        "unplaced": false,
+        "corners": [
+          [
+            917920.3293910098,
+            5882028.182250698
+          ],
+          [
+            920791.4952659716,
+            5882028.182250698
+          ],
+          [
+            920791.4952659716,
+            5882853.463290465
+          ],
+          [
+            917920.3293910098,
+            5882853.463290465
+          ]
+        ]
+      },
+      {
+        "text": "Basòdino",
+        "provider_id": "8",
+        "feature_id": 26843612708865,
+        "unplaced": false,
+        "corners": [
+          [
+            941302.894074871,
+            5846140.997470807
+          ],
+          [
+            944092.8456072799,
+            5846140.997470807
+          ],
+          [
+            944092.8456072799,
+            5846966.278510574
+          ],
+          [
+            941302.894074871,
+            5846966.278510574
+          ]
+        ]
+      },
+      {
+        "text": "Niesen",
+        "provider_id": "8",
+        "feature_id": 23540782858240,
+        "unplaced": false,
+        "corners": [
+          [
+            850806.2298994933,
+            5884101.536642933
+          ],
+          [
+            852879.5842917287,
+            5884101.536642933
+          ],
+          [
+            852879.5842917287,
+            5884926.8176827
+          ],
+          [
+            850806.2298994933,
+            5884926.8176827
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aletschhorn",
+      "Basodino",
+      "Fieschergletscher",
+      "Finsteraarhorn",
+      "Helsenhorn",
+      "Niesen",
+      "Ritzlihorn"
+    ],
+    "after_natural_texts": [
+      "Aletschhorn",
+      "Basòdino",
+      "Fieschergletscher",
+      "Finsteraarhorn",
+      "Helsenhorn",
+      "Niesen",
+      "Ritzlihorn"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "basodino-z12",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Ghiacciaio del Basòdino",
+        "provider_id": "6",
+        "feature_id": 106283311038469,
+        "unplaced": false,
+        "corners": [
+          [
+            943628.8218313693,
+            5847030.818163829
+          ],
+          [
+            944788.7600146775,
+            5847041.952385648
+          ],
+          [
+            944784.357913078,
+            5847500.553428006
+          ],
+          [
+            943624.4197297698,
+            5847489.419206187
+          ]
+        ]
+      },
+      {
+        "text": "Corno di Ban / Bannhorn",
+        "provider_id": "8",
+        "feature_id": 105183782633472,
+        "unplaced": false,
+        "corners": [
+          [
+            930223.2572502925,
+            5847352.942384127
+          ],
+          [
+            931276.3564642058,
+            5847352.942384127
+          ],
+          [
+            931276.3564642058,
+            5847765.58290401
+          ],
+          [
+            930223.2572502925,
+            5847765.58290401
+          ]
+        ]
+      },
+      {
+        "text": "Piccolo Corno Gries",
+        "provider_id": "8",
+        "feature_id": 105183782633473,
+        "unplaced": false,
+        "corners": [
+          [
+            932952.5966079283,
+            5852990.621093371
+          ],
+          [
+            934413.559027457,
+            5852990.621093371
+          ],
+          [
+            934413.559027457,
+            5853196.941353313
+          ],
+          [
+            932952.5966079283,
+            5853196.941353313
+          ]
+        ]
+      },
+      {
+        "text": "Poncione di Braga",
+        "provider_id": "8",
+        "feature_id": 106283311038466,
+        "unplaced": false,
+        "corners": [
+          [
+            950322.7619946634,
+            5850133.787161212
+          ],
+          [
+            951669.3674539061,
+            5850133.787161212
+          ],
+          [
+            951669.3674539061,
+            5850340.107421154
+          ],
+          [
+            950322.7619946634,
+            5850340.107421154
+          ]
+        ]
+      },
+      {
+        "text": "Pizzo Fiorèra",
+        "provider_id": "8",
+        "feature_id": 106283311038467,
+        "unplaced": false,
+        "corners": [
+          [
+            941966.0450116732,
+            5840868.186138769
+          ],
+          [
+            942937.6313008919,
+            5840868.186138769
+          ],
+          [
+            942937.6313008919,
+            5841074.50639871
+          ],
+          [
+            941966.0450116732,
+            5841074.50639871
+          ]
+        ]
+      },
+      {
+        "text": "Monte Giove",
+        "provider_id": "8",
+        "feature_id": 105188077600768,
+        "unplaced": false,
+        "corners": [
+          [
+            933282.3805834791,
+            5838352.93017676
+          ],
+          [
+            934193.6532800664,
+            5838352.93017676
+          ],
+          [
+            934193.6532800664,
+            5838559.250436702
+          ],
+          [
+            933282.3805834791,
+            5838559.250436702
+          ]
+        ]
+      },
+      {
+        "text": "Marchhorn",
+        "provider_id": "8",
+        "feature_id": 106283311038464,
+        "unplaced": false,
+        "corners": [
+          [
+            941645.3677914456,
+            5852412.566066964
+          ],
+          [
+            942446.1650955895,
+            5852412.566066964
+          ],
+          [
+            942446.1650955895,
+            5852618.886326905
+          ],
+          [
+            941645.3677914456,
+            5852618.886326905
+          ]
+        ]
+      },
+      {
+        "text": "Basodino",
+        "provider_id": "8",
+        "feature_id": 106283311038465,
+        "unplaced": false,
+        "corners": [
+          [
+            942352.7088852251,
+            5846452.866517854
+          ],
+          [
+            943052.5854254613,
+            5846452.866517854
+          ],
+          [
+            943052.5854254613,
+            5846659.186777796
+          ],
+          [
+            942352.7088852251,
+            5846659.186777796
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Ghiacciaio del Basòdino",
+        "provider_id": "6",
+        "feature_id": 106283311038469,
+        "unplaced": false,
+        "corners": [
+          [
+            943628.8218313693,
+            5847030.818163829
+          ],
+          [
+            944788.7600146775,
+            5847041.952385648
+          ],
+          [
+            944784.357913078,
+            5847500.553428006
+          ],
+          [
+            943624.4197297698,
+            5847489.419206187
+          ]
+        ]
+      },
+      {
+        "text": "Corno di Ban / Bannhorn",
+        "provider_id": "8",
+        "feature_id": 105183782633472,
+        "unplaced": false,
+        "corners": [
+          [
+            930223.2572502925,
+            5847352.942384127
+          ],
+          [
+            931276.3564642058,
+            5847352.942384127
+          ],
+          [
+            931276.3564642058,
+            5847765.58290401
+          ],
+          [
+            930223.2572502925,
+            5847765.58290401
+          ]
+        ]
+      },
+      {
+        "text": "Poncione di Braga",
+        "provider_id": "8",
+        "feature_id": 106283311038466,
+        "unplaced": false,
+        "corners": [
+          [
+            950322.7619946634,
+            5850133.787161212
+          ],
+          [
+            951669.3674539061,
+            5850133.787161212
+          ],
+          [
+            951669.3674539061,
+            5850340.107421154
+          ],
+          [
+            950322.7619946634,
+            5850340.107421154
+          ]
+        ]
+      },
+      {
+        "text": "Klein Grieshorn",
+        "provider_id": "8",
+        "feature_id": 105183782633473,
+        "unplaced": false,
+        "corners": [
+          [
+            933113.084509113,
+            5852990.621093371
+          ],
+          [
+            934253.0711262723,
+            5852990.621093371
+          ],
+          [
+            934253.0711262723,
+            5853196.941353313
+          ],
+          [
+            933113.084509113,
+            5853196.941353313
+          ]
+        ]
+      },
+      {
+        "text": "Pizzo Fiorèra",
+        "provider_id": "8",
+        "feature_id": 106283311038467,
+        "unplaced": false,
+        "corners": [
+          [
+            941966.0450116732,
+            5840868.186138769
+          ],
+          [
+            942937.6313008919,
+            5840868.186138769
+          ],
+          [
+            942937.6313008919,
+            5841074.50639871
+          ],
+          [
+            941966.0450116732,
+            5841074.50639871
+          ]
+        ]
+      },
+      {
+        "text": "Monte Giove",
+        "provider_id": "8",
+        "feature_id": 105188077600768,
+        "unplaced": false,
+        "corners": [
+          [
+            933282.3805834791,
+            5838352.93017676
+          ],
+          [
+            934193.6532800664,
+            5838352.93017676
+          ],
+          [
+            934193.6532800664,
+            5838559.250436702
+          ],
+          [
+            933282.3805834791,
+            5838559.250436702
+          ]
+        ]
+      },
+      {
+        "text": "Marchhorn",
+        "provider_id": "8",
+        "feature_id": 106283311038464,
+        "unplaced": false,
+        "corners": [
+          [
+            941645.3677914456,
+            5852412.566066964
+          ],
+          [
+            942446.1650955895,
+            5852412.566066964
+          ],
+          [
+            942446.1650955895,
+            5852618.886326905
+          ],
+          [
+            941645.3677914456,
+            5852618.886326905
+          ]
+        ]
+      },
+      {
+        "text": "Basòdino",
+        "provider_id": "8",
+        "feature_id": 106283311038465,
+        "unplaced": false,
+        "corners": [
+          [
+            942353.9032137921,
+            5846452.866517854
+          ],
+          [
+            943051.3910968944,
+            5846452.866517854
+          ],
+          [
+            943051.3910968944,
+            5846659.186777796
+          ],
+          [
+            942353.9032137921,
+            5846659.186777796
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Basodino",
+      "Corno di Ban / Bannhorn",
+      "Ghiacciaio del Basòdino",
+      "Marchhorn",
+      "Monte Giove",
+      "Piccolo Corno Gries",
+      "Pizzo Fiorèra",
+      "Poncione di Braga"
+    ],
+    "after_natural_texts": [
+      "Basòdino",
+      "Corno di Ban / Bannhorn",
+      "Ghiacciaio del Basòdino",
+      "Klein Grieshorn",
+      "Marchhorn",
+      "Monte Giove",
+      "Pizzo Fiorèra",
+      "Poncione di Braga"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "grand-combin-z10",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Grand Combin de Grafeneire",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810000.2029165926,
+            5769530.194379139
+          ],
+          [
+            815089.2369403916,
+            5769530.194379139
+          ],
+          [
+            815089.2369403916,
+            5771180.756458672
+          ],
+          [
+            810000.2029165926,
+            5771180.756458672
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5761347.252202641
+          ],
+          [
+            764473.5922728025,
+            5761347.252202641
+          ]
+        ]
+      },
+      {
+        "text": "Dent Blanche",
+        "provider_id": "8",
+        "feature_id": 23549372792833,
+        "unplaced": false,
+        "corners": [
+          [
+            845369.0490984266,
+            5785411.778498236
+          ],
+          [
+            849335.414269287,
+            5785411.778498236
+          ],
+          [
+            849335.414269287,
+            5786237.059538003
+          ],
+          [
+            845369.0490984266,
+            5786237.059538003
+          ]
+        ]
+      },
+      {
+        "text": "Mont Ruan",
+        "provider_id": "8",
+        "feature_id": 21350349537281,
+        "unplaced": false,
+        "corners": [
+          [
+            766586.9566720309,
+            5799820.158329992
+          ],
+          [
+            769739.9840887943,
+            5799820.158329992
+          ],
+          [
+            769739.9840887943,
+            5800645.439369759
+          ],
+          [
+            766586.9566720309,
+            5800645.439369759
+          ]
+        ]
+      },
+      {
+        "text": "Besso",
+        "provider_id": "8",
+        "feature_id": 23553667760129,
+        "unplaced": false,
+        "corners": [
+          [
+            851653.008853465,
+            5792405.766586329
+          ],
+          [
+            853485.1088751752,
+            5792405.766586329
+          ],
+          [
+            853485.1088751752,
+            5793231.047626096
+          ],
+          [
+            851653.008853465,
+            5793231.047626096
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5761347.252202641
+          ],
+          [
+            764473.5922728025,
+            5761347.252202641
+          ]
+        ]
+      },
+      {
+        "text": "Grand Combin",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810442.7016506498,
+            5769942.834899022
+          ],
+          [
+            814646.7382063344,
+            5769942.834899022
+          ],
+          [
+            814646.7382063344,
+            5770768.115938789
+          ],
+          [
+            810442.7016506498,
+            5770768.115938789
+          ]
+        ]
+      },
+      {
+        "text": "Dent Blanche",
+        "provider_id": "8",
+        "feature_id": 23549372792833,
+        "unplaced": false,
+        "corners": [
+          [
+            845369.0490984266,
+            5785411.778498236
+          ],
+          [
+            849335.414269287,
+            5785411.778498236
+          ],
+          [
+            849335.414269287,
+            5786237.059538003
+          ],
+          [
+            845369.0490984266,
+            5786237.059538003
+          ]
+        ]
+      },
+      {
+        "text": "Mont Ruan",
+        "provider_id": "8",
+        "feature_id": 21350349537281,
+        "unplaced": false,
+        "corners": [
+          [
+            766586.9566720309,
+            5799820.158329992
+          ],
+          [
+            769739.9840887943,
+            5799820.158329992
+          ],
+          [
+            769739.9840887943,
+            5800645.439369759
+          ],
+          [
+            766586.9566720309,
+            5800645.439369759
+          ]
+        ]
+      },
+      {
+        "text": "Besso",
+        "provider_id": "8",
+        "feature_id": 23553667760129,
+        "unplaced": false,
+        "corners": [
+          [
+            851653.008853465,
+            5792405.766586329
+          ],
+          [
+            853485.1088751752,
+            5792405.766586329
+          ],
+          [
+            853485.1088751752,
+            5793231.047626096
+          ],
+          [
+            851653.008853465,
+            5793231.047626096
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille du Midi",
+      "Besso",
+      "Dent Blanche",
+      "Grand Combin de Grafeneire",
+      "Mont Ruan"
+    ],
+    "after_natural_texts": [
+      "Aiguille du Midi",
+      "Besso",
+      "Dent Blanche",
+      "Grand Combin",
+      "Mont Ruan"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "aletsch-z8",
+    "runtime": "4",
+    "before_naturals": [],
+    "after_naturals": [],
+    "before_natural_texts": [],
+    "after_natural_texts": [],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "mont-blanc-z12",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Ghiacciaio del Brouillard",
+        "provider_id": "6",
+        "feature_id": 86535051411459,
+        "unplaced": false,
+        "corners": [
+          [
+            765005.0679303897,
+            5750165.3757666275
+          ],
+          [
+            765233.9120837447,
+            5749028.181450133
+          ],
+          [
+            765683.5209563663,
+            5749118.658829683
+          ],
+          [
+            765454.6768030113,
+            5750255.853146178
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Bionnassay",
+        "provider_id": "6",
+        "feature_id": 85431244816391,
+        "unplaced": false,
+        "corners": [
+          [
+            757599.8215906081,
+            5756386.236352786
+          ],
+          [
+            758542.5097333561,
+            5756270.306562976
+          ],
+          [
+            758598.4884058329,
+            5756725.499580034
+          ],
+          [
+            757655.8002630849,
+            5756841.4293698445
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Tré-la-Tête",
+        "provider_id": "8",
+        "feature_id": 85435539783682,
+        "unplaced": false,
+        "corners": [
+          [
+            755505.5283546014,
+            5747351.811472911
+          ],
+          [
+            756337.6767836278,
+            5747351.811472911
+          ],
+          [
+            756337.6767836278,
+            5747764.451992795
+          ],
+          [
+            755505.5283546014,
+            5747764.451992795
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille de Rochefort",
+        "provider_id": "8",
+        "feature_id": 86530756444161,
+        "unplaced": false,
+        "corners": [
+          [
+            774397.5669177801,
+            5758036.274832899
+          ],
+          [
+            775172.088993451,
+            5758036.274832899
+          ],
+          [
+            775172.088993451,
+            5758448.915352782
+          ],
+          [
+            774397.5669177801,
+            5758448.915352782
+          ]
+        ]
+      },
+      {
+        "text": "Glacier des Bossons",
+        "provider_id": "8",
+        "feature_id": 85431244816386,
+        "unplaced": false,
+        "corners": [
+          [
+            763060.8508691643,
+            5757093.2031382155
+          ],
+          [
+            764561.8232956862,
+            5757093.2031382155
+          ],
+          [
+            764561.8232956862,
+            5757299.523398157
+          ],
+          [
+            763060.8508691643,
+            5757299.523398157
+          ]
+        ]
+      },
+      {
+        "text": "Picco Luigi Amedeo",
+        "provider_id": "8",
+        "feature_id": 86530756444160,
+        "unplaced": false,
+        "corners": [
+          [
+            763490.6598621972,
+            5751752.165786789
+          ],
+          [
+            764972.8216137895,
+            5751752.165786789
+          ],
+          [
+            764972.8216137895,
+            5751958.486046731
+          ],
+          [
+            763490.6598621972,
+            5751958.486046731
+          ]
+        ]
+      },
+      {
+        "text": "Dômes de Miage",
+        "provider_id": "8",
+        "feature_id": 85435539783683,
+        "unplaced": false,
+        "corners": [
+          [
+            756406.0520940862,
+            5750696.3793336
+          ],
+          [
+            757615.6083502708,
+            5750696.3793336
+          ],
+          [
+            757615.6083502708,
+            5750902.699593542
+          ],
+          [
+            756406.0520940862,
+            5750902.699593542
+          ]
+        ]
+      },
+      {
+        "text": "Dôme du Goûter",
+        "provider_id": "8",
+        "feature_id": 86535051411457,
+        "unplaced": false,
+        "corners": [
+          [
+            761208.4472618155,
+            5755062.844574391
+          ],
+          [
+            762406.0602323306,
+            5755062.844574391
+          ],
+          [
+            762406.0602323306,
+            5755269.164834333
+          ],
+          [
+            761208.4472618155,
+            5755269.164834333
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 86530756444163,
+        "unplaced": false,
+        "corners": [
+          [
+            766144.6072290441,
+            5760829.062895654
+          ],
+          [
+            767258.6171998722,
+            5760829.062895654
+          ],
+          [
+            767258.6171998722,
+            5761035.3831555955
+          ],
+          [
+            766144.6072290441,
+            5761035.3831555955
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Ghiacciaio del Brouillard",
+        "provider_id": "6",
+        "feature_id": 86535051411459,
+        "unplaced": false,
+        "corners": [
+          [
+            765005.0679303897,
+            5750165.3757666275
+          ],
+          [
+            765233.9120837447,
+            5749028.181450133
+          ],
+          [
+            765683.5209563663,
+            5749118.658829683
+          ],
+          [
+            765454.6768030113,
+            5750255.853146178
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Bionnassay",
+        "provider_id": "6",
+        "feature_id": 85431244816391,
+        "unplaced": false,
+        "corners": [
+          [
+            757599.8215906081,
+            5756386.236352786
+          ],
+          [
+            758542.5097333561,
+            5756270.306562976
+          ],
+          [
+            758598.4884058329,
+            5756725.499580034
+          ],
+          [
+            757655.8002630849,
+            5756841.4293698445
+          ]
+        ]
+      },
+      {
+        "text": "Glacier de Tré-la-Tête",
+        "provider_id": "8",
+        "feature_id": 85435539783682,
+        "unplaced": false,
+        "corners": [
+          [
+            755505.5283546014,
+            5747351.811472911
+          ],
+          [
+            756337.6767836278,
+            5747351.811472911
+          ],
+          [
+            756337.6767836278,
+            5747764.451992795
+          ],
+          [
+            755505.5283546014,
+            5747764.451992795
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille de Rochefort",
+        "provider_id": "8",
+        "feature_id": 86530756444161,
+        "unplaced": false,
+        "corners": [
+          [
+            774397.5669177801,
+            5758036.274832899
+          ],
+          [
+            775172.088993451,
+            5758036.274832899
+          ],
+          [
+            775172.088993451,
+            5758448.915352782
+          ],
+          [
+            774397.5669177801,
+            5758448.915352782
+          ]
+        ]
+      },
+      {
+        "text": "Glacier des Bossons",
+        "provider_id": "8",
+        "feature_id": 85431244816386,
+        "unplaced": false,
+        "corners": [
+          [
+            763060.8508691643,
+            5757093.2031382155
+          ],
+          [
+            764561.8232956862,
+            5757093.2031382155
+          ],
+          [
+            764561.8232956862,
+            5757299.523398157
+          ],
+          [
+            763060.8508691643,
+            5757299.523398157
+          ]
+        ]
+      },
+      {
+        "text": "Picco Luigi Amedeo",
+        "provider_id": "8",
+        "feature_id": 86530756444160,
+        "unplaced": false,
+        "corners": [
+          [
+            763490.6598621972,
+            5751752.165786789
+          ],
+          [
+            764972.8216137895,
+            5751752.165786789
+          ],
+          [
+            764972.8216137895,
+            5751958.486046731
+          ],
+          [
+            763490.6598621972,
+            5751958.486046731
+          ]
+        ]
+      },
+      {
+        "text": "Dômes de Miage",
+        "provider_id": "8",
+        "feature_id": 85435539783683,
+        "unplaced": false,
+        "corners": [
+          [
+            756406.0520940862,
+            5750696.3793336
+          ],
+          [
+            757615.6083502708,
+            5750696.3793336
+          ],
+          [
+            757615.6083502708,
+            5750902.699593542
+          ],
+          [
+            756406.0520940862,
+            5750902.699593542
+          ]
+        ]
+      },
+      {
+        "text": "Dôme du Goûter",
+        "provider_id": "8",
+        "feature_id": 86535051411457,
+        "unplaced": false,
+        "corners": [
+          [
+            761208.4472618155,
+            5755062.844574391
+          ],
+          [
+            762406.0602323306,
+            5755062.844574391
+          ],
+          [
+            762406.0602323306,
+            5755269.164834333
+          ],
+          [
+            761208.4472618155,
+            5755269.164834333
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 86530756444163,
+        "unplaced": false,
+        "corners": [
+          [
+            766144.6072290441,
+            5760829.062895654
+          ],
+          [
+            767258.6171998722,
+            5760829.062895654
+          ],
+          [
+            767258.6171998722,
+            5761035.3831555955
+          ],
+          [
+            766144.6072290441,
+            5761035.3831555955
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille de Rochefort",
+      "Aiguille du Midi",
+      "Dôme du Goûter",
+      "Dômes de Miage",
+      "Ghiacciaio del Brouillard",
+      "Glacier de Bionnassay",
+      "Glacier de Tré-la-Tête",
+      "Glacier des Bossons",
+      "Picco Luigi Amedeo"
+    ],
+    "after_natural_texts": [
+      "Aiguille de Rochefort",
+      "Aiguille du Midi",
+      "Dôme du Goûter",
+      "Dômes de Miage",
+      "Ghiacciaio del Brouillard",
+      "Glacier de Bionnassay",
+      "Glacier de Tré-la-Tête",
+      "Glacier des Bossons",
+      "Picco Luigi Amedeo"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "mont-blanc-z10",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "Grand Combin de Grafeneire",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810000.2029165926,
+            5769530.194379139
+          ],
+          [
+            815089.2369403916,
+            5769530.194379139
+          ],
+          [
+            815089.2369403916,
+            5771180.756458672
+          ],
+          [
+            810000.2029165926,
+            5771180.756458672
+          ]
+        ]
+      },
+      {
+        "text": "Testa del Rutor",
+        "provider_id": "8",
+        "feature_id": 21358922694657,
+        "unplaced": false,
+        "corners": [
+          [
+            778621.0113126783,
+            5720946.699768226
+          ],
+          [
+            783121.2413529682,
+            5720946.699768226
+          ],
+          [
+            783121.2413529682,
+            5721771.980807993
+          ],
+          [
+            778621.0113126783,
+            5721771.980807993
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5761347.252202641
+          ],
+          [
+            764473.5922728025,
+            5761347.252202641
+          ]
+        ]
+      },
+      {
+        "text": "Le Grand Mont",
+        "provider_id": "8",
+        "feature_id": 20259427844096,
+        "unplaced": false,
+        "corners": [
+          [
+            725516.3859115532,
+            5721090.01919626
+          ],
+          [
+            729825.52338113,
+            5721090.01919626
+          ],
+          [
+            729825.52338113,
+            5721915.300236027
+          ],
+          [
+            725516.3859115532,
+            5721915.300236027
+          ]
+        ]
+      },
+      {
+        "text": "Pointe Percée",
+        "provider_id": "8",
+        "feature_id": 20255132876801,
+        "unplaced": false,
+        "corners": [
+          [
+            727715.1448033189,
+            5772847.441973859
+          ],
+          [
+            731888.1288162627,
+            5772847.441973859
+          ],
+          [
+            731888.1288162627,
+            5773672.723013626
+          ],
+          [
+            727715.1448033189,
+            5773672.723013626
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Testa del Rutor",
+        "provider_id": "8",
+        "feature_id": 21358922694657,
+        "unplaced": false,
+        "corners": [
+          [
+            778621.0113126783,
+            5720946.699768226
+          ],
+          [
+            783121.2413529682,
+            5720946.699768226
+          ],
+          [
+            783121.2413529682,
+            5721771.980807993
+          ],
+          [
+            778621.0113126783,
+            5721771.980807993
+          ]
+        ]
+      },
+      {
+        "text": "Aiguille du Midi",
+        "provider_id": "8",
+        "feature_id": 21354644504577,
+        "unplaced": false,
+        "corners": [
+          [
+            764473.5922728025,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5760521.971162874
+          ],
+          [
+            768929.6321561149,
+            5761347.252202641
+          ],
+          [
+            764473.5922728025,
+            5761347.252202641
+          ]
+        ]
+      },
+      {
+        "text": "Grand Combin",
+        "provider_id": "8",
+        "feature_id": 22454139355136,
+        "unplaced": false,
+        "corners": [
+          [
+            810442.7016506498,
+            5769942.834899022
+          ],
+          [
+            814646.7382063345,
+            5769942.834899022
+          ],
+          [
+            814646.7382063345,
+            5770768.115938789
+          ],
+          [
+            810442.7016506498,
+            5770768.115938789
+          ]
+        ]
+      },
+      {
+        "text": "Pointe Percée",
+        "provider_id": "8",
+        "feature_id": 20255132876801,
+        "unplaced": false,
+        "corners": [
+          [
+            727715.1448033189,
+            5772847.441973859
+          ],
+          [
+            731888.1288162627,
+            5772847.441973859
+          ],
+          [
+            731888.1288162627,
+            5773672.723013626
+          ],
+          [
+            727715.1448033189,
+            5773672.723013626
+          ]
+        ]
+      },
+      {
+        "text": "Grand Mont",
+        "provider_id": "8",
+        "feature_id": 20259427844096,
+        "unplaced": false,
+        "corners": [
+          [
+            725964.8562884452,
+            5721090.01919626
+          ],
+          [
+            729377.0530042382,
+            5721090.01919626
+          ],
+          [
+            729377.0530042382,
+            5721915.300236027
+          ],
+          [
+            725964.8562884452,
+            5721915.300236027
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "Aiguille du Midi",
+      "Grand Combin de Grafeneire",
+      "Le Grand Mont",
+      "Pointe Percée",
+      "Testa del Rutor"
+    ],
+    "after_natural_texts": [
+      "Aiguille du Midi",
+      "Grand Combin",
+      "Grand Mont",
+      "Pointe Percée",
+      "Testa del Rutor"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  },
+  {
+    "camera": "cairo-nile-z14",
+    "runtime": "4",
+    "before_naturals": [
+      {
+        "text": "جزيرة الزمالك",
+        "provider_id": "6",
+        "feature_id": 154361191727104,
+        "unplaced": false,
+        "corners": [
+          [
+            3475499.2600601977,
+            3511350.501809428
+          ],
+          [
+            3475548.397643628,
+            3511075.837550901
+          ],
+          [
+            3475604.829465605,
+            3511085.933234174
+          ],
+          [
+            3475555.6918821745,
+            3511360.597492701
+          ]
+        ]
+      },
+      {
+        "text": "جزيرة الزمالك",
+        "provider_id": "6",
+        "feature_id": 155464998322176,
+        "unplaced": false,
+        "corners": [
+          [
+            3475657.8120355257,
+            3510432.4282616153
+          ],
+          [
+            3475704.5544828638,
+            3510157.346272684
+          ],
+          [
+            3475761.07213067,
+            3510166.94985737
+          ],
+          [
+            3475714.329683332,
+            3510442.031846301
+          ]
+        ]
+      }
+    ],
+    "after_naturals": [
+      {
+        "text": "Gezira-Zamalek",
+        "provider_id": "6",
+        "feature_id": 154361191727104,
+        "unplaced": false,
+        "corners": [
+          [
+            3475495.097225971,
+            3511373.5284594945
+          ],
+          [
+            3475552.3200198463,
+            3511052.764866698
+          ],
+          [
+            3475608.756775692,
+            3511062.8329321495
+          ],
+          [
+            3475551.533981817,
+            3511383.596524946
+          ]
+        ]
+      },
+      {
+        "text": "Gezira-Zamalek",
+        "provider_id": "6",
+        "feature_id": 155464998322176,
+        "unplaced": false,
+        "corners": [
+          [
+            3475653.891822246,
+            3510455.4989420674
+          ],
+          [
+            3475708.4746961435,
+            3510134.275592232
+          ],
+          [
+            3475764.9923439496,
+            3510143.879176918
+          ],
+          [
+            3475710.409470052,
+            3510465.102526753
+          ]
+        ]
+      }
+    ],
+    "before_natural_texts": [
+      "جزيرة الزمالك"
+    ],
+    "after_natural_texts": [
+      "Gezira-Zamalek"
+    ],
+    "nonnatural_text_population_equal": true,
+    "nonnatural_text_and_corners_equal": true,
+    "removed_nonnatural_records": [],
+    "added_nonnatural_records": [],
+    "scope": "PNG placement records; curved labels emit multiple full-text records. Not unique labels/features or native/source-ID equality."
+  }
+]

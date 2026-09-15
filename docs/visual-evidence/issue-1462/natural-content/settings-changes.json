@@ -1,0 +1,50 @@
+[
+  {
+    "runtime": "3",
+    "rule": "natural-line-label",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "natural-line-label-qfit-open-fonts-z8-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "natural-point-label",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "natural-point-label-qfit-open-fonts-z8-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "natural-line-label",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "natural-line-label-qfit-open-fonts-z8-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "natural-point-label",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "natural-point-label-qfit-open-fonts-z8-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  }
+]

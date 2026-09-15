@@ -1,0 +1,911 @@
+{
+  "features": [
+    {
+      "id": 3383219520,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拉克呂薩",
+        "name_vi": "La Clusaz",
+        "name_script": "Latin",
+        "name_ru": "Ла Клюза",
+        "name_zh-Hans": "拉克吕萨",
+        "name_pt": "La Clusaz",
+        "symbolrank": 15,
+        "name_ja": "ラ・クリュサ",
+        "name_it": "La Clusaz",
+        "name_en": "La Clusaz",
+        "name_de": "La Clusaz",
+        "disputed": "false",
+        "name_es": "La Clusaz",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_fr": "La Clusaz",
+        "class": "settlement",
+        "name": "La Clusaz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.423912048339844,
+          45.90434424945917
+        ]
+      }
+    },
+    {
+      "id": 10678983400,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "多芒西",
+        "name_vi": "Domancy",
+        "name_script": "Latin",
+        "name_ru": "Доманси",
+        "name_zh-Hans": "多芒西",
+        "name_pt": "Domancy",
+        "symbolrank": 15,
+        "name_ja": "ドマンシー",
+        "name_it": "Domancy",
+        "name_en": "Domancy",
+        "name_es": "Domancy",
+        "disputed": "false",
+        "name_de": "Domancy",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_fr": "Domancy",
+        "class": "settlement",
+        "name": "Domancy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.649045944213867,
+          45.91264554283083
+        ]
+      }
+    },
+    {
+      "id": 3649851920,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_en": "Le Petit-Bornand-les-Glières",
+        "name_fr": "Le Petit-Bornand-les-Glières",
+        "class": "settlement",
+        "name": "Le Petit-Bornand-les-Glières",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.3961029052734375,
+          46.00036021180449
+        ]
+      }
+    },
+    {
+      "id": 2507510100,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Le Grand-Bornand",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.427173614501953,
+          45.94183950732966
+        ]
+      }
+    },
+    {
+      "id": 266917630,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "薩朗什",
+        "name_script": "Latin",
+        "name_ru": "Салланш",
+        "name_zh-Hans": "萨朗什",
+        "name_pt": "Sallanches",
+        "name_ko": "쌀렁슈",
+        "symbolrank": 13,
+        "name_ja": "セロンシ",
+        "name_it": "Sallanches",
+        "name_en": "Sallanches",
+        "name_de": "Sallanches",
+        "disputed": "false",
+        "name_es": "Sallanches",
+        "name_vi": "Sallanches",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_fr": "Sallanches",
+        "class": "settlement",
+        "name": "Sallanches",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.6302490234375,
+          45.93610938897285
+        ]
+      }
+    },
+    {
+      "id": 266951300,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "聖熱爾韋萊班",
+        "name_script": "Latin",
+        "name_ru": "Сен-Жерве-ле-Бен",
+        "name_zh-Hans": "圣热尔韦莱班",
+        "name_pt": "Saint-Gervais-les-Bains",
+        "name_ko": "생제르베레벵",
+        "symbolrank": 14,
+        "name_ja": "サン=ジェルヴェ=レ=バン",
+        "name_it": "Saint-Gervais-les-Bains",
+        "name_en": "Saint-Gervais-les-Bains",
+        "name_de": "Saint-Gervais-les-Bains",
+        "disputed": "false",
+        "name_es": "Saint-Gervais-les-Bains",
+        "name_vi": "Saint-Gervais-les-Bains",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_fr": "Saint-Gervais-les-Bains",
+        "class": "settlement",
+        "name": "Saint-Gervais-les-Bains",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.711359024047852,
+          45.89287567291743
+        ]
+      }
+    },
+    {
+      "id": 20813124630,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_zh-Hans": "弗拉尼",
+        "name_script": "Latin",
+        "name_pt": "Flaine",
+        "name_it": "Flaine",
+        "name_fr": "Flaine",
+        "name_en": "Flaine",
+        "symbolrank": 17,
+        "name_ja": "フレーヌ",
+        "name_es": "Flaine",
+        "name_de": "Flaine",
+        "filterrank": 2,
+        "name_zh-Hant": "弗拉尼",
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "class": "settlement",
+        "name": "Flaine",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.690330505371094,
+          46.00685869549844
+        ]
+      }
+    },
+    {
+      "id": 5527175240,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "帕西",
+        "name_script": "Latin",
+        "name_ru": "Пасси",
+        "name_zh-Hans": "帕西",
+        "name_pt": "Passy",
+        "name_ko": "빠씨",
+        "symbolrank": 13,
+        "name_ja": "パッシー",
+        "name_it": "Passy",
+        "name_en": "Passy",
+        "name_de": "Passy",
+        "disputed": "false",
+        "name_es": "Passy",
+        "name_vi": "Passy",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_fr": "Passy",
+        "class": "settlement",
+        "name": "Passy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.6844940185546875,
+          45.92327416322286
+        ]
+      }
+    },
+    {
+      "id": 266962750,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_zh-Hans": "霞慕尼",
+        "name_ru": "Шамони-Мон-Блан",
+        "name_script": "Latin",
+        "name_ko": "샤모니-몽-블렁",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_zh-Hant": "霞慕尼",
+        "iso_3166_1": "FR",
+        "symbolrank": 13,
+        "name_ja": "シャモニー＝モン＝ブラン",
+        "class": "settlement",
+        "name": "Chamonix-Mont-Blanc",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.869974136352539,
+          45.92309504603833
+        ]
+      }
+    },
+    {
+      "id": 17442920020,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Vallorcine",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.932458877563477,
+          46.03403673615753
+        ]
+      }
+    },
+    {
+      "id": 30216891440,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Sixt-Fer-à-Cheval",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.775388717651367,
+          46.05470932060271
+        ]
+      }
+    },
+    {
+      "id": 9639475100,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Ollomont",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.310628890991211,
+          45.849668059631256
+        ]
+      }
+    },
+    {
+      "id": 2401267250,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Liddes",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.186517715454102,
+          45.991714256768034
+        ]
+      }
+    },
+    {
+      "id": 2400722730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Bourg-Saint-Pierre",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.208833694458008,
+          45.948941644578355
+        ]
+      }
+    },
+    {
+      "id": 2400758360,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Orsières",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.145404815673828,
+          46.03004430865096
+        ]
+      }
+    },
+    {
+      "id": 416451730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Flumet",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.514291763305664,
+          45.817614177415265
+        ]
+      }
+    },
+    {
+      "id": 266977010,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Beaufort",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.5732574462890625,
+          45.71744665139346
+        ]
+      }
+    },
+    {
+      "id": 266966420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Ugine",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.420478820800781,
+          45.74901912782454
+        ]
+      }
+    },
+    {
+      "id": 2586286670,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拉蒂勒",
+        "name_vi": "La Thuile",
+        "name_script": "Latin",
+        "name_ru": "Ла-Тюиль",
+        "name_zh-Hans": "拉蒂勒",
+        "name_pt": "La Thuile",
+        "symbolrank": 15,
+        "name_ja": "ラ・トゥイール",
+        "name_it": "La Thuile",
+        "name_es": "La Thuile",
+        "iso_3166_1": "IT",
+        "name_de": "La Thuile",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "IT-23",
+        "name_fr": "La Thuile",
+        "name_ar": "لا ثويل",
+        "name_en": "La Thuile",
+        "class": "settlement",
+        "name": "La Thuile",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.94859504699707,
+          45.71630803141056
+        ]
+      }
+    },
+    {
+      "id": 266952400,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_zh-Hans": "圣莫里斯堡",
+        "name_ru": "Бур-Сен-Морис",
+        "name_script": "Latin",
+        "name_ko": "부르생모리스",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_zh-Hant": "聖莫里斯堡",
+        "iso_3166_1": "FR",
+        "symbolrank": 13,
+        "name_ja": "ブール＝サン＝モーリス",
+        "class": "settlement",
+        "name": "Bourg-Saint-Maurice",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.769552230834961,
+          45.618600080302
+        ]
+      }
+    },
+    {
+      "id": 17662127210,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "庫馬約爾",
+        "name_script": "Latin",
+        "name_ru": "Курмайёр",
+        "name_zh-Hans": "库马约尔",
+        "name_pt": "Courmayeur",
+        "name_ko": "쿠마이어",
+        "symbolrank": 14,
+        "name_ja": "クールマイユール",
+        "name_it": "Courmayeur",
+        "name_en": "Courmayeur",
+        "name_de": "Courmayeur",
+        "name_ar": "كورمايور",
+        "name_fr": "Courmayeur",
+        "disputed": "false",
+        "name_vi": "Courmayeur",
+        "name_es": "Courmayeur",
+        "iso_3166_1": "IT",
+        "filterrank": 1,
+        "iso_3166_2": "IT-23",
+        "class": "settlement",
+        "name": "Courmayeur",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.973056793212891,
+          45.78739726631932
+        ]
+      }
+    },
+    {
+      "id": 9639461600,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Roisan",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.311315536499023,
+          45.78458416571934
+        ]
+      }
+    },
+    {
+      "id": 15503487080,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_fr": "Derby",
+        "name_it": "Derby",
+        "disputed": "false",
+        "symbolrank": 17,
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_en": "Derby",
+        "class": "settlement",
+        "name": "Derby",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.090473175048828,
+          45.724337803472366
+        ]
+      }
+    },
+    {
+      "id": 17930259520,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-23",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Valgrisenche",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.064723968505859,
+          45.63114550569864
+        ]
+      }
+    },
+    {
+      "id": 17362808230,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "艾馬維爾",
+        "name_vi": "Aymavilles",
+        "name_script": "Latin",
+        "name_ru": "Эмавиль",
+        "name_zh-Hans": "艾马维尔",
+        "name_pt": "Aymavilles",
+        "symbolrank": 15,
+        "name_ja": "アイマヴィル",
+        "name_it": "Aymavilles",
+        "iso_3166_1": "IT",
+        "name_de": "Aymavilles",
+        "name_es": "Aymavilles",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "IT-23",
+        "name_fr": "Aymavilles",
+        "name_ar": "أيمافيلي",
+        "name_en": "Aymavilles",
+        "class": "settlement",
+        "name": "Aymavilles",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.247629165649414,
+          45.701743635242536
+        ]
+      }
+    },
+    {
+      "id": 25938007690,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "聖雷米昂博斯",
+        "name_vi": "Saint-Rhémy-en-Bosses",
+        "name_script": "Latin",
+        "name_ru": "Сен-Реми-ан-Босс",
+        "name_zh-Hans": "圣雷米昂博斯",
+        "name_pt": "Saint-Rhémy-en-Bosses",
+        "symbolrank": 16,
+        "name_ja": "サン=レミ=アン=ボス",
+        "name_it": "Saint-Rhémy-en-Bosses",
+        "iso_3166_1": "IT",
+        "name_de": "Saint-Rhémy-en-Bosses",
+        "name_es": "Saint-Rhémy-en-Bosses",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "IT-23",
+        "name_fr": "Saint-Rhémy-en-Bosses",
+        "name_ar": "سان ريمي أون بوس",
+        "name_en": "Saint-Rhémy-en-Bosses",
+        "class": "settlement",
+        "name": "Saint-Rhémy-en-Bosses",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.182226181030273,
+          45.82371540572092
+        ]
+      }
+    },
+    {
+      "id": 10237694,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 13,
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "park",
+        "name_script": "Latin",
+        "type": "Protected Area",
+        "class": "park_like",
+        "name": "Réserve naturelle des Aiguilles rouges"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.870489120483398,
+          45.97936906985757
+        ]
+      }
+    },
+    {
+      "id": 10237684,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 12,
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "maki": "park",
+        "name_script": "Latin",
+        "type": "Protected Area",
+        "class": "park_like",
+        "name": "Réserve naturelle des Contamines-Montjoie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.746377944946289,
+          45.781112484187815
+        ]
+      }
+    },
+    {
+      "id": 268643450,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "Pointe Percée",
+        "name_fr": "Pointe Percée",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_en": "Pointe Percée",
+        "elevation_ft": 9023,
+        "elevation_m": 2750,
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Pointe Percée",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.555919647216797,
+          45.95574451935309
+        ]
+      }
+    },
+    {
+      "id": 1670754930,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "南針峰",
+        "name_vi": "Aiguille du Midi",
+        "name_ru": "Эгюий-дю-Миди",
+        "name_zh-Hans": "南针峰",
+        "name_pt": "Agulha do Midi",
+        "name_ja": "エギーユ・デュ・ミディ",
+        "name_it": "Aiguille du Midi",
+        "name_en": "Aiguille du Midi",
+        "name_es": "Aiguille du Midi",
+        "elevation_m": 3842,
+        "name_de": "Aiguille du Midi",
+        "elevation_ft": 12606,
+        "filterrank": 1,
+        "disputed": "false",
+        "maki": "mountain",
+        "name_fr": "Aiguille du Midi",
+        "iso_3166_1": "FR",
+        "class": "landform",
+        "name": "Aiguille du Midi",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.887397766113281,
+          45.878715882135936
+        ]
+      }
+    },
+    {
+      "id": 268630130,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "大孔班山",
+        "name_script": "Latin",
+        "name_ru": "Гран-Комбен",
+        "name_zh-Hans": "大孔班山",
+        "name_pt": "Grand Combin",
+        "name_ja": "グラン・コンバン",
+        "name_de": "Grand Combin",
+        "name_es": "Grand Combin",
+        "disputed": "false",
+        "filterrank": 1,
+        "elevation_ft": 14154,
+        "name_en": "Grand Combin",
+        "elevation_m": 4314,
+        "iso_3166_2": "CH-VS",
+        "maki": "mountain",
+        "name_fr": "Grand Combin",
+        "iso_3166_1": "CH",
+        "name_ar": "غراند كومبين",
+        "name_it": "Grand Combin",
+        "class": "landform",
+        "name": "Grand Combin de Grafeneire",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.299213409423828,
+          45.937601664320255
+        ]
+      }
+    },
+    {
+      "id": 30102249570,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_it": "Grand Mont",
+        "name_fr": "Grand Mont",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "disputed": "false",
+        "name_en": "Grand Mont",
+        "elevation_ft": 8813,
+        "elevation_m": 2686,
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Le Grand Mont",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.536779403686523,
+          45.63156563882012
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

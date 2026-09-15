@@ -1,0 +1,182 @@
+[
+  {
+    "a": "3/cairo-nile-z14/before/qgis.png",
+    "b": "3/cairo-nile-z14/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "93d0e18b753cd3c20777676c979a4f3233ee7c21b2ab60ec6c60802183b5068c"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/labels.json",
+    "b": "3/cairo-nile-z14/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/cairo-nile-z14/before/runtime.json",
+    "b": "3/cairo-nile-z14/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/qgis.png",
+    "b": "3/cairo-nile-z14/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "97750eb40a6570387a21197b4cf61a4d6ce53785a330b9343e0436f4faeeb2a7"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/labels.json",
+    "b": "3/cairo-nile-z14/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/cairo-nile-z14/after/runtime.json",
+    "b": "3/cairo-nile-z14/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "a0a6dbe48b9f0863a0141b671ec85553d9691dfcdedd612ebceae30405768810"
+  },
+  {
+    "a": "3/grand-combin-z10/before/qgis.png",
+    "b": "3/grand-combin-z10/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "77d0017711dbcc9c2dcebbbddce6153c312d5b951fab1603356b6dd203a1e221"
+  },
+  {
+    "a": "3/grand-combin-z10/before/labels.json",
+    "b": "3/grand-combin-z10/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "e5c7bea3b812bb8bc5982b14b2582190874b384773a7af900c84413a7c61a436"
+  },
+  {
+    "a": "3/grand-combin-z10/before/runtime.json",
+    "b": "3/grand-combin-z10/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5"
+  },
+  {
+    "a": "3/grand-combin-z10/after/qgis.png",
+    "b": "3/grand-combin-z10/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "8dfe474417da58f3f46607763e78b629ae360c707556ad706553af2417702507"
+  },
+  {
+    "a": "3/grand-combin-z10/after/labels.json",
+    "b": "3/grand-combin-z10/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/grand-combin-z10/after/runtime.json",
+    "b": "3/grand-combin-z10/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5"
+  },
+  {
+    "a": "3/grand-combin-z10/after/qgis.png",
+    "b": "3/grand-combin-z10/after-replay/qgis.png",
+    "identical": true,
+    "sha256": "8dfe474417da58f3f46607763e78b629ae360c707556ad706553af2417702507"
+  },
+  {
+    "a": "3/grand-combin-z10/after/labels.json",
+    "b": "3/grand-combin-z10/after-replay/labels.json",
+    "identical": true,
+    "sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/grand-combin-z10/after/runtime.json",
+    "b": "3/grand-combin-z10/after-replay/runtime.json",
+    "identical": true,
+    "sha256": "ad199db43b0fdd4584d8db9660cb87185ab2f1c556e2e5c68649d5d1674af9c5"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/qgis.png",
+    "b": "4/cairo-nile-z14/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "b532f56b61434f9c16a9937909656b5025ee1ad154cea55396f4d00c21435f72"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/labels.json",
+    "b": "4/cairo-nile-z14/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/cairo-nile-z14/before/runtime.json",
+    "b": "4/cairo-nile-z14/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/qgis.png",
+    "b": "4/cairo-nile-z14/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "25a697cfb8da55400e44f44dbf6faadb7606ff721992713a48eb9a65db59797f"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/labels.json",
+    "b": "4/cairo-nile-z14/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/cairo-nile-z14/after/runtime.json",
+    "b": "4/cairo-nile-z14/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "1b8d1a9bfcba7bf9b45d305d4ccc73487c337c86d2f3b6c419014c99fb1e6d35"
+  },
+  {
+    "a": "4/grand-combin-z10/before/qgis.png",
+    "b": "4/grand-combin-z10/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "cc0d410ef441a971793f12f3eb66043c11d8ba5847ce85f20627c7acb451dfe4"
+  },
+  {
+    "a": "4/grand-combin-z10/before/labels.json",
+    "b": "4/grand-combin-z10/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "1c1db36003acad4012611077d18e1ef81a6c59cc2a2b5e2fb3fcec210c7f22c2"
+  },
+  {
+    "a": "4/grand-combin-z10/before/runtime.json",
+    "b": "4/grand-combin-z10/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180"
+  },
+  {
+    "a": "4/grand-combin-z10/after/qgis.png",
+    "b": "4/grand-combin-z10/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "9d0d6e2568f01b6d11c0699d5803fa983d4cab2cdbd3f20aee0ee2562011fc3b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/labels.json",
+    "b": "4/grand-combin-z10/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/runtime.json",
+    "b": "4/grand-combin-z10/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180"
+  },
+  {
+    "a": "4/grand-combin-z10/after/qgis.png",
+    "b": "4/grand-combin-z10/after-replay/qgis.png",
+    "identical": true,
+    "sha256": "9d0d6e2568f01b6d11c0699d5803fa983d4cab2cdbd3f20aee0ee2562011fc3b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/labels.json",
+    "b": "4/grand-combin-z10/after-replay/labels.json",
+    "identical": true,
+    "sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/grand-combin-z10/after/runtime.json",
+    "b": "4/grand-combin-z10/after-replay/runtime.json",
+    "identical": true,
+    "sha256": "35c53c0273599bf08e206773e176dd5488a5c51464492901952edc5ec56aa180"
+  }
+]

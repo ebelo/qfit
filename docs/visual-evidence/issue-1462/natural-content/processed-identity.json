@@ -1,0 +1,28 @@
+[
+  {
+    "runtime": "3",
+    "source_symbol_owners": 14,
+    "native_rules": 39,
+    "changed_fields": [
+      "natural-line-label",
+      "natural-line-label-qfit-open-fonts-z8-plus",
+      "natural-point-label",
+      "natural-point-label-qfit-open-fonts-z8-plus"
+    ],
+    "only_field_name_changes": true,
+    "processed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff"
+  },
+  {
+    "runtime": "4",
+    "source_symbol_owners": 14,
+    "native_rules": 39,
+    "changed_fields": [
+      "natural-line-label",
+      "natural-line-label-qfit-open-fonts-z8-plus",
+      "natural-point-label",
+      "natural-point-label-qfit-open-fonts-z8-plus"
+    ],
+    "only_field_name_changes": true,
+    "processed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff"
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "captured_date_utc": "2026-09-15",
+  "assembled_at_utc": "2026-09-15T12:42:36.513138+00:00",
+  "baseline_commit": "3436e3833f9603db17be3f707afc43a86432f5d8",
+  "candidate_runtime_commit": "cbf23209c8f7e935ffd1188ed90b88e38251c00d",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "native_matrix_png": 112,
+  "browser_png": 56,
+  "actual_pdfs": 16,
+  "pdf_companion_png": 8,
+  "public_worker_replay_png": 2,
+  "runtime_source_files": 233,
+  "source_property_replay": "39 camera/property sets through their own two font bands per runtime/variant; 18 Before text mismatches become zero; not unique features, native decoder/fetch/zoom equivalence or collision survival",
+  "gateway_preflight": "same active run: exit0, ok:true, reason:mapbox_authorized, http_status:200, TLS verified",
+  "live_container_preflights": "each successful live container independently authorized with unchanged inherited protected environment",
+  "excluded_startup_attempts": [
+    "stale untagged image ID after gate rebuild",
+    "offline audit user write permission",
+    "missing candidate nested mount directory under readonly checkout"
+  ],
+  "recovery": "retain rebuilt images with dedicated tags; use task-owner UID for offline writes; create task-owned mount target before readonly binding. No credential/egress/TLS fallback. No failed or blank map counted.",
+  "scope": "Natural line/point content only. Original source-globe and explicit Mercator reference separate. Source/native scale, PNG100/96DPI, QGIS4 PDF density and variability remain open. Live tile bytes unarchived; no desktop/full-atlas, real-activity, accessibility, RTL-shaping or general cartographic pass."
+}

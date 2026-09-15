@@ -1,0 +1,1517 @@
+{
+  "features": [
+    {
+      "id": 315188240,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "貝爾恩附近沃倫",
+        "name_script": "Latin",
+        "name_ru": "Волен-Берн",
+        "name_zh-Hans": "贝尔恩附近沃伦",
+        "name_pt": "Wohlen bei Bern",
+        "symbolrank": 14,
+        "name_ja": "ヴォーレン・バイ・ベルン",
+        "name_it": "Wohlen bei Bern",
+        "name_en": "Wohlen bei Bern",
+        "name_es": "Wohlen bei Bern",
+        "name_de": "Wohlen bei Bern",
+        "disputed": "false",
+        "name_vi": "Wohlen bei Bern",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Wohlen bei Bern",
+        "class": "settlement",
+        "name": "Wohlen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.355926036834717,
+          46.97083832476099
+        ]
+      }
+    },
+    {
+      "id": 15670614460,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "克尼茨",
+        "name_script": "Latin",
+        "name_ru": "Кёниц",
+        "name_zh-Hans": "克尼茨",
+        "name_pt": "Köniz",
+        "name_ko": "쾨니츠",
+        "symbolrank": 12,
+        "name_ja": "ケーニッツ",
+        "name_it": "Köniz",
+        "name_en": "Köniz",
+        "name_de": "Köniz",
+        "name_ar": "كوينز",
+        "name_es": "Köniz",
+        "disputed": "false",
+        "name_vi": "Köniz",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Köniz",
+        "class": "settlement",
+        "name": "Köniz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.413067817687988,
+          46.9222338286977
+        ]
+      }
+    },
+    {
+      "id": 184774550,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "伯恩 / 伯爾尼",
+        "name_script": "Latin",
+        "name_ru": "Берн",
+        "name_zh-Hans": "伯尔尼",
+        "name_pt": "Berna",
+        "name_ko": "베른",
+        "symbolrank": 9,
+        "name_ja": "ベルン",
+        "name_it": "Berna",
+        "name_en": "Bern",
+        "name_de": "Bern",
+        "name_ar": "برن",
+        "name_fr": "Berne",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "capital": 2,
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "name_vi": "Bern",
+        "text_anchor": "bottom",
+        "name_es": "Berna",
+        "class": "settlement",
+        "name": "Bern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.452185153961182,
+          46.94847519115831
+        ]
+      }
+    },
+    {
+      "id": 308843610,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "伯恩附近布雷姆加滕",
+        "name_script": "Latin",
+        "name_ru": "Бремгартен-Берн",
+        "name_zh-Hans": "伯恩附近布雷姆加滕",
+        "name_pt": "Bremgarten bei Bern",
+        "name_ko": "브렘가르텐 바이 베른",
+        "symbolrank": 14,
+        "name_ja": "ブレムガルテン・バイ・ベルン",
+        "name_it": "Bremgarten bei Bern",
+        "name_en": "Bremgarten bei Bern",
+        "name_es": "Bremgarten bei Bern",
+        "disputed": "false",
+        "name_vi": "Bremgarten bei Bern",
+        "name_de": "Bremgarten bei Bern",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Bremgarten bei Bern",
+        "class": "settlement",
+        "name": "Bremgarten",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.43748664855957,
+          46.976768039466236
+        ]
+      }
+    },
+    {
+      "id": 314913290,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "伊蒂根",
+        "name_vi": "Ittigen",
+        "name_script": "Latin",
+        "name_ru": "Иттиген",
+        "name_zh-Hans": "伊蒂根",
+        "name_pt": "Ittigen",
+        "name_ko": "이티겐",
+        "name_it": "Ittigen",
+        "disputed": "false",
+        "name_de": "Ittigen",
+        "name_es": "Ittigen",
+        "symbolrank": 13,
+        "name_ja": "イッティゲン",
+        "filterrank": 2,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_en": "Ittigen",
+        "name_fr": "Ittigen",
+        "class": "settlement",
+        "name": "Ittigen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.481517791748047,
+          46.979066542152054
+        ]
+      }
+    },
+    {
+      "id": 308842420,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "伯恩附近穆里",
+        "name_script": "Latin",
+        "name_ru": "Мури-Берн",
+        "name_zh-Hans": "伯恩附近穆里",
+        "name_pt": "Muri bei Bern",
+        "name_ko": "무리 바이 베른",
+        "symbolrank": 13,
+        "name_ja": "ムーリ・バイ・ベルン",
+        "name_it": "Muri bei Bern",
+        "name_en": "Muri bei Bern",
+        "name_de": "Muri bei Bern",
+        "name_ar": "موري باي برن",
+        "name_es": "Muri bei Bern",
+        "disputed": "false",
+        "name_vi": "Muri bei Bern",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Muri bei Bern",
+        "class": "settlement",
+        "name": "Muri bei Bern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.487096786499023,
+          46.929048148670944
+        ]
+      }
+    },
+    {
+      "id": 330782670,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "斯泰特倫",
+        "name_vi": "Stettlen",
+        "name_script": "Latin",
+        "name_de": "Stettlen",
+        "symbolrank": 14,
+        "name_ja": "シュテットレン",
+        "disputed": "false",
+        "name_it": "Stettlen",
+        "name_es": "Stettlen",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_en": "Stettlen",
+        "name_fr": "Stettlen",
+        "name_ko": "슈테틀렌",
+        "name_zh-Hans": "斯泰特伦",
+        "name_pt": "Stettlen",
+        "name_ru": "Штетлен",
+        "class": "settlement",
+        "name": "Stettlen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.525162696838379,
+          46.95836181547216
+        ]
+      }
+    },
+    {
+      "id": 315175570,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "奧斯特蒙迪根",
+        "name_vi": "Ostermundigen",
+        "name_script": "Latin",
+        "name_ru": "Остермундиген",
+        "name_zh-Hans": "奥斯特蒙迪根",
+        "name_pt": "Ostermundigen",
+        "name_ko": "오스터문디겐",
+        "symbolrank": 13,
+        "name_ja": "オスターミュンディゲン",
+        "name_it": "Ostermundigen",
+        "name_de": "Ostermundigen",
+        "name_es": "Ostermundigen",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Ostermundigen",
+        "name_en": "Ostermundigen",
+        "class": "settlement",
+        "name": "Ostermundigen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.491130828857422,
+          46.958273942412575
+        ]
+      }
+    },
+    {
+      "id": 315175520,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "克爾薩茨",
+        "name_vi": "Kehrsatz",
+        "name_script": "Latin",
+        "name_de": "Kehrsatz",
+        "symbolrank": 14,
+        "name_ja": "ケールザッツ",
+        "name_it": "Kehrsatz",
+        "name_es": "Kehrsatz",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_en": "Kehrsatz",
+        "name_fr": "Kehrsatz",
+        "name_zh-Hans": "克尔萨茨",
+        "name_pt": "Kehrsatz",
+        "name_ru": "Керзац",
+        "class": "settlement",
+        "name": "Kehrsatz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.47096061706543,
+          46.910127114182615
+        ]
+      }
+    },
+    {
+      "id": 17516494420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Habstetten",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.498726844787598,
+          46.9849953444936
+        ]
+      }
+    },
+    {
+      "id": 21546509780,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Amselberg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.518317699432373,
+          46.94248374052117
+        ]
+      }
+    },
+    {
+      "id": 2401094820,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "伯恩附近阿爾門丁根",
+        "name_script": "Latin",
+        "name_zh-Hans": "伯恩附近阿尔门丁根",
+        "name_pt": "Allmendingen",
+        "symbolrank": 16,
+        "name_ja": "アルメンディンゲン",
+        "name_it": "Allmendingen",
+        "name_es": "Allmendingen",
+        "disputed": "false",
+        "name_vi": "Allmendingen",
+        "name_de": "Allmendingen",
+        "filterrank": 2,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_fr": "Allmendingen",
+        "name_en": "Allmendingen",
+        "class": "settlement",
+        "name": "Allmendingen b. Bern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.523982524871826,
+          46.91370371644595
+        ]
+      }
+    },
+    {
+      "id": 15369821440,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Schüpfenried",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.374100685119629,
+          46.98823029022725
+        ]
+      }
+    },
+    {
+      "id": 108250049690,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Altikofen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.4634504318237305,
+          46.98111607904599
+        ]
+      }
+    },
+    {
+      "id": 108250043410,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Steinibach",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.457420825958252,
+          46.98477577094627
+        ]
+      }
+    },
+    {
+      "id": 108167220730,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Unterzollikofen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.457013130187988,
+          46.99257739765278
+        ]
+      }
+    },
+    {
+      "id": 67324004340,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Brünnen",
+        "disputed": "false",
+        "symbolrank": 17,
+        "name_de": "Brünnen",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Brünnen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.376654148101807,
+          46.946717377842674
+        ]
+      }
+    },
+    {
+      "id": 2797455900,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Oberbottigen",
+        "symbolrank": 17,
+        "name_de": "Oberbottigen",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Oberbottigen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.3496174812316895,
+          46.93584695015841
+        ]
+      }
+    },
+    {
+      "id": 2986395070,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Oberwohlen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.359209060668945,
+          46.976943724687516
+        ]
+      }
+    },
+    {
+      "id": 315017430,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_en": "Niederwangen",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "symbolrank": 16,
+        "name_de": "Niederwangen",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Niederwangen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.376203536987305,
+          46.92602943859728
+        ]
+      }
+    },
+    {
+      "id": 73467812400,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Ackerli",
+        "disputed": "false",
+        "symbolrank": 17,
+        "name_de": "Ackerli",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Ackerli",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.384657859802246,
+          46.94995463929283
+        ]
+      }
+    },
+    {
+      "id": 330772470,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Breitenrain",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "Breitenrain",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Breitenrain",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.450404167175293,
+          46.96017782639447
+        ]
+      }
+    },
+    {
+      "id": 73482665810,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Old Bethlehem",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "Altes Bethlehem",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Altes Bethlehem",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.3957085609436035,
+          46.950189003561945
+        ]
+      }
+    },
+    {
+      "id": 314913330,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Länggasse",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "Länggasse",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Länggasse",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.436950206756592,
+          46.95295735383249
+        ]
+      }
+    },
+    {
+      "id": 2780256180,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Blinzern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.424032688140869,
+          46.92106138517781
+        ]
+      }
+    },
+    {
+      "id": 2780250030,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_ru": "Шпигель",
+        "name_it": "Spiegel",
+        "name_fr": "Spiegel",
+        "name_en": "Spiegel",
+        "symbolrank": 16,
+        "name_de": "Spiegel",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Spiegel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.436220645904541,
+          46.92601478424996
+        ]
+      }
+    },
+    {
+      "id": 314913260,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "Neufeld",
+        "iso_3166_2": "CH-BE",
+        "name_en": "Neufeld",
+        "class": "settlement_subdivision",
+        "name": "Neufeld",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.428088188171387,
+          46.959035504134846
+        ]
+      }
+    },
+    {
+      "id": 32469446640,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Thalmatt",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.410471439361572,
+          46.9754943043493
+        ]
+      }
+    },
+    {
+      "id": 314913250,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_ru": "Либефельд",
+        "name_fr": "Liebefeld",
+        "name_en": "Liebefeld",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "symbolrank": 16,
+        "name_ja": "リーベフェルト",
+        "name_de": "Liebefeld",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Liebefeld",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.420470714569092,
+          46.93224252065721
+        ]
+      }
+    },
+    {
+      "id": 314913230,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_ru": "Ваберн",
+        "name_it": "Wabern",
+        "name_fr": "Wabern",
+        "name_en": "Wabern",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "symbolrank": 16,
+        "name_de": "Wabern",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Wabern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.449824810028076,
+          46.92913606971564
+        ]
+      }
+    },
+    {
+      "id": 67400592270,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Eymatt",
+        "disputed": "false",
+        "symbolrank": 17,
+        "name_de": "Eymatt",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Eymatt",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.383542060852051,
+          46.96171552938503
+        ]
+      }
+    },
+    {
+      "id": 2907985790,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Latin",
+        "name_fr": "Halen",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "symbolrank": 17,
+        "name_de": "Halen",
+        "iso_3166_2": "CH-BE",
+        "name_en": "Halen",
+        "class": "settlement_subdivision",
+        "name": "Halen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.413346767425537,
+          46.97258070420796
+        ]
+      }
+    },
+    {
+      "id": 57606470390,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_en": "Schosshalde",
+        "symbolrank": 17,
+        "name_de": "Schosshalde",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Schosshalde",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.474157810211182,
+          46.94712753944623
+        ]
+      }
+    },
+    {
+      "id": 21546478170,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Seidenberg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.493898868560791,
+          46.93274070828829
+        ]
+      }
+    },
+    {
+      "id": 21546478150,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Kräyigen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.495572566986084,
+          46.92479845944706
+        ]
+      }
+    },
+    {
+      "id": 21546478120,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Thoracker",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.487504482269287,
+          46.93520227326627
+        ]
+      }
+    },
+    {
+      "id": 32223100700,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_fr": "Rüfenacht",
+        "name_en": "Rüfenacht",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "symbolrank": 16,
+        "name_de": "Rüfenacht",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Rüfenacht BE",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.53387451171875,
+          46.93032298969368
+        ]
+      }
+    },
+    {
+      "id": 32598224350,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_it": "Oberwangen",
+        "name_fr": "Oberwangen",
+        "name_en": "Oberwangen",
+        "symbolrank": 16,
+        "name_de": "Oberwangen",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Oberwangen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.360239028930664,
+          46.91298548350545
+        ]
+      }
+    },
+    {
+      "id": 40975428840,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_ru": "Шлирн",
+        "name_en": "Schliern",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_de": "Schliern",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "class": "settlement_subdivision",
+        "name": "Schliern",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.4147844314575195,
+          46.91047892171051
+        ]
+      }
+    },
+    {
+      "id": 130397165000,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Sandbühl",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.4727630615234375,
+          46.91854054472711
+        ]
+      }
+    },
+    {
+      "id": 3849089741,
+      "owner": "airport-label",
+      "properties": {
+        "sizerank": 14,
+        "name_zh-Hant": "伯爾尼-貝爾普機場",
+        "name_vi": "Sân bay Berne",
+        "name_script": "Latin",
+        "name_ru": "Берн",
+        "name_zh-Hans": "伯尔尼-贝尔普机场",
+        "name_pt": "Aeroporto de Berna",
+        "name_ko": "베른 공항",
+        "name_ja": "ベルン​空港",
+        "name_it": "Aeroporto Berna",
+        "name_en": "Bern Airport",
+        "disputed": "false",
+        "name_de": "Flughafen Bern-Belp",
+        "name_es": "Aeropuerto de Berna",
+        "ref": "BRN",
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "airport",
+        "name_fr": "Aéroport Berne",
+        "class": "civil",
+        "name": "Flughafen Bern-Belp",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.498383522033691,
+          46.911592963647706
+        ]
+      }
+    },
+    {
+      "id": 95012634,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Forest",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "park",
+        "name_script": "Latin",
+        "class": "park_like",
+        "name": "Riederenwald"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.427873611450195,
+          46.98637131818859
+        ]
+      }
+    },
+    {
+      "id": 3178001561,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hospital",
+        "name_script": "Latin",
+        "category_en": "Hospital",
+        "maki": "hospital",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "category_zh-Hans": "医院",
+        "class": "medical",
+        "name": "Inselspital"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.423882484436035,
+          46.94714218801681
+        ]
+      }
+    },
+    {
+      "id": 404229461,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "name_fr": "Musée d'Histoire de Berne",
+        "name_en": "Historical Museum of Bern",
+        "name_de": "Bernisches Historisches Museum",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 1,
+        "name_zh-Hant": "伯恩歷史博物館",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "伯恩历史博物馆",
+        "iso_3166_2": "CH-BE",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Bernisches Historisches Museum"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.449288368225098,
+          46.94295253345609
+        ]
+      }
+    },
+    {
+      "id": 324851831,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Stadium",
+        "name_script": "Latin",
+        "category_en": "Stadium",
+        "maki": "stadium",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "category_zh-Hans": "体育场",
+        "class": "arts_and_entertainment",
+        "name": "Stadion Wankdorf"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.464845180511475,
+          46.96306281377451
+        ]
+      }
+    },
+    {
+      "id": 1118924,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 10,
+        "type": "Forest",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "park",
+        "name_script": "Latin",
+        "class": "park_like",
+        "name": "Bremgartenwald"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.407402992248535,
+          46.961656951033206
+        ]
+      }
+    },
+    {
+      "id": 65851776350,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Ngo",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "marker",
+        "name_script": "Latin",
+        "class": "general",
+        "name": "Union postale universelle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.472805976867676,
+          46.93911417051632
+        ]
+      }
+    },
+    {
+      "id": 85035814,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Forest",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "park",
+        "name_script": "Latin",
+        "class": "park_like",
+        "name": "Hühnliwald"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.515571117401123,
+          46.923113144499865
+        ]
+      }
+    },
+    {
+      "id": 61953504,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 13,
+        "type": "Forest",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "park",
+        "name_script": "Latin",
+        "class": "park_like",
+        "name": "Gurtenwald"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.441928386688232,
+          46.91676709171631
+        ]
+      }
+    },
+    {
+      "id": 70294463290,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "disputed": "false",
+        "elevation_ft": 1873,
+        "elevation_m": 571,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Bawartenhubel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.424075603485107,
+          46.96578656770649
+        ]
+      }
+    },
+    {
+      "id": 316642980,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "disputed": "false",
+        "elevation_ft": 3107,
+        "elevation_m": 947,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Bantiger",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.527737617492676,
+          46.977866062629374
+        ]
+      }
+    },
+    {
+      "id": 107020450050,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "disputed": "false",
+        "elevation_ft": 2339,
+        "elevation_m": 713,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "mountain",
+        "class": "landform",
+        "name": "Säuhoger",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.472484111785889,
+          46.90436593740421
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 3070,
+        "iso_3166_2": "CH-BE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Köniztalstrasse"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              7.4530863761901855,
+              46.907942924108795
+            ],
+            [
+              7.449395656585693,
+              46.90826542757276
+            ],
+            [
+              7.447056770324707,
+              46.90870520189654
+            ],
+            [
+              7.4448466300964355,
+              46.908851792535984
+            ],
+            [
+              7.440834045410156,
+              46.91021506628107
+            ],
+            [
+              7.434203624725342,
+              46.91175420464134
+            ],
+            [
+              7.430963516235352,
+              46.913571796831576
+            ],
+            [
+              7.427937984466553,
+              46.91489097836234
+            ],
+            [
+              7.426156997680664,
+              46.91512549612369
+            ],
+            [
+              7.421779632568359,
+              46.91692831714272
+            ],
+            [
+              7.420320510864258,
+              46.91741199051148
+            ],
+            [
+              7.418668270111084,
+              46.91877504651646
+            ],
+            [
+              7.417745590209961,
+              46.91906817230989
+            ],
+            [
+              7.417423725128174,
+              46.91895092218493
+            ]
+          ],
+          [
+            [
+              7.449073791503906,
+              46.9081188353297
+            ],
+            [
+              7.449395656585693,
+              46.90826542757276
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

@@ -1,0 +1,218 @@
+[
+  {
+    "runtime": "3",
+    "camera": "cairo-nile-z14",
+    "variant": "before-pdf",
+    "a": "3/cairo-nile-z14/before-pdf/pdf150.png",
+    "b": "3/cairo-nile-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473561.5358333196,
+        3507442.8955992307,
+        3479676.4980961345,
+        3511742.478440272
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-nile-z14",
+    "variant": "after-pdf",
+    "a": "3/cairo-nile-z14/after-pdf/pdf150.png",
+    "b": "3/cairo-nile-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473561.5358333196,
+        3507442.8955992307,
+        3479676.4980961345,
+        3511742.478440272
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "grand-combin-z10",
+    "variant": "before-pdf",
+    "a": "3/grand-combin-z10/before-pdf/pdf150.png",
+    "b": "3/grand-combin-z10/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 288895.85493609885,
+      "extent": [
+        763601.2651975912,
+        5736022.574622013,
+        861440.6614026166,
+        5804815.900078671
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "grand-combin-z10",
+    "variant": "after-pdf",
+    "a": "3/grand-combin-z10/after-pdf/pdf150.png",
+    "b": "3/grand-combin-z10/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 288895.85493609885,
+      "extent": [
+        763601.2651975912,
+        5736022.574622013,
+        861440.6614026166,
+        5804815.900078671
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-nile-z14",
+    "variant": "before-pdf",
+    "a": "4/cairo-nile-z14/before-pdf/pdf150.png",
+    "b": "4/cairo-nile-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 66,
+    "max_channel_delta": 5,
+    "normalized_mae": 3.1318082788671023e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473561.5358333196,
+        3507442.8955992307,
+        3479676.4980961345,
+        3511742.478440272
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-nile-z14",
+    "variant": "after-pdf",
+    "a": "4/cairo-nile-z14/after-pdf/pdf150.png",
+    "b": "4/cairo-nile-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 27,
+    "max_channel_delta": 3,
+    "normalized_mae": 1.441085693536674e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473561.5358333196,
+        3507442.8955992307,
+        3479676.4980961345,
+        3511742.478440272
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "grand-combin-z10",
+    "variant": "before-pdf",
+    "a": "4/grand-combin-z10/before-pdf/pdf150.png",
+    "b": "4/grand-combin-z10/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 261,
+    "max_channel_delta": 6,
+    "normalized_mae": 5.16294480755265e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 288895.85493609885,
+      "extent": [
+        763601.2651975912,
+        5736022.574622013,
+        861440.6614026166,
+        5804815.900078671
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "grand-combin-z10",
+    "variant": "after-pdf",
+    "a": "4/grand-combin-z10/after-pdf/pdf150.png",
+    "b": "4/grand-combin-z10/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 271,
+    "max_channel_delta": 11,
+    "normalized_mae": 5.038126361655774e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 288895.85493609885,
+      "extent": [
+        763601.2651975912,
+        5736022.574622013,
+        861440.6614026166,
+        5804815.900078671
+      ]
+    }
+  }
+]

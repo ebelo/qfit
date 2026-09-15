@@ -1,0 +1,1137 @@
+{
+  "features": [
+    {
+      "id": 2400339240,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_ru": "Райхенбах-им-Кандерталь",
+        "class": "settlement",
+        "name": "Reichenbach im Kandertal",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.690858840942383,
+          46.62356437768281
+        ]
+      }
+    },
+    {
+      "id": 184775620,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Frutigen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.6444244384765625,
+          46.587417475394034
+        ]
+      }
+    },
+    {
+      "id": 2400720070,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "勞特布倫嫩",
+        "name_vi": "Lauterbrunnen",
+        "name_script": "Latin",
+        "name_ru": "Лаутербруннен",
+        "name_zh-Hans": "劳特布伦嫩",
+        "name_pt": "Lauterbrunnen",
+        "name_ko": "라우터브루넨",
+        "symbolrank": 15,
+        "name_ja": "ラウターブルンネン",
+        "name_it": "Lauterbrunnen",
+        "name_en": "Lauterbrunnen",
+        "name_es": "Lauterbrunnen",
+        "disputed": "false",
+        "name_de": "Lauterbrunnen",
+        "iso_3166_1": "CH",
+        "filterrank": 2,
+        "iso_3166_2": "CH-BE",
+        "name_fr": "Lauterbrunnen",
+        "class": "settlement",
+        "name": "Lauterbrunnen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.907838821411133,
+          46.59390564471269
+        ]
+      }
+    },
+    {
+      "id": 213119180,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "格林德瓦",
+        "name_vi": "Grindelwald",
+        "name_script": "Latin",
+        "name_ru": "Гриндельвальд",
+        "name_zh-Hans": "格林德瓦",
+        "name_pt": "Grindelwald",
+        "name_ko": "그린델발트",
+        "symbolrank": 14,
+        "name_ja": "グリンデルヴァルト",
+        "name_it": "Grindelwald",
+        "name_es": "Grindelwald",
+        "disputed": "false",
+        "name_de": "Grindelwald",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_fr": "Grindelwald",
+        "name_ar": "جريندلفالد",
+        "name_en": "Grindelwald",
+        "class": "settlement",
+        "name": "Grindelwald",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.03675651550293,
+          46.62427174355287
+        ]
+      }
+    },
+    {
+      "id": 2401180000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Wilderswil",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.863035202026367,
+          46.663398250210406
+        ]
+      }
+    },
+    {
+      "id": 2400968980,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "文根",
+        "name_zh-Hans": "文根",
+        "name_script": "Latin",
+        "name_ru": "Венген",
+        "name_ko": "웽엔",
+        "symbolrank": 13,
+        "name_ja": "ヴェンゲン",
+        "name_it": "Wengen",
+        "name_de": "Wengen",
+        "name_es": "Wengen",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_fr": "Wengen",
+        "name_ar": "وينجن",
+        "name_en": "Wengen",
+        "class": "settlement",
+        "name": "Wengen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.921743392944336,
+          46.60546445788057
+        ]
+      }
+    },
+    {
+      "id": 184775940,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "因特拉肯",
+        "name_script": "Latin",
+        "name_ru": "Интерлакен",
+        "name_zh-Hans": "因特拉肯",
+        "name_pt": "Interlaken",
+        "name_ko": "인터라켄",
+        "symbolrank": 13,
+        "name_ja": "インターラーケン",
+        "name_it": "Interlaken",
+        "name_en": "Interlaken",
+        "name_de": "Interlaken",
+        "name_ar": "انترلاكن",
+        "name_fr": "Interlaken",
+        "disputed": "false",
+        "name_es": "Interlaken",
+        "name_vi": "Interlaken",
+        "iso_3166_1": "CH",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "class": "settlement",
+        "name": "Interlaken",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.858486175537109,
+          46.68554167523348
+        ]
+      }
+    },
+    {
+      "id": 29733864370,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "name_ru": "Гуттанен",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Guttannen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.290472030639648,
+          46.65520995285968
+        ]
+      }
+    },
+    {
+      "id": 2400990690,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_fr": "Loèche-les-Bains",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Leukerbad",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.626743316650391,
+          46.3793266974499
+        ]
+      }
+    },
+    {
+      "id": 184785610,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "坎德施泰格",
+        "name_vi": "Kandersteg",
+        "name_script": "Latin",
+        "name_ru": "Кандерштег",
+        "name_zh-Hans": "坎德施泰格",
+        "name_pt": "Kandersteg",
+        "name_ko": "칸더슈테크",
+        "symbolrank": 15,
+        "name_ja": "カンデルシュテーク",
+        "name_it": "Kandersteg",
+        "name_de": "Kandersteg",
+        "name_es": "Kandersteg",
+        "iso_3166_1": "CH",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-BE",
+        "name_en": "Kandersteg",
+        "name_fr": "Kandersteg",
+        "class": "settlement",
+        "name": "Kandersteg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.675666809082031,
+          46.49756508058792
+        ]
+      }
+    },
+    {
+      "id": 2400496810,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "洛伊克",
+        "name_vi": "Leuk",
+        "name_script": "Latin",
+        "name_zh-Hans": "洛伊克",
+        "name_pt": "Loèche",
+        "name_ko": "로이크",
+        "symbolrank": 14,
+        "name_ja": "ロイク",
+        "name_it": "Leuk",
+        "name_de": "Leuk Stadt",
+        "name_es": "Leuk",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_ar": "ليك",
+        "name_en": "Leuk",
+        "name_fr": "Loèche",
+        "class": "settlement",
+        "name": "Leuk",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.635326385498047,
+          46.31705842736258
+        ]
+      }
+    },
+    {
+      "id": 2400870100,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_zh-Hant": "特門",
+        "name_de": "Termen",
+        "name_es": "Termen",
+        "name_it": "Termen",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Termen",
+        "name_fr": "Termen",
+        "name_zh-Hans": "特门",
+        "name_pt": "Termen",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Termen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.022680282592773,
+          46.32837981916853
+        ]
+      }
+    },
+    {
+      "id": 2400610850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "維勒",
+        "name_script": "Latin",
+        "name_de": "Wiler",
+        "symbolrank": 16,
+        "name_ja": "ヴィラー",
+        "name_es": "Wiler",
+        "name_it": "Wiler",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Wiler",
+        "name_fr": "Wiler",
+        "name_zh-Hans": "维勒",
+        "name_pt": "Wiler",
+        "name_ru": "Вилер",
+        "class": "settlement",
+        "name": "Wiler",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.783641815185547,
+          46.404012911875355
+        ]
+      }
+    },
+    {
+      "id": 2400312230,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "金美尔瓦尔德",
+        "iso_3166_1": "CH",
+        "name_vi": "Gimmelwald",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "disputed": "false",
+        "name_de": "Gimmelwald",
+        "name_ja": "ギンメルヴァルト",
+        "symbolrank": 16,
+        "name_es": "Gimmelwald",
+        "name_en": "Gimmelwald",
+        "name_fr": "Gimmelwald",
+        "name_it": "Gimmelwald",
+        "name_ko": "김멜발트",
+        "name_script": "Latin",
+        "name_ru": "Гиммельвальд",
+        "name_zh-Hant": "金美爾瓦爾德",
+        "class": "settlement",
+        "name": "Gimmelwald",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.894020080566406,
+          46.54687833525978
+        ]
+      }
+    },
+    {
+      "id": 268607070,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "name_de": "Ulrichen",
+        "symbolrank": 16,
+        "disputed": "false",
+        "name_it": "Ulrichen",
+        "filterrank": 2,
+        "name_es": "Ulrichen",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Ulrichen",
+        "name_fr": "Ulrichen",
+        "name_pt": "Ulrichen",
+        "name_script": "Latin",
+        "type": "village",
+        "text_anchor": "bottom",
+        "class": "settlement",
+        "name": "Ulrichen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.304977416992188,
+          46.50654519707595
+        ]
+      }
+    },
+    {
+      "id": 4363648350,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_it": "Biel",
+        "name_fr": "Biel",
+        "name_en": "Biel",
+        "iso_3166_2": "CH-VS",
+        "symbolrank": 17,
+        "name_de": "Biel",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "class": "settlement",
+        "name": "Biel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.216571807861328,
+          46.45589448750874
+        ]
+      }
+    },
+    {
+      "id": 28728694590,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "菲施",
+        "name_script": "Latin",
+        "name_zh-Hans": "菲施",
+        "name_pt": "Fiesch",
+        "name_ko": "피쉬",
+        "symbolrank": 15,
+        "name_ja": "フィーシュ",
+        "iso_3166_1": "CH",
+        "name_it": "Fiesch",
+        "name_de": "Fiesch",
+        "name_es": "Fiesch",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "name_en": "Fiesch",
+        "name_fr": "Fiesch",
+        "class": "settlement",
+        "name": "Fiesch",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.134174346923828,
+          46.40294755047154
+        ]
+      }
+    },
+    {
+      "id": 18398386420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_fr": "Ponte",
+        "name_en": "Ponte",
+        "name_it": "Ponte",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_ja": "ポンテ",
+        "name_de": "Ponte",
+        "filterrank": 1,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "class": "settlement",
+        "name": "Ponte / Zum Schtäg",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.425741195678711,
+          46.37683969719089
+        ]
+      }
+    },
+    {
+      "id": 1183138430,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "filterrank": 1,
+        "iso_3166_2": "CH-VS",
+        "name_de": "Oberwald",
+        "name_ja": "オーバーヴァルト",
+        "symbolrank": 16,
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "name_it": "Oberwald",
+        "name_es": "Oberwald",
+        "name_en": "Oberwald",
+        "name_fr": "Oberwald",
+        "name_ko": "오버발트",
+        "name_script": "Latin",
+        "name_zh-Hans": "上瓦尔德",
+        "name_pt": "Oberwald",
+        "name_zh-Hant": "上瓦爾德",
+        "class": "settlement",
+        "name": "Oberwald",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.352012634277344,
+          46.5328861882318
+        ]
+      }
+    },
+    {
+      "id": 2401037020,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "filterrank": 1,
+        "name_de": "Blitzingen",
+        "disputed": "false",
+        "name_it": "Blitzingen",
+        "name_es": "Blitzingen",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Blitzingen",
+        "name_fr": "Blitzingen",
+        "name_zh-Hans": "布利钦根",
+        "name_pt": "Blitzingen",
+        "name_script": "Latin",
+        "name_zh-Hant": "布利欽根",
+        "class": "settlement",
+        "name": "Blitzingen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.202323913574219,
+          46.443771517890184
+        ]
+      }
+    },
+    {
+      "id": 2400410320,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_vi": "Turtmann",
+        "filterrank": 2,
+        "name_de": "Turtmann",
+        "disputed": "false",
+        "name_it": "Turtmann",
+        "name_es": "Turtmann",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Turtmann",
+        "name_fr": "Tourtemagne",
+        "name_zh-Hans": "图尔特曼",
+        "name_pt": "Turtmann",
+        "name_script": "Latin",
+        "name_zh-Hant": "圖爾特曼",
+        "class": "settlement",
+        "name": "Turtmann",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.701759338378906,
+          46.301109666620135
+        ]
+      }
+    },
+    {
+      "id": 2401290450,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Visperterminen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.903032302856445,
+          46.25899210413692
+        ]
+      }
+    },
+    {
+      "id": 2400541630,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_zh-Hant": "里德布里格",
+        "name_de": "Ried-Brig",
+        "name_es": "Ried-Brig",
+        "name_it": "Ried-Brig",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Ried-Brig",
+        "name_fr": "Ried-Brig",
+        "name_zh-Hans": "里德布里格",
+        "name_pt": "Ried-Brig",
+        "name_ru": "Рид-Бриг",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Ried-Brig",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.016672134399414,
+          46.31504285543048
+        ]
+      }
+    },
+    {
+      "id": 2400269730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "name_fr": "Rarogne",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Raron",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.7996063232421875,
+          46.309944312693574
+        ]
+      }
+    },
+    {
+      "id": 577222830,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "symbolrank": 13,
+        "name_zh-Hant": "布里格",
+        "name_script": "Latin",
+        "name_de": "Brig",
+        "name_es": "Brig",
+        "name_it": "Briga",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_en": "Brig",
+        "name_fr": "Brigue",
+        "name_zh-Hans": "布里格",
+        "name_pt": "Briga",
+        "name_ru": "Бриг",
+        "class": "settlement",
+        "name": "Brig",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.987918853759766,
+          46.31634705751071
+        ]
+      }
+    },
+    {
+      "id": 600282390,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "菲斯普",
+        "name_script": "Latin",
+        "name_ru": "Фисп",
+        "name_zh-Hans": "菲斯普",
+        "name_pt": "Visp",
+        "name_ko": "피스프",
+        "symbolrank": 13,
+        "name_ja": "フィスプ",
+        "name_it": "Visp",
+        "name_en": "Visp",
+        "name_es": "Visp",
+        "name_de": "Visp",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VS",
+        "iso_3166_1": "CH",
+        "name_fr": "Viège",
+        "class": "settlement",
+        "name": "Visp",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.881231307983398,
+          46.29132467004575
+        ]
+      }
+    },
+    {
+      "id": 636308780,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IT",
+        "iso_3166_2": "IT-21",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Baceno",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.320255279541016,
+          46.26089105718546
+        ]
+      }
+    },
+    {
+      "id": 28182564,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 8,
+        "type": "Nature Reserve",
+        "name_script": "Latin",
+        "name_it": "Parco naturale della Valle di Binn",
+        "name_fr": "Parc naturel de la Vallée de Binn",
+        "name_de": "Landschaftspark Binntal",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "maki": "park",
+        "name_en": "Binntal Nature Park",
+        "class": "park_like",
+        "name": "Landschaftspark Binntal"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.18429946899414,
+          46.364639912768126
+        ]
+      }
+    },
+    {
+      "id": 28182634,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 5,
+        "type": "Nature Reserve",
+        "name_script": "Latin",
+        "name_it": "Parco naturale Pfyn-Finges",
+        "name_fr": "Parc naturel Pfyn-Finges",
+        "name_de": "Naturpark Pfyn-Finges",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "maki": "park",
+        "name_en": "Pfyn-Finges Nature Park",
+        "class": "park_like",
+        "name": "Naturpark Pfyn-Finges"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.651548385620117,
+          46.30745415407944
+        ]
+      }
+    },
+    {
+      "id": 11173214,
+      "owner": "water-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "sizerank": 12,
+        "name_ru": "Тунское озеро",
+        "name_fr": "Lac de Thoune",
+        "maki": "marker",
+        "iso_3166_2": "CH-BE",
+        "disputed": "false",
+        "elevation_ft": 1831,
+        "elevation_m": 558,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "class": "water",
+        "name": "Thunersee",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.720556259155273,
+          46.6924890710705
+        ]
+      }
+    },
+    {
+      "id": 316642990,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "elevation_m": 2362,
+        "elevation_ft": 7750,
+        "name_en": "Niesen",
+        "name_de": "Niesen",
+        "name_es": "Niesen",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_2": "CH-BE",
+        "maki": "mountain",
+        "name_fr": "Niesen",
+        "iso_3166_1": "CH",
+        "name_ar": "نيسين",
+        "name_it": "Niesen",
+        "name_pt": "Monte Niesen",
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Niesen",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.65223503112793,
+          46.646195501233905
+        ]
+      }
+    },
+    {
+      "id": 18320429800,
+      "owner": "natural-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_fr": "Ritzlihorn",
+        "sizerank": 16,
+        "name_ar": "ريتزلينورن",
+        "maki": "mountain",
+        "iso_3166_2": "CH-BE",
+        "name_es": "Ritzlihorn",
+        "name_de": "Ritzlihorn",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_en": "Ritzlihorn",
+        "elevation_ft": 10768,
+        "elevation_m": 3282,
+        "class": "landform",
+        "name": "Ritzlihorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.25871467590332,
+          46.633407721997116
+        ]
+      }
+    },
+    {
+      "id": 268624740,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_ru": "Алечхорн",
+        "name_pt": "Aletschhorn",
+        "name_ja": "アレーチュホルン",
+        "name_it": "Aletschhorn",
+        "name_es": "Aletschhorn",
+        "name_de": "Aletschhorn",
+        "filterrank": 1,
+        "disputed": "false",
+        "elevation_ft": 13764,
+        "name_en": "Aletschhorn",
+        "elevation_m": 4195,
+        "iso_3166_2": "CH-VS",
+        "maki": "mountain",
+        "name_fr": "Aletschhorn",
+        "iso_3166_1": "CH",
+        "name_ar": "ألتسشورن",
+        "class": "landform",
+        "name": "Aletschhorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.9932403564453125,
+          46.4651770836158
+        ]
+      }
+    },
+    {
+      "id": 2850704,
+      "owner": "natural-point-label",
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VS",
+        "maki": "marker",
+        "sizerank": 13,
+        "name_ru": "Фишерглечер",
+        "class": "glacier",
+        "name": "Fieschergletscher",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.107051849365234,
+          46.51877231239493
+        ]
+      }
+    },
+    {
+      "id": 6539025610,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "芬斯特瓦山",
+        "name_script": "Latin",
+        "name_ru": "Финстераархорн",
+        "name_zh-Hans": "芬斯特瓦山",
+        "name_pt": "Finsteraarhorn",
+        "name_ja": "フィンシュターアールホルン",
+        "name_it": "Finsteraarhorn",
+        "name_en": "Finsteraarhorn",
+        "name_de": "Finsteraarhorn",
+        "name_ar": "فينستيرارون",
+        "name_fr": "Finsteraarhorn",
+        "name_es": "Finsteraarhorn",
+        "filterrank": 1,
+        "disputed": "false",
+        "elevation_ft": 14023,
+        "elevation_m": 4274,
+        "iso_3166_2": "CH-VS",
+        "maki": "mountain",
+        "iso_3166_1": "CH",
+        "class": "landform",
+        "name": "Finsteraarhorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.126106262207031,
+          46.537373514204916
+        ]
+      }
+    },
+    {
+      "id": 268625340,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 3273,
+        "elevation_ft": 10739,
+        "name_en": "Basòdino",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_de": "Monte Basòdino",
+        "name_es": "Basòdino",
+        "iso_3166_2": "CH-TI",
+        "maki": "mountain",
+        "name_fr": "Monte Basòdino",
+        "iso_3166_1": "CH",
+        "name_ar": "باسودينو",
+        "sizerank": 16,
+        "name_it": "Basòdino",
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Basodino",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.468399047851562,
+          46.411588215204006
+        ]
+      }
+    },
+    {
+      "id": 268631360,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 3272,
+        "elevation_ft": 10735,
+        "name_en": "Helsenhorn",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_de": "Helsenhorn",
+        "name_es": "Helsenhorn",
+        "iso_3166_2": "CH-VS",
+        "maki": "mountain",
+        "name_fr": "Helsenhorn",
+        "iso_3166_1": "CH",
+        "name_ar": "هيلسينورن",
+        "sizerank": 16,
+        "name_it": "Helsenhorn",
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Helsenhorn",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.191680908203125,
+          46.30478600127935
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}
