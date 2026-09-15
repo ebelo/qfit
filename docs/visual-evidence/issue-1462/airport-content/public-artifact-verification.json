@@ -1,0 +1,35 @@
+{
+  "method": "GitHub content API JSON/base64; raw Accept request failed, no policy changes",
+  "artifacts": [
+    {
+      "artifact": "geneva-airport-z10-qgis3-crop.png",
+      "commit": "3a773fe351caf585cbfd6c68bac5e63fe18983be",
+      "sha256": "ff07d3cd9e81e06d50079d59a33513515c2d1de9d16840df0726f88a30c41488",
+      "github_api_bytes_match": true
+    },
+    {
+      "artifact": "cairo-airport-z14-qgis4-crop.png",
+      "commit": "3a773fe351caf585cbfd6c68bac5e63fe18983be",
+      "sha256": "99f6b7e585a009fbcde7cdbe1cceaa7b22c0faa8350c6df9e04b4e91fdcdd068",
+      "github_api_bytes_match": true
+    },
+    {
+      "artifact": "bern-urban-z12-light-qgis4-crop.png",
+      "commit": "3a773fe351caf585cbfd6c68bac5e63fe18983be",
+      "sha256": "534fafaf80251fd14d00539ff46dfec0b59faf2919618bc831aef081325f5186",
+      "github_api_bytes_match": true
+    },
+    {
+      "artifact": "source.json",
+      "commit": "3a773fe351caf585cbfd6c68bac5e63fe18983be",
+      "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+      "github_api_bytes_match": true
+    },
+    {
+      "artifact": "final-head-verification.json",
+      "commit": "3439b1e",
+      "sha256": "3c0ce137e54d64d1ca0074859990f17206cf1c27a94180eceb485036aa33d90f",
+      "github_api_bytes_match": true
+    }
+  ]
+}

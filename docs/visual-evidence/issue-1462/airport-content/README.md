@@ -178,7 +178,12 @@ No real token copy, credential fallback, permission broadening or TLS disabling.
 
 Local full suite2681passed/192skipped/328subtests; both completeDocker scripts
 217passed/82skipped; legacy airport1test/161subtests; bothZIP builds and9package
-checks pass. CI/security/Sonar and exact-head review proof will be linked after
-completion. The goal remains OPEN; no release, deployment or accepted limitation.
+checks pass. All11 final-head CI/security/CodeQL/Sonar/Greptile checks passed. Codex completed
+clean on f8fa1a6; Greptile5/5 on that exact head; fresh Sonar APIHTTP200,total0.
+[PR1477](https://github.com/ebelo/qfit/pull/1477) is **MERGED**, verified
+2026-09-15 11:07:33UTC. Clean main78b183b has the same entire tree as reviewed
+headf8fa1a6. [Merged checks/reviews and API proof](merged-gates.json) ·
+[Final-head233-file identity](final-head-verification.json) ·
+[Public artifact-byte verification](public-artifact-verification.json). The goal remains OPEN; no release, deployment or accepted limitation.
 
 Map data © OpenStreetMap contributors; reference cartography © Mapbox.

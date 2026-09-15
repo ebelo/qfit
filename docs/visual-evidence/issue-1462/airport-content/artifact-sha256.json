@@ -18,7 +18,8 @@
   "bern-urban-z12-light-qgis3-full.png": "0d99c0c02955bd94e4713c8cdde46c7d6f707c0485a20eef4eb10b8623bfe806",
   "generator-provenance.json": "45d1e1233d3162a8efbe5fa9f527842083636145ff2e4ec694fd0401da50b2e9",
   "cairo-airport-z8-qgis4-missing-ref-crop.png": "50a128a3e5c938006365d22b43c6799fb0dcb53e3bc805d9c9cdd8952a376609",
-  "README.md": "856752038420c90f7e20345d5b226f5c582ee30c8567361c2bf28abd5fbe9bdf",
+  "README.md": "20cbfa0206d8dd1a6acede59579d0476ac3d427fa4284c0335ae72ce0df47d30",
+  "public-artifact-verification.json": "4861f8755c3c395be88e381d08725e1e4647c295ef88f39759a732de11fe2b63",
   "cairo-airport-z8-qgis3-missing-ref-crop.png": "3aedfed271e9dae8e4b069d7939e24d2d8f53fea3823d1a38183e6da15d994eb",
   "lausanne-lavaux-z10-light-qgis4-full.png": "7c9d0ef7ec882a6dd8b26c7bef7cd814b3cca37b2621c5edc8f1cb41b969e870",
   "switzerland-alps-z5-light-qgis3-crop.png": "d4c33a6bf496b7bb4e16f9e9d78dfc7c2b32a0cc34cf611f605c71e47b66a4a1",
@@ -30,6 +31,7 @@
   "pdf_worker.py": "0d785467d2526a4dc31aaf434e1f0041dfebedfd28019a1fbe8e24fab998385f",
   "geneva-airport-z10-qgis4-crop.png": "3cc65c86d106ba908f147527e6e64a0af32bb8953e74c1351b466f8da2b86cca",
   "lausanne-lavaux-z10-light-qgis3-full.png": "808be2e8574652adbe25657f54ead0953a8a0e89cc9d3c2029ebaead5d70e444",
+  "merged-gates.json": "f829a56b8b1738ae8b749576ab593672cdd2bc6916521671750e6a1663f75206",
   "zurich-streets-z17-light-qgis3-full.png": "3ba74db93e9d297239f84d35f23818be3e890abc819177c1faee4fd3b637d1d1",
   "geneva-streets-z18-light-qgis3-crop.png": "295bcfaa9f8c4f8c7972168c4f582f5dce55274d4d496236f60f4d4acebd5b2b",
   "cairo-airport-z14-qgis4-pdf150-crop.png": "0e072ab88dbf92d71716dcffe172e0da950a39e8f95338b2e0471a621a2792b0",
@@ -38,6 +40,7 @@
   "cairo-airport-z14-qgis3-crop.png": "1b8d8c18d90eb5164955843b791fa16c7163e50aa9bc58f703060f2f0c7de72c",
   "candidate-runtime-hashes.json": "da61c057c28c1e5a15e0d35e26475258c09d7073ad8c402657baf2a8c282ed4c",
   "switzerland-alps-z5-light-qgis3-full.png": "32fb8ff5136c61abe0c37754b1665963030eaa847cbe6c5305ae4bf49b8ac43b",
+  "final-head-verification.json": "3c0ce137e54d64d1ca0074859990f17206cf1c27a94180eceb485036aa33d90f",
   "switzerland-alps-z5-light-qgis4-crop.png": "56ca612c95b231d63b93201ce6d1e6cf3472e5af24ec7691b99f5d1f3629d3ad",
   "lausanne-lavaux-z10-light-qgis4-crop.png": "66b84f9cad18ce2e95695c95378395aa350308d66a4d3bf1b31e55314c7d2455",
   "geneva-airport-z14-qgis3-full.png": "6b485ce096b5cb9c440e9feb5ce80e53a0586c38bd7696dfb516f1364c267060",
@@ -887,6 +890,5 @@
   "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png.features.json": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
   "reference-mercator-repeat/zurich-region-z8-light/mapbox.png": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
   "reference-mercator-repeat/zurich-region-z8-light/runtime.json": "816dbfa65495dde06090477a62a5b2896e530204b286a4997abe07108c6cb115",
-  "reference-mercator-repeat/zurich-region-z8-light/mapbox.png.features.json": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
-  "final-head-verification.json": "3c0ce137e54d64d1ca0074859990f17206cf1c27a94180eceb485036aa33d90f"
+  "reference-mercator-repeat/zurich-region-z8-light/mapbox.png.features.json": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42"
 }
