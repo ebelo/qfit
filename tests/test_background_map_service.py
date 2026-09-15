@@ -1345,6 +1345,99 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                             self.assertEqual(selected == 1, water_class in allowed
                                              and worldview in ("all", "US") and geometry_type == "LineString")
 
+    def test_light_natural_names_preserve_source_rank_geometry_worldview_and_settings(self):
+        import copy
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.validation.mapbox_outdoors_comparison import qgis_label_styles_snapshot
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch("qfit.visualization.infrastructure.mapbox_light_labels._light_natural_name_fallback_owners", return_value=set()):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        for layer in (before_layer, after_layer):
+            layer.labeling.return_value = layer.setLabeling.call_args.args[0]
+        before, after = qgis_label_styles_snapshot(before_layer), qgis_label_styles_snapshot(after_layer)
+        names = ["natural-line-label", "natural-point-label"]
+        normalized = copy.deepcopy(after)
+        changed = []
+        for row in normalized:
+            if any(row["style_name"] == name or row["style_name"].startswith(name + "-qfit-open-fonts-") for name in names):
+                self.assertEqual(row["label_settings"]["field_name"], 'coalesce("name_en", "name")')
+                row["label_settings"]["field_name"] = '"name"'
+                changed.append(row["style_name"])
+        self.assertEqual({name.split("-qfit-open-fonts-")[0] for name in changed}, set(names))
+        self.assertEqual(normalized, before, "Only the two natural-feature families' text fields may change")
+        rules = [r for r in after_layer.labeling().styles()
+                 if r.styleName().split("-qfit-open-fonts-")[0] in names]
+        for name in names:
+            family = [r for r in rules if r.styleName().split("-qfit-open-fonts-")[0] == name]
+            self.assertIn([(r.minZoomLevel(), r.maxZoomLevel()) for r in family],
+                          [[(4, -1)], [(4, 7), (8, -1)]])
+        cases = [({"name_en": "Rhine", "name": "Le Rhin / Rhein"}, "Rhine"),
+                 ({"name_en": None, "name": "L’Arve"}, "L’Arve"),
+                 ({"name": "القاهرة"}, "القاهرة"),
+                 ({"name_en": "", "name": "ירושלים"}, ""),
+                 ({"name_en": "Zürich / ירושלים 12", "name": "local"}, "Zürich / ירושלים 12"),
+                 ({"name_en": "English only"}, "English only"), ({}, None),
+                 ({"name_en": "A deliberately long river name — Rhône, Rhine and tributaries", "name": "local"},
+                  "A deliberately long river name — Rhône, Rhine and tributaries")]
+        for rule in rules:
+            settings = rule.labelSettings()
+            predicate, expression = QgsExpression(rule.filterExpression()), QgsExpression(settings.fieldName)
+            requested = settings.referencedFields(QgsRenderContext())
+            self.assertTrue({"name_en", "name"}.issubset(requested))
+            fields = QgsFields()
+            for name in sorted(requested | predicate.referencedColumns()):
+                fields.append(QgsField(name))
+            feature = QgsFeature(fields)
+            feature.setGeometry(QgsGeometry.fromWkt("LINESTRING (0 0, 1 1, 2 0)"))
+            context = QgsExpressionContext()
+            context.setFields(fields)
+            for properties, expected in cases:
+                feature.setAttributes([properties.get(field.name()) for field in fields])
+                context.setFeature(feature)
+                with self.subTest(rule=rule.styleName(), properties=properties):
+                    self.assertTrue(expression.prepare(context))
+                    actual = expression.evaluate(context)
+                    self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                    self.assertEqual(None if actual == NULL else actual, expected)
+            owner_name = rule.styleName().split("-qfit-open-fonts-")[0]
+            owner = next(x for x in source["layers"] if x["id"] == owner_name)
+            allowed = (["glacier", "landform", "disputed_glacier", "disputed_landform"]
+                       if owner_name == "natural-line-label" else
+                       ["dock", "glacier", "landform", "water_feature", "wetland",
+                        "disputed_dock", "disputed_glacier", "disputed_landform",
+                        "disputed_water_feature", "disputed_wetland"])
+            geometry = "LineString" if owner_name == "natural-line-label" else "Point"
+            self.assertEqual(owner["filter"], ["all", ["match", ["get", "class"], allowed,
+                             ["match", ["get", "worldview"], ["all", "US"], True, False], False],
+                             ["<=", ["get", "filterrank"], 1], ["==", ["geometry-type"], geometry]])
+            for natural_class in allowed + ["river", None]:
+                for worldview in ("all", "US", "CN", "all,US", "", None):
+                    for geometry_type in ("LineString", "Point", "Polygon"):
+                        for rank in (0, 1, 1.1, None):
+                            feature.setAttribute("class", natural_class)
+                            feature.setAttribute("worldview", worldview)
+                            feature.setAttribute("_geom_type", geometry_type)
+                            feature.setAttribute("filterrank", rank)
+                            context.setFeature(feature)
+                            with self.subTest(rule=rule.styleName(), natural_class=natural_class,
+                                              worldview=worldview, geometry_type=geometry_type, rank=rank):
+                                self.assertTrue(predicate.prepare(context))
+                                selected = predicate.evaluate(context)
+                                self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+                                self.assertEqual(selected == 1, natural_class in allowed
+                                                 and worldview in ("all", "US") and geometry_type == geometry
+                                                 and rank is not None and rank <= 1)
+
     def test_light_airport_content_preserves_rank_reference_and_native_settings(self):
         import copy
         import json
