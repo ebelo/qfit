@@ -1,0 +1,86 @@
+{
+  "checked_at_utc": "2026-09-15T12:48:42.097Z",
+  "results": [
+    {
+      "url": "/api/issues/search?projectKeys=ebelo_qfit&pullRequest=1479&resolved=false",
+      "http_status": 200,
+      "body": {
+        "total": 0,
+        "p": 1,
+        "ps": 50,
+        "paging": {
+          "pageIndex": 1,
+          "pageSize": 50,
+          "total": 0
+        },
+        "effortTotal": 0,
+        "debtTotal": 0,
+        "issues": [],
+        "components": [],
+        "organizations": [],
+        "facets": []
+      }
+    },
+    {
+      "url": "/api/qualitygates/project_status?projectKey=ebelo_qfit&pullRequest=1479",
+      "http_status": 200,
+      "body": {
+        "projectStatus": {
+          "status": "OK",
+          "conditions": [
+            {
+              "status": "OK",
+              "metricKey": "new_reliability_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_security_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_maintainability_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_coverage",
+              "comparator": "LT",
+              "periodIndex": 1,
+              "errorThreshold": "80",
+              "actualValue": "100.0"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_duplicated_lines_density",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "3",
+              "actualValue": "0.0"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_security_hotspots_reviewed",
+              "comparator": "LT",
+              "periodIndex": 1,
+              "errorThreshold": "100",
+              "actualValue": "100.0"
+            }
+          ],
+          "periods": [],
+          "ignoredConditions": false
+        }
+      }
+    }
+  ]
+}

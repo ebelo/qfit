@@ -1,0 +1,316 @@
+{
+  "verified_at_utc": "2026-09-15T12:53:09.581046+00:00",
+  "pr": 1479,
+  "merge": {
+    "headRefOid": "1e6846879a620fd237908ce18ffed69f085aa480",
+    "mergeCommit": {
+      "oid": "a2d1f30ed53a30ab752e86c5eb3d353669e068ab"
+    },
+    "mergedAt": "2026-09-15T12:51:47Z",
+    "state": "MERGED",
+    "url": "https://github.com/ebelo/qfit/pull/1479"
+  },
+  "main_clean": true,
+  "main_equals_reviewed_head_tree": true,
+  "captured_runtime_files_match_merged_main": 233,
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:46:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970782487/job/104386270834",
+      "name": "Analyze (actions)",
+      "startedAt": "2026-09-15T12:45:55Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:47:43Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785483/job/104386276072",
+      "name": "sonarcloud",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "SonarCloud"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:46:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785366/job/104386275488",
+      "name": "build",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "build"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:46:15Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785429/job/104386276149",
+      "name": "plugin-security-scan",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "plugin-security-scan"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:46:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785442/job/104386276191",
+      "name": "unit-tests",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:47:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970782487/job/104386271106",
+      "name": "Analyze (python)",
+      "startedAt": "2026-09-15T12:45:57Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:48:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785442/job/104386276104",
+      "name": "docker-qgis3",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:47:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34970785442/job/104386276186",
+      "name": "docker-qgis4",
+      "startedAt": "2026-09-15T12:45:56Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:46:31Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/runs/104386474980",
+      "name": "CodeQL",
+      "startedAt": "2026-09-15T12:46:29Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:48:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://greptile.com/",
+      "name": "Greptile Review",
+      "startedAt": "2026-09-15T12:45:54Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T12:47:40Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://sonarcloud.io/dashboard?id=ebelo_qfit&pullRequest=1479",
+      "name": "SonarCloud Code Analysis",
+      "startedAt": "2026-09-15T12:46:58Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ],
+  "reviews": [],
+  "review_summary_comments": [
+    {
+      "id": "IC_kwDORsgCKs8AAAABUpPTfA",
+      "author": {
+        "login": "chatgpt-codex-connector"
+      },
+      "authorAssociation": "NONE",
+      "body": "<!-- codex-pull-request-review-summary -->\n\n## Codex Review Summary\n\nThis comment shows the latest Codex review activity on this pull request.\n\n| Review | Status | Commit | Review trigger |\n| --- | --- | --- | --- |\n| \ud83d\udcdd **Code Review** | \u2705 **Completed** <relative-time datetime=\"2026-09-15T12:48:48.070177Z\">2026-09-15T12:48:48.070177Z</relative-time> | `1e68468` | PR opened |\n\n\n\n<details> <summary>\u2139\ufe0f About Codex in GitHub</summary>\n<br/>\n\n[Your team has set up Codex to review pull requests in this repo](https://chatgpt.com/codex/cloud/settings/general). Reviews are triggered when you\n- Open a pull request for review\n- Mark a draft as ready\n- Comment \"@codex review\" or \"@codex security review\".\n\nCodex reacts with \ud83d\udc40 while any review is running, comments if it has suggestions, and reacts with \ud83d\udc4d once all reviews finish with no findings.\n\n</details>",
+      "createdAt": "2026-09-15T12:45:59Z",
+      "includesCreatedEdit": true,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/ebelo/qfit/pull/1479#issuecomment-5680386940",
+      "viewerDidAuthor": false
+    },
+    {
+      "id": "IC_kwDORsgCKs8AAAABUpRAcw",
+      "author": {
+        "login": "greptile-apps"
+      },
+      "authorAssociation": "NONE",
+      "body": "<!-- greptile_summary -->\n\n<h2><a href=\"https://app.greptile.com/api/retrigger?id=64435624\"><picture><source media=\"(prefers-color-scheme: dark)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/RetriggerDark.svg?v=2\"><source media=\"(prefers-color-scheme: light)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=2\"><img alt=\"Retrigger\" src=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=2\" align=\"right\"></picture></a>Confidence Score: 5/5</h2>\n\nThe PR appears safe to merge; the implementation is narrowly guarded and its intended behavior is covered by focused regression tests.\n\n<details><summary><h3>Summary</h3></summary>\n\nThis PR narrowly restores source-requested English/local-name fallback for Mapbox Light natural line and point labels while preserving existing filtering, placement, typography, and unrelated label behavior.\n- Recognizes only unique Light natural-label owners matching the audited source contract.\n- Rewrites native `\"name\"` expressions before font-band splitting to `coalesce(\"name_en\", \"name\")`.\n- Adds focused unit and real-QGIS regression coverage for fallback semantics, owner ambiguity, eligibility, and settings preservation.\n- Documents the scoped visual assessment and remaining fidelity limitations.\n</details>\n\n<sub>Reviews (1) \u00b7 Last reviewed commit: [\"docs: clarify natural-content ledger sum...\"](https://github.com/ebelo/qfit/commit/1e6846879a620fd237908ce18ffed69f085aa480)</sub>",
+      "createdAt": "2026-09-15T12:48:05Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/ebelo/qfit/pull/1479#issuecomment-5680414835",
+      "viewerDidAuthor": false
+    }
+  ],
+  "reactions": [
+    {
+      "id": 506838611,
+      "node_id": "REA_lAHORsgCKs8AAAABRZCHqM4eNb5T",
+      "user": {
+        "login": "greptile-apps[bot]",
+        "id": 165735046,
+        "node_id": "BOT_kgDOCeDqhg",
+        "avatar_url": "https://avatars.githubusercontent.com/in/867647?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/greptile-apps%5Bbot%5D",
+        "html_url": "https://github.com/greptile-apps%5Bbot%5D",
+        "followers_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/followers",
+        "following_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/following{/other_user}",
+        "gists_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/subscriptions",
+        "organizations_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/orgs",
+        "repos_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/repos",
+        "events_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "content": "+1",
+      "created_at": "2026-09-15T12:48:09Z"
+    },
+    {
+      "id": 506839760,
+      "node_id": "REA_lAHORsgCKs8AAAABRZCHqM4eNcLQ",
+      "user": {
+        "login": "chatgpt-codex-connector[bot]",
+        "id": 199175422,
+        "node_id": "BOT_kgDOC98s_g",
+        "avatar_url": "https://avatars.githubusercontent.com/in/1144995?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D",
+        "html_url": "https://github.com/chatgpt-codex-connector%5Bbot%5D",
+        "followers_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/followers",
+        "following_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/following{/other_user}",
+        "gists_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/subscriptions",
+        "organizations_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/orgs",
+        "repos_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/repos",
+        "events_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "content": "+1",
+      "created_at": "2026-09-15T12:48:51Z"
+    }
+  ],
+  "inline_findings": [],
+  "review_threads": {
+    "data": {
+      "repository": {
+        "pullRequest": {
+          "reviewThreads": {
+            "nodes": []
+          }
+        }
+      }
+    }
+  },
+  "fresh_sonar": {
+    "checked_at_utc": "2026-09-15T12:48:42.097Z",
+    "results": [
+      {
+        "url": "/api/issues/search?projectKeys=ebelo_qfit&pullRequest=1479&resolved=false",
+        "http_status": 200,
+        "body": {
+          "total": 0,
+          "p": 1,
+          "ps": 50,
+          "paging": {
+            "pageIndex": 1,
+            "pageSize": 50,
+            "total": 0
+          },
+          "effortTotal": 0,
+          "debtTotal": 0,
+          "issues": [],
+          "components": [],
+          "organizations": [],
+          "facets": []
+        }
+      },
+      {
+        "url": "/api/qualitygates/project_status?projectKey=ebelo_qfit&pullRequest=1479",
+        "http_status": 200,
+        "body": {
+          "projectStatus": {
+            "status": "OK",
+            "conditions": [
+              {
+                "status": "OK",
+                "metricKey": "new_reliability_rating",
+                "comparator": "GT",
+                "periodIndex": 1,
+                "errorThreshold": "1",
+                "actualValue": "1"
+              },
+              {
+                "status": "OK",
+                "metricKey": "new_security_rating",
+                "comparator": "GT",
+                "periodIndex": 1,
+                "errorThreshold": "1",
+                "actualValue": "1"
+              },
+              {
+                "status": "OK",
+                "metricKey": "new_maintainability_rating",
+                "comparator": "GT",
+                "periodIndex": 1,
+                "errorThreshold": "1",
+                "actualValue": "1"
+              },
+              {
+                "status": "OK",
+                "metricKey": "new_coverage",
+                "comparator": "LT",
+                "periodIndex": 1,
+                "errorThreshold": "80",
+                "actualValue": "100.0"
+              },
+              {
+                "status": "OK",
+                "metricKey": "new_duplicated_lines_density",
+                "comparator": "GT",
+                "periodIndex": 1,
+                "errorThreshold": "3",
+                "actualValue": "0.0"
+              },
+              {
+                "status": "OK",
+                "metricKey": "new_security_hotspots_reviewed",
+                "comparator": "LT",
+                "periodIndex": 1,
+                "errorThreshold": "100",
+                "actualValue": "100.0"
+              }
+            ],
+            "periods": [],
+            "ignoredConditions": false
+          }
+        }
+      }
+    ]
+  },
+  "scope": "Scoped natural-content PR merged; whole issue remains OPEN with no accepted limitation."
+}

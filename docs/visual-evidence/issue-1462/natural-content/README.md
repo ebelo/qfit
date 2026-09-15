@@ -157,4 +157,22 @@ eight PDF-hook PNGs also match the ordinary maps/settings/context.
 All three PR images actually load inline1140×335; [inline proof](inline-image-verification.json).
 Six public GitHub JSON/base64 artifact reads match local bytes, including images,
 source, gallery and manifest: [public byte proof](public-artifact-verification.json).
-Exact-head CI/security/Sonar and Codex/Greptile are still pending here; no merge claim.
+CI/reviews were pending when this identity proof was first published; final status follows.
+
+## Merged gates — 2026-09-15
+
+[PR1479](https://github.com/ebelo/qfit/pull/1479) **MERGED**, GitHub verified at
+2026-09-15 12:51:47UTC. Main `a2d1f30ed53a30ab752e86c5eb3d353669e068ab` is
+clean/synced and its complete tree equals reviewed head `1e6846879a620fd237908ce18ffed69f085aa480`.
+All233captured runtime Python hashes also equal merged main.
+
+[Checks/reviews/merge proof](merged-gates.json): all11final-head checks SUCCESS,
+including both Docker lanes, security, CodeQL and Sonar. Codex completed clean at
+12:48:48.070UTC on1e68468; Greptile5/5 on the same full head; both reacted+1.
+No inline finding or unresolved review thread. Fresh public Sonar API HTTP200,
+zero unresolved issues, gateOK, coverage100%, duplication0%: [API proof](sonar-fresh.json).
+
+PR Markdown was read back exactly. The deprecated gh-edit Projects-classic failure
+was recovered using an exact Markdown-derived REST JSON file, without auth/policy
+changes. This does not alter runtime or capture proof. Broader C01–C30/C19/output
+findings above remain open; no release, deployment or holistic completion.
