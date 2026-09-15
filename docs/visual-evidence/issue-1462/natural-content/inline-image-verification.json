@@ -1,0 +1,24 @@
+{
+  "verified_at_utc": "2026-09-15T12:47:33.130176+00:00",
+  "pr": "https://github.com/ebelo/qfit/pull/1479",
+  "images": [
+    {
+      "path": "grand-combin-z10-qgis4-crop.png",
+      "complete": true,
+      "natural_width": 1140,
+      "natural_height": 335
+    },
+    {
+      "path": "cairo-nile-z14-qgis3-crop.png",
+      "complete": true,
+      "natural_width": 1140,
+      "natural_height": 335
+    },
+    {
+      "path": "mont-blanc-z10-qgis4-crop.png",
+      "complete": true,
+      "natural_width": 1140,
+      "natural_height": 335
+    }
+  ]
+}

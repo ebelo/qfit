@@ -1,0 +1,13 @@
+{
+  "verified_at_utc": "2026-09-15T12:46:26.380601+00:00",
+  "pr": 1479,
+  "final_head": "1e6846879a620fd237908ce18ffed69f085aa480",
+  "captured_runtime": "cbf23209c8f7e935ffd1188ed90b88e38251c00d",
+  "non_test_python_files": 233,
+  "all_runtime_hashes_identical": true,
+  "files_changed_since_capture": [
+    "docs/light-cartographic-assessment.md",
+    "docs/mapbox-outdoors-comparison-harness.md"
+  ],
+  "scope": "Final code uses the captured production runtime without changes. Documentation-only delta; no historical render called fresh. Capture PNG/settings/context named repeats and supplemental identities remain separate proofs."
+}

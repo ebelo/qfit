@@ -1,0 +1,44 @@
+[
+  {
+    "path": "README.md",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 11415,
+    "sha256": "84313abeaed58ccef3fc2890ab9809a92043fb13d7d6ede4f75ec28393e6474f",
+    "public_bytes_match": true
+  },
+  {
+    "path": "source.json",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 96675,
+    "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+    "public_bytes_match": true
+  },
+  {
+    "path": "manifest.json",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 123877,
+    "sha256": "e14b8583c0c8e11e12ba20fe1509736619327896978003a6c0a937a191db5c1f",
+    "public_bytes_match": true
+  },
+  {
+    "path": "grand-combin-z10-qgis4-crop.png",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 96688,
+    "sha256": "0576a20f2f0219a24ab059a93e81c2f9e52c05842794407a46c8a026e44c9bcd",
+    "public_bytes_match": true
+  },
+  {
+    "path": "cairo-nile-z14-qgis3-crop.png",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 127602,
+    "sha256": "821528a1c92621821f0351028f13c0b7393ca1f7b364309c09d5203f8f999042",
+    "public_bytes_match": true
+  },
+  {
+    "path": "mont-blanc-z10-qgis4-crop.png",
+    "commit": "88726798141796d6956dcf9df8299366e49ec0fb",
+    "bytes": 105266,
+    "sha256": "ae56b00784a08e6733b31c5cdfed7882fdd9269ecc3b6ca1f6447fcbb6d87d3f",
+    "public_bytes_match": true
+  }
+]

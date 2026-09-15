@@ -146,3 +146,15 @@ The full C01–C30 ledger remains8OPEN/16PARTIAL/5NOTASSESSED/1source-backedN/A.
 Source/native zoom/handoff, road/boundary paint, rural/topology/seams, long/RTL shaping,
 real activities/accessibility, packaged desktop, full atlas and map context remain required.
 No absent cell or limitation is accepted; #1462 stays OPEN.
+
+## Final-head identity and public delivery
+
+[PR1479](https://github.com/ebelo/qfit/pull/1479), exact head
+`1e6846879a620fd237908ce18ffed69f085aa480`: all233captured runtime Python files
+match; only the two assessment/harness documents differ from captured cbf2320.
+[Identity proof](final-head-verification.json). The two public-worker replays and
+eight PDF-hook PNGs also match the ordinary maps/settings/context.
+All three PR images actually load inline1140×335; [inline proof](inline-image-verification.json).
+Six public GitHub JSON/base64 artifact reads match local bytes, including images,
+source, gallery and manifest: [public byte proof](public-artifact-verification.json).
+Exact-head CI/security/Sonar and Codex/Greptile are still pending here; no merge claim.
