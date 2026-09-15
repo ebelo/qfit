@@ -1,0 +1,2683 @@
+{
+  "features": [
+    {
+      "id": 366509710,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "梅蘭",
+        "name_script": "Latin",
+        "name_ru": "Мерен",
+        "name_zh-Hans": "梅兰",
+        "name_pt": "Meyrin",
+        "name_ko": "메린",
+        "symbolrank": 13,
+        "name_ja": "メイラン",
+        "name_it": "Meyrin",
+        "name_en": "Meyrin",
+        "name_de": "Meyrin",
+        "name_ar": "ميرين",
+        "name_es": "Meyrin",
+        "disputed": "false",
+        "name_vi": "Meyrin",
+        "filterrank": 1,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_fr": "Meyrin",
+        "class": "settlement",
+        "name": "Meyrin",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.07120156288147,
+          46.22832529522691
+        ]
+      }
+    },
+    {
+      "id": 10031623220,
+      "owner": "settlement-major-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Chèvres",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.075621843338013,
+          46.19959440179292
+        ]
+      }
+    },
+    {
+      "id": 366509760,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "韋爾涅",
+        "name_vi": "Vernier",
+        "name_script": "Latin",
+        "name_ru": "Вернье",
+        "name_zh-Hans": "韦尔涅",
+        "name_pt": "Vernier",
+        "name_ko": "베르니에",
+        "symbolrank": 12,
+        "name_ja": "ヴェルニエ",
+        "name_it": "Vernier",
+        "name_en": "Vernier",
+        "name_de": "Vernier",
+        "name_es": "Vernier",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_fr": "Vernier",
+        "name_ar": "فيرناير",
+        "class": "settlement",
+        "name": "Vernier",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.081576347351074,
+          46.21318220147407
+        ]
+      }
+    },
+    {
+      "id": 366509790,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "貝爾內",
+        "name_vi": "Bernex",
+        "name_script": "Latin",
+        "name_de": "Bernex",
+        "symbolrank": 13,
+        "name_ja": "ベルネ",
+        "name_es": "Bernex",
+        "name_it": "Bernex",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_en": "Bernex",
+        "name_fr": "Bernex",
+        "name_zh-Hans": "贝尔内",
+        "name_pt": "Bernex",
+        "class": "settlement",
+        "name": "Bernex",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.072177886962891,
+          46.17465984766329
+        ]
+      }
+    },
+    {
+      "id": 366509880,
+      "owner": "settlement-major-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_script": "Latin",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Onex",
+        "name_ru": "Оне",
+        "class": "settlement",
+        "name": "Onex",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.100748777389526,
+          46.18378228935492
+        ]
+      }
+    },
+    {
+      "id": 18066490470,
+      "owner": "settlement-major-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Saint-Mathieu",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.080449819564819,
+          46.18214065867846
+        ]
+      }
+    },
+    {
+      "id": 2400461370,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "卡魯日",
+        "name_script": "Latin",
+        "name_ru": "Каруж",
+        "name_zh-Hans": "卡鲁日",
+        "name_pt": "Carouge",
+        "name_ko": "카루주",
+        "symbolrank": 13,
+        "name_ja": "カルージュ",
+        "name_it": "Carouge",
+        "name_en": "Carouge",
+        "name_de": "Carouge",
+        "disputed": "false",
+        "name_es": "Carouge",
+        "name_vi": "Carouge",
+        "filterrank": 1,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_fr": "Carouge",
+        "name_ar": "كاروج",
+        "class": "settlement",
+        "name": "Carouge",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.139683723449707,
+          46.184666224030764
+        ]
+      }
+    },
+    {
+      "id": 366509740,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "朗西",
+        "name_script": "Latin",
+        "name_ru": "Ланси",
+        "name_zh-Hans": "朗西",
+        "name_pt": "Lancy",
+        "name_ko": "랭시",
+        "symbolrank": 12,
+        "name_ja": "ランシー",
+        "name_it": "Lancy",
+        "name_en": "Lancy",
+        "name_es": "Lancy",
+        "disputed": "false",
+        "name_vi": "Lancy",
+        "name_de": "Lancy",
+        "filterrank": 1,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_fr": "Lancy",
+        "name_ar": "لانس",
+        "class": "settlement",
+        "name": "Lancy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.120082139968872,
+          46.184250256541986
+        ]
+      }
+    },
+    {
+      "id": 33476020390,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Cointrin",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Cointrin",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.103484630584717,
+          46.22762019485472
+        ]
+      }
+    },
+    {
+      "id": 39592902050,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Aïre",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.101961135864258,
+          46.19906715713566
+        ]
+      }
+    },
+    {
+      "id": 39592824330,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Le Lignon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.096028089523315,
+          46.2040423630726
+        ]
+      }
+    },
+    {
+      "id": 139627536910,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Quartier de l'Etang",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1040425300598145,
+          46.21834171473725
+        ]
+      }
+    },
+    {
+      "id": 137398329230,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Les Charmilles",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Les Charmilles",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.124824285507202,
+          46.2079628049614
+        ]
+      }
+    },
+    {
+      "id": 137411108900,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Les Délices",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.133922338485718,
+          46.20740594106019
+        ]
+      }
+    },
+    {
+      "id": 39592816830,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "La Servette",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.131175756454468,
+          46.21294462947725
+        ]
+      }
+    },
+    {
+      "id": 139953591920,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "quarter",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Les Avanchets",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Les Avanchets",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.109911203384399,
+          46.22043507683006
+        ]
+      }
+    },
+    {
+      "id": 137565417970,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "La Queue-d'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.129727363586426,
+          46.19614122864962
+        ]
+      }
+    },
+    {
+      "id": 39566056630,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Plainpalais",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Plainpalais",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.140906810760498,
+          46.19740370421209
+        ]
+      }
+    },
+    {
+      "id": 137633340010,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Quartier des Nations",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.138653755187988,
+          46.22181576133846
+        ]
+      }
+    },
+    {
+      "id": 39566041940,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Châtelaine",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.114470958709717,
+          46.21093265042461
+        ]
+      }
+    },
+    {
+      "id": 137399036890,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Les Ouches",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.114192008972168,
+          46.20809645145766
+        ]
+      }
+    },
+    {
+      "id": 28134825190,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Les Pâquis",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.148717403411865,
+          46.21220221036339
+        ]
+      }
+    },
+    {
+      "id": 28134889850,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Le Petit-Saconnex",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Le Petit-Saconnex",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.128107309341431,
+          46.22316672009856
+        ]
+      }
+    },
+    {
+      "id": 137632853000,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Rive",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.153470277786255,
+          46.20175530942768
+        ]
+      }
+    },
+    {
+      "id": 5830130880,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Frontenex",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.174981594085693,
+          46.20675997186234
+        ]
+      }
+    },
+    {
+      "id": 137553366360,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Les Tranchées",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.152987480163574,
+          46.1983022720901
+        ]
+      }
+    },
+    {
+      "id": 39592673200,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Grange-Canal",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.17531418800354,
+          46.20073798549271
+        ]
+      }
+    },
+    {
+      "id": 28134830370,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Eaux-Vives",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Eaux-Vives",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.161559820175171,
+          46.204020087035246
+        ]
+      }
+    },
+    {
+      "id": 137662549140,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "La Roseraie",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.146453619003296,
+          46.18883315320997
+        ]
+      }
+    },
+    {
+      "id": 28135077010,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Petit-Lancy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.119041442871094,
+          46.18994725187767
+        ]
+      }
+    },
+    {
+      "id": 137662549130,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "La Cluse",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147741079330444,
+          46.19345280169259
+        ]
+      }
+    },
+    {
+      "id": 28134928850,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "suburb",
+        "class": "settlement_subdivision",
+        "name": "Grand-Lancy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.120908260345459,
+          46.181583533054976
+        ]
+      }
+    },
+    {
+      "id": 97917715130,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Pinchat",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147623062133789,
+          46.176517144971825
+        ]
+      }
+    },
+    {
+      "id": 137673951040,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Crêts-de-Champel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.158759593963623,
+          46.18551300526474
+        ]
+      }
+    },
+    {
+      "id": 137422870600,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "quarter",
+        "class": "settlement_subdivision",
+        "name": "Bout-du-Monde",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.157118082046509,
+          46.18206637558819
+        ]
+      }
+    },
+    {
+      "id": 5830183850,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "quarter",
+        "name_script": "Latin",
+        "name_ru": "Коншес",
+        "name_it": "Conches",
+        "name_fr": "Conches",
+        "name_en": "Conches",
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "name_ja": "コンシュ",
+        "name_de": "Conches",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "settlement_subdivision",
+        "name": "Conches",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.173833608627319,
+          46.177661208892005
+        ]
+      }
+    },
+    {
+      "id": 28222796420,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Latin",
+        "name_ru": "Шампель",
+        "name_pt": "Champel",
+        "name_it": "Champel",
+        "name_fr": "Champel",
+        "name_en": "Champel",
+        "symbolrank": 16,
+        "name_de": "Champel",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "settlement_subdivision",
+        "name": "Champel",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.153620481491089,
+          46.19280666842917
+        ]
+      }
+    },
+    {
+      "id": 22930421130,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Public Building",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "maki": "town-hall",
+        "name_script": "Latin",
+        "class": "public_facilities",
+        "name": "Inter-Parliamentary Union"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.121777296066284,
+          46.22713775253936
+        ]
+      }
+    },
+    {
+      "id": 848371221,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hospital",
+        "name_script": "Latin",
+        "category_en": "Hospital",
+        "maki": "hospital",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "医院",
+        "class": "medical",
+        "name": "Hôpital de Loëx"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.0848915576934814,
+          46.198673576840065
+        ]
+      }
+    },
+    {
+      "id": 21927284,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 13,
+        "type": "Wood",
+        "name_script": "Latin",
+        "category_en": "Wood",
+        "maki": "park",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "树林",
+        "class": "park_like",
+        "name": "Bois des Frères"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.097229719161987,
+          46.21232099809603
+        ]
+      }
+    },
+    {
+      "id": 8514625581,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Arts Centre",
+        "name_script": "Latin",
+        "category_en": "Arts Center",
+        "maki": "art-gallery",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "艺术中心",
+        "class": "arts_and_entertainment",
+        "name": "Maison des compagnies"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.083636283874512,
+          46.22459929389487
+        ]
+      }
+    },
+    {
+      "id": 152567361,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Theatre",
+        "name_script": "Latin",
+        "category_en": "Theater",
+        "maki": "theatre",
+        "filterrank": 1,
+        "name_zh-Hant": "日內瓦大劇院",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦大剧院",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "剧院",
+        "class": "arts_and_entertainment",
+        "name": "Grand Théâtre de Genève"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.142644882202148,
+          46.20177758638337
+        ]
+      }
+    },
+    {
+      "id": 836661871,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Yes",
+        "name_script": "Latin",
+        "name_fr": "Association européenne de libre-échange",
+        "maki": "marker",
+        "name_de": "Europäische Freihandelsassoziation",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "building",
+        "name": "Association européenne de libre-échange"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1388468742370605,
+          46.22021980568658
+        ]
+      }
+    },
+    {
+      "id": 210674594,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Government",
+        "name_script": "Latin",
+        "name_fr": "Organisation Mondiale du Commerce",
+        "name_en": "World Trade Organization",
+        "name_de": "Welthandelsorganisation",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "maki": "marker",
+        "class": "general",
+        "name": "Organisation Mondiale du Commerce"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.149682998657227,
+          46.223753114928115
+        ]
+      }
+    },
+    {
+      "id": 600181720,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Attraction",
+        "name_script": "Latin",
+        "sizerank": 16,
+        "name_ru": "Фонтан Же д'О",
+        "name_fr": "Jet d'eau",
+        "name_es": "El Chorro",
+        "category_en": "Tourist Attraction",
+        "maki": "attraction",
+        "filterrank": 1,
+        "name_zh-Hant": "大噴泉",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "大喷泉",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "旅游名胜",
+        "class": "arts_and_entertainment",
+        "name": "Jet d'eau"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.155884265899658,
+          46.20738366638673
+        ]
+      }
+    },
+    {
+      "id": 10846516151,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Harbour",
+        "name_script": "Latin",
+        "category_en": "Harbor",
+        "maki": "harbor",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "港口",
+        "class": "industrial",
+        "name": "Port-Noir"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.168276071548462,
+          46.21202402828271
+        ]
+      }
+    },
+    {
+      "id": 6159619450,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Restaurant des Evaux"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.0913825035095215,
+          46.1895238970441
+        ]
+      }
+    },
+    {
+      "id": 809620961,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Stadium",
+        "name_script": "Latin",
+        "category_en": "Stadium",
+        "maki": "stadium",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "体育场",
+        "class": "arts_and_entertainment",
+        "name": "Stade de Genève"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.127409934997559,
+          46.17780235798588
+        ]
+      }
+    },
+    {
+      "id": 888030741,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "University",
+        "name_script": "Latin",
+        "category_en": "University",
+        "maki": "college",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "大学",
+        "class": "education",
+        "name": "Campus Battelle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.139415502548218,
+          46.17648742870867
+        ]
+      }
+    },
+    {
+      "id": 497112471,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hospital",
+        "name_script": "Latin",
+        "category_en": "Hospital",
+        "maki": "hospital",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "医院",
+        "class": "medical",
+        "name": "Hôpitaux universitaires de Genève"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.148213148117065,
+          46.19201941533629
+        ]
+      }
+    },
+    {
+      "id": 849626021,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Migros",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Migros"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.110672950744629,
+          46.18814240069534
+        ]
+      }
+    },
+    {
+      "id": 6759466571,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hospital",
+        "name_script": "Latin",
+        "category_en": "Hospital",
+        "maki": "hospital",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "医院",
+        "class": "medical",
+        "name": "Clinique Vert-Pré"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.177406311035156,
+          46.18754819803863
+        ]
+      }
+    },
+    {
+      "id": 16696834,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Sports Centre",
+        "name_script": "Latin",
+        "category_en": "Sports Complex",
+        "maki": "marker",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "体育中心",
+        "class": "sport_and_leisure",
+        "name": "Centre Sportif de Vessy"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1637163162231445,
+          46.184138836144484
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.119384765625,
+            46.20093105571692
+          ],
+          [
+            6.119191646575928,
+            46.200886501110006
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6894464551,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148567199707031,
+            46.20630704640021
+          ],
+          [
+            6.147569417953491,
+            46.20634417157859
+          ],
+          [
+            6.14659309387207,
+            46.20601746914767
+          ],
+          [
+            6.143835783004761,
+            46.20565363915381
+          ],
+          [
+            6.1417436599731445,
+            46.20514130303587
+          ],
+          [
+            6.137151718139648,
+            46.205089326641
+          ],
+          [
+            6.136314868927002,
+            46.20498537370375
+          ],
+          [
+            6.135435104370117,
+            46.204621536874214
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6803902801,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "L'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.163330078125,
+              46.18782301756576
+            ],
+            [
+              6.162847280502319,
+              46.18753334288991
+            ],
+            [
+              6.162804365158081,
+              46.1874367843254
+            ]
+          ],
+          [
+            [
+              6.14260196685791,
+              46.1874367843254
+            ],
+            [
+              6.142430305480957,
+              46.18754819803863
+            ],
+            [
+              6.142022609710693,
+              46.187919575451815
+            ],
+            [
+              6.141722202301025,
+              46.18842464470711
+            ],
+            [
+              6.140960454940796,
+              46.1900957966605
+            ],
+            [
+              6.140531301498413,
+              46.190793951762345
+            ],
+            [
+              6.13961935043335,
+              46.19279181470159
+            ],
+            [
+              6.1392974853515625,
+              46.19334139994777
+            ],
+            [
+              6.138728857040405,
+              46.19385384610422
+            ],
+            [
+              6.135241985321045,
+              46.19568078916754
+            ],
+            [
+              6.133900880813599,
+              46.19618578710444
+            ],
+            [
+              6.132742166519165,
+              46.19679474903245
+            ],
+            [
+              6.129330396652222,
+              46.199052305100224
+            ],
+            [
+              6.128493547439575,
+              46.19951271633215
+            ],
+            [
+              6.127549409866333,
+              46.199928568322434
+            ],
+            [
+              6.125897169113159,
+              46.20047065636993
+            ],
+            [
+              6.124234199523926,
+              46.200767688648284
+            ],
+            [
+              6.1226677894592285,
+              46.20093848148122
+            ],
+            [
+              6.119191646575928,
+              46.200886501110006
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.135424375534058,
+            46.2046141116077
+          ],
+          [
+            6.134415864944458,
+            46.20389385598608
+          ],
+          [
+            6.133943796157837,
+            46.203641393017705
+          ],
+          [
+            6.133332252502441,
+            46.20338150345603
+          ],
+          [
+            6.132827997207642,
+            46.20324784548839
+          ],
+          [
+            6.131604909896851,
+            46.20309191078189
+          ],
+          [
+            6.129469871520996,
+            46.203225569128875
+          ],
+          [
+            6.128557920455933,
+            46.20320329276029
+          ],
+          [
+            6.127431392669678,
+            46.203084485308636
+          ],
+          [
+            6.1243736743927,
+            46.20242361416945
+          ],
+          [
+            6.123322248458862,
+            46.20209688842249
+          ],
+          [
+            6.121841669082642,
+            46.201532539373915
+          ],
+          [
+            6.119191646575928,
+            46.200886501110006
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6803902801,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "L'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.163330078125,
+            46.18782301756576
+          ],
+          [
+            6.162847280502319,
+            46.18753334288991
+          ],
+          [
+            6.162611246109009,
+            46.18702083780079
+          ],
+          [
+            6.1624181270599365,
+            46.186337490248974
+          ],
+          [
+            6.162482500076294,
+            46.18494105796623
+          ],
+          [
+            6.162300109863281,
+            46.18465136810323
+          ],
+          [
+            6.162042617797852,
+            46.184450812688425
+          ],
+          [
+            6.16032600402832,
+            46.18199952072112
+          ],
+          [
+            6.159961223602295,
+            46.1813161107504
+          ],
+          [
+            6.159757375717163,
+            46.180781262239066
+          ],
+          [
+            6.1596715450286865,
+            46.18027612275651
+          ],
+          [
+            6.159682273864746,
+            46.17965954915755
+          ],
+          [
+            6.159542798995972,
+            46.179065254807455
+          ],
+          [
+            6.159381866455078,
+            46.17873096141278
+          ],
+          [
+            6.159188747406006,
+            46.178515526814834
+          ],
+          [
+            6.158405542373657,
+            46.17804751081414
+          ],
+          [
+            6.158062219619751,
+            46.17789150459535
+          ],
+          [
+            6.1576759815216064,
+            46.17781721576418
+          ],
+          [
+            6.1571502685546875,
+            46.177765213522605
+          ],
+          [
+            6.156517267227173,
+            46.17778750020361
+          ],
+          [
+            6.155980825424194,
+            46.17792864897331
+          ],
+          [
+            6.1554014682769775,
+            46.17817380123853
+          ],
+          [
+            6.154800653457642,
+            46.178441238826736
+          ],
+          [
+            6.154382228851318,
+            46.17885725026744
+          ],
+          [
+            6.153824329376221,
+            46.179800693121734
+          ],
+          [
+            6.153470277786255,
+            46.180959545654275
+          ],
+          [
+            6.153727769851685,
+            46.18133839599213
+          ],
+          [
+            6.154017448425293,
+            46.18211837376191
+          ],
+          [
+            6.1544787883758545,
+            46.18479249925281
+          ],
+          [
+            6.15433931350708,
+            46.1853050251174
+          ],
+          [
+            6.154189109802246,
+            46.1855650001786
+          ],
+          [
+            6.153963804244995,
+            46.18586954082946
+          ],
+          [
+            6.153513193130493,
+            46.18621864632934
+          ],
+          [
+            6.152558326721191,
+            46.186560321905745
+          ],
+          [
+            6.1514317989349365,
+            46.1867163035281
+          ],
+          [
+            6.150144338607788,
+            46.186738586580844
+          ],
+          [
+            6.147955656051636,
+            46.18687971237199
+          ],
+          [
+            6.146045923233032,
+            46.186753441944376
+          ],
+          [
+            6.144962310791016,
+            46.18680543568499
+          ],
+          [
+            6.143664121627808,
+            46.18699855486244
+          ],
+          [
+            6.142795085906982,
+            46.187317942782414
+          ],
+          [
+            6.142430305480957,
+            46.18754819803863
+          ],
+          [
+            6.142022609710693,
+            46.187919575451815
+          ],
+          [
+            6.141722202301025,
+            46.18842464470711
+          ],
+          [
+            6.140960454940796,
+            46.1900957966605
+          ],
+          [
+            6.140531301498413,
+            46.190793951762345
+          ],
+          [
+            6.13961935043335,
+            46.19279181470159
+          ],
+          [
+            6.1392974853515625,
+            46.19334139994777
+          ],
+          [
+            6.138728857040405,
+            46.19385384610422
+          ],
+          [
+            6.135241985321045,
+            46.19568078916754
+          ],
+          [
+            6.133900880813599,
+            46.19618578710444
+          ],
+          [
+            6.132742166519165,
+            46.19679474903245
+          ],
+          [
+            6.129330396652222,
+            46.199052305100224
+          ],
+          [
+            6.128493547439575,
+            46.19951271633215
+          ],
+          [
+            6.127549409866333,
+            46.199928568322434
+          ],
+          [
+            6.125897169113159,
+            46.20047065636993
+          ],
+          [
+            6.124234199523926,
+            46.200767688648284
+          ],
+          [
+            6.1226677894592285,
+            46.20093848148122
+          ],
+          [
+            6.119191646575928,
+            46.200886501110006
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6803902801,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "L'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.170411109924316,
+            46.179065254807455
+          ],
+          [
+            6.171151399612427,
+            46.1796001200116
+          ],
+          [
+            6.171494722366333,
+            46.17992697951942
+          ],
+          [
+            6.171483993530273,
+            46.18142010846785
+          ],
+          [
+            6.171280145645142,
+            46.182668065733424
+          ],
+          [
+            6.1708831787109375,
+            46.18360401509301
+          ],
+          [
+            6.170411109924316,
+            46.18421311643459
+          ],
+          [
+            6.169874668121338,
+            46.1852604578406
+          ],
+          [
+            6.168769598007202,
+            46.18660488812873
+          ],
+          [
+            6.167868375778198,
+            46.18728080474753
+          ],
+          [
+            6.166377067565918,
+            46.187919575451815
+          ],
+          [
+            6.165250539779663,
+            46.188164683170015
+          ],
+          [
+            6.164231300354004,
+            46.18812011821166
+          ],
+          [
+            6.163437366485596,
+            46.18788986535108
+          ],
+          [
+            6.162847280502319,
+            46.18753334288991
+          ],
+          [
+            6.162611246109009,
+            46.18702083780079
+          ],
+          [
+            6.1624181270599365,
+            46.186337490248974
+          ],
+          [
+            6.162482500076294,
+            46.18494105796623
+          ],
+          [
+            6.162300109863281,
+            46.18465136810323
+          ],
+          [
+            6.162042617797852,
+            46.184450812688425
+          ],
+          [
+            6.16032600402832,
+            46.18199952072112
+          ],
+          [
+            6.159961223602295,
+            46.1813161107504
+          ],
+          [
+            6.159757375717163,
+            46.180781262239066
+          ],
+          [
+            6.1596715450286865,
+            46.18027612275651
+          ],
+          [
+            6.159682273864746,
+            46.17965954915755
+          ],
+          [
+            6.159542798995972,
+            46.179065254807455
+          ],
+          [
+            6.159381866455078,
+            46.17873096141278
+          ],
+          [
+            6.159188747406006,
+            46.178515526814834
+          ],
+          [
+            6.158405542373657,
+            46.17804751081414
+          ],
+          [
+            6.158062219619751,
+            46.17789150459535
+          ],
+          [
+            6.1576759815216064,
+            46.17781721576418
+          ],
+          [
+            6.1571502685546875,
+            46.177765213522605
+          ],
+          [
+            6.156517267227173,
+            46.17778750020361
+          ],
+          [
+            6.155980825424194,
+            46.17792864897331
+          ],
+          [
+            6.1554014682769775,
+            46.17817380123853
+          ],
+          [
+            6.154800653457642,
+            46.178441238826736
+          ],
+          [
+            6.154382228851318,
+            46.17885725026744
+          ],
+          [
+            6.153824329376221,
+            46.179800693121734
+          ],
+          [
+            6.153470277786255,
+            46.180959545654275
+          ],
+          [
+            6.153727769851685,
+            46.18133839599213
+          ],
+          [
+            6.154017448425293,
+            46.18211837376191
+          ],
+          [
+            6.1544787883758545,
+            46.18479249925281
+          ],
+          [
+            6.15433931350708,
+            46.1853050251174
+          ],
+          [
+            6.154189109802246,
+            46.1855650001786
+          ],
+          [
+            6.153963804244995,
+            46.18586954082946
+          ],
+          [
+            6.153513193130493,
+            46.18621864632934
+          ],
+          [
+            6.152558326721191,
+            46.186560321905745
+          ],
+          [
+            6.1514317989349365,
+            46.1867163035281
+          ],
+          [
+            6.150144338607788,
+            46.186738586580844
+          ],
+          [
+            6.147955656051636,
+            46.18687971237199
+          ],
+          [
+            6.146045923233032,
+            46.186753441944376
+          ],
+          [
+            6.144962310791016,
+            46.18680543568499
+          ],
+          [
+            6.143664121627808,
+            46.18699855486244
+          ],
+          [
+            6.142795085906982,
+            46.187317942782414
+          ],
+          [
+            6.142430305480957,
+            46.18754819803863
+          ],
+          [
+            6.142022609710693,
+            46.187919575451815
+          ],
+          [
+            6.141722202301025,
+            46.18842464470711
+          ],
+          [
+            6.141357421875,
+            46.18922680398575
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "motorway",
+        "toll": "true",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(0, 0%, 100%)",
+        "shield_image": "ch-motorway-2",
+        "shield": "ch-motorway",
+        "shield_text_color": "white",
+        "reflen": 2,
+        "iso_3166_1": "CH",
+        "len": 3760,
+        "iso_3166_2": "CH-GE",
+        "layer": -1,
+        "name_script": "Latin",
+        "ref": "1",
+        "structure": "tunnel",
+        "oneway": "false",
+        "class": "motorway",
+        "name": "Tunnel de Vernier"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.0931313037872314,
+              46.2149788064265
+            ],
+            [
+              6.090610027313232,
+              46.214258686705904
+            ],
+            [
+              6.081587076187134,
+              46.21136326468681
+            ],
+            [
+              6.080224514007568,
+              46.210843557397084
+            ],
+            [
+              6.0789477825164795,
+              46.210219902158116
+            ],
+            [
+              6.077907085418701,
+              46.20953684305687
+            ],
+            [
+              6.0771989822387695,
+              46.208935447033724
+            ],
+            [
+              6.076598167419434,
+              46.20828207105191
+            ],
+            [
+              6.076104640960693,
+              46.207576713256714
+            ],
+            [
+              6.0757505893707275,
+              46.20689362128516
+            ],
+            [
+              6.07545018196106,
+              46.20592836814748
+            ],
+            [
+              6.075364351272583,
+              46.20528238157405
+            ],
+            [
+              6.075375080108643,
+              46.2046141116077
+            ]
+          ],
+          [
+            [
+              6.0756754875183105,
+              46.2047848924835
+            ],
+            [
+              6.075814962387085,
+              46.20597291866565
+            ],
+            [
+              6.076244115829468,
+              46.207101519740945
+            ],
+            [
+              6.07694149017334,
+              46.208163274583825
+            ],
+            [
+              6.077896356582642,
+              46.20912848845009
+            ],
+            [
+              6.078529357910156,
+              46.209611089022815
+            ],
+            [
+              6.079216003417969,
+              46.21004171364629
+            ],
+            [
+              6.079913377761841,
+              46.21039809009184
+            ],
+            [
+              6.080878973007202,
+              46.21079901082916
+            ],
+            [
+              6.092970371246338,
+              46.214674427078165
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 1430,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "107",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "primary",
+        "name": "Route de Pré-Bois"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.101231575012207,
+              46.225794313902895
+            ],
+            [
+              6.100727319717407,
+              46.22537865772023
+            ],
+            [
+              6.100587844848633,
+              46.22517825093618
+            ]
+          ],
+          [
+            [
+              6.095523834228516,
+              46.21863865038796
+            ],
+            [
+              6.095738410949707,
+              46.218920737768826
+            ],
+            [
+              6.097015142440796,
+              46.221459458982764
+            ],
+            [
+              6.097637414932251,
+              46.222417016320406
+            ],
+            [
+              6.0984742641448975,
+              46.223307752338485
+            ],
+            [
+              6.100587844848633,
+              46.22517825093618
+            ],
+            [
+              6.101628541946411,
+              46.225994718437875
+            ]
+          ],
+          [
+            [
+              6.0984742641448975,
+              46.223307752338485
+            ],
+            [
+              6.097862720489502,
+              46.22281042651025
+            ],
+            [
+              6.097240447998047,
+              46.22205329495765
+            ],
+            [
+              6.095813512802124,
+              46.219395829029224
+            ],
+            [
+              6.095513105392456,
+              46.21873515412872
+            ],
+            [
+              6.095523834228516,
+              46.21863865038796
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "bike_lane": "right",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 1870,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "101",
+        "structure": "none",
+        "oneway": "false",
+        "class": "primary",
+        "name": "Route de Meyrin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.117281913757324,
+              46.2165229488385
+            ],
+            [
+              6.118751764297485,
+              46.216144341015024
+            ],
+            [
+              6.126422882080078,
+              46.214726394403414
+            ],
+            [
+              6.127506494522095,
+              46.214451709413
+            ],
+            [
+              6.1293840408325195,
+              46.21371673470941
+            ]
+          ],
+          [
+            [
+              6.124759912490845,
+              46.21515697892076
+            ],
+            [
+              6.118869781494141,
+              46.21626312022104
+            ],
+            [
+              6.112689971923828,
+              46.217926002128564
+            ]
+          ],
+          [
+            [
+              6.129502058029175,
+              46.21385036720534
+            ],
+            [
+              6.129405498504639,
+              46.213887487285376
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 600,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Liotard"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.1298668384552,
+              46.21208342237381
+            ],
+            [
+              6.128922700881958,
+              46.21256599698319
+            ]
+          ],
+          [
+            [
+              6.1298668384552,
+              46.21208342237381
+            ],
+            [
+              6.132913827896118,
+              46.20987094911334
+            ],
+            [
+              6.1351025104522705,
+              46.20922500890387
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 3120,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "105",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "primary",
+        "name": "Quai de Cologny"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.172792911529541,
+              46.21187554277387
+            ],
+            [
+              6.172996759414673,
+              46.211934937025575
+            ],
+            [
+              6.173425912857056,
+              46.21218736187873
+            ],
+            [
+              6.173790693283081,
+              46.2125511485969
+            ]
+          ],
+          [
+            [
+              6.1840903759002686,
+              46.226402947634966
+            ],
+            [
+              6.180292367935181,
+              46.221400075031994
+            ],
+            [
+              6.176429986953735,
+              46.21608495131568
+            ],
+            [
+              6.176204681396484,
+              46.21567664539384
+            ],
+            [
+              6.175142526626587,
+              46.214199294967216
+            ]
+          ],
+          [
+            [
+              6.176204681396484,
+              46.21567664539384
+            ],
+            [
+              6.1803138256073,
+              46.22130357597504
+            ],
+            [
+              6.182931661605835,
+              46.22474774500037
+            ]
+          ],
+          [
+            [
+              6.174874305725098,
+              46.21385036720534
+            ],
+            [
+              6.174091100692749,
+              46.21284811555998
+            ],
+            [
+              6.173790693283081,
+              46.2125511485969
+            ],
+            [
+              6.172792911529541,
+              46.21187554277387
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 780,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin Sur-Rang"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.149253845214844,
+            46.175855954320696
+          ],
+          [
+            6.14660382270813,
+            46.17369402827245
+          ],
+          [
+            6.146035194396973,
+            46.17279505805985
+          ],
+          [
+            6.145123243331909,
+            46.17180691682364
+          ],
+          [
+            6.144028902053833,
+            46.170402685579035
+          ],
+          [
+            6.143578290939331,
+            46.170046049712795
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 1310,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin de Fossard"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.184787750244141,
+            46.188402362337854
+          ],
+          [
+            6.183639764785767,
+            46.18901883788942
+          ],
+          [
+            6.182695627212524,
+            46.18933078673882
+          ],
+          [
+            6.172546148300171,
+            46.19113559889959
+          ],
+          [
+            6.171784400939941,
+            46.190519147089105
+          ],
+          [
+            6.171602010726929,
+            46.19043002095407
+          ],
+          [
+            6.169155836105347,
+            46.191180161413115
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

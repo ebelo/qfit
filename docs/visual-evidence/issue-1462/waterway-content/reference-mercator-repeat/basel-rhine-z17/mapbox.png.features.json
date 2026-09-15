@@ -1,0 +1,1418 @@
+{
+  "features": [
+    {
+      "id": 21463075610,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Hotel Balade"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.591021656990051,
+          47.56243649139742
+        ]
+      }
+    },
+    {
+      "id": 134471318750,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Guidepost",
+        "name_script": "Latin",
+        "category_en": "Guidepost",
+        "maki": "information",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "路标",
+        "class": "visitor_amenities",
+        "name": "Totentanz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.586514204740524,
+          47.561764102504895
+        ]
+      }
+    },
+    {
+      "id": 20994782280,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Gallery",
+        "name_script": "Latin",
+        "category_en": "Art Gallery",
+        "maki": "art-gallery",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "美术馆",
+        "class": "arts_and_entertainment",
+        "name": "Ausstellungsraum Klingental"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.590410113334656,
+          47.56264282165549
+        ]
+      }
+    },
+    {
+      "id": 20995279060,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Museum Kleines Klingental"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.5896309316158295,
+          47.5620971306528
+        ]
+      }
+    },
+    {
+      "id": 81437535210,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Aldi Suisse",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "class": "food_and_drink_stores",
+        "name": "Aldi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.592323869466782,
+          47.56224463972654
+        ]
+      }
+    },
+    {
+      "id": 76737406910,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "brand": "Migros Restaurant",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "category_zh-Hans": "餐馆",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "class": "food_and_drink",
+        "name": "Migros Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.592502236366272,
+          47.561830165322135
+        ]
+      }
+    },
+    {
+      "id": 5851842940,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Alchemist"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.588265687227249,
+          47.55955864256194
+        ]
+      }
+    },
+    {
+      "id": 44177696940,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Portofino Basel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.587127089500427,
+          47.56107632028127
+        ]
+      }
+    },
+    {
+      "id": 32087778670,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "East West Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.5915031135082245,
+          47.560435588717496
+        ]
+      }
+    },
+    {
+      "id": 1223370730,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Merian"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.591338157653809,
+          47.56060663223215
+        ]
+      }
+    },
+    {
+      "id": 60971407980,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Rappaz Museum"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.590387314558029,
+          47.561640121376456
+        ]
+      }
+    },
+    {
+      "id": 5847409220,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "HotelD."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.586503475904465,
+          47.560969532231496
+        ]
+      }
+    },
+    {
+      "id": 6536056851,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Bridge",
+        "name_script": "Latin",
+        "category_en": "Bridge",
+        "maki": "bridge",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "桥梁",
+        "class": "landmark",
+        "name": "Mittlere Brücke"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.5897181034088135,
+          47.560144179961924
+        ]
+      }
+    },
+    {
+      "id": 2085156900,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "name_de": "Les Trois Rois",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Les Trois Rois"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.587690353393555,
+          47.560389434022625
+        ]
+      }
+    },
+    {
+      "id": 3158918961,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Restaurant Schafeck"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.592486143112183,
+          47.56055414274735
+        ]
+      }
+    },
+    {
+      "id": 3158807881,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Zum schiefen Eck"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.593030631542206,
+          47.56164283629482
+        ]
+      }
+    },
+    {
+      "id": 8218396671,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Migros",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "class": "food_and_drink_stores",
+        "name": "Migros"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.592301070690155,
+          47.56168356005341
+        ]
+      }
+    },
+    {
+      "id": 1223370610,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Hotel Krafft"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.591737806797028,
+          47.56018942987498
+        ]
+      }
+    },
+    {
+      "id": 4648101491,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "sizerank": 16,
+        "name_ru": "Рейн",
+        "name_it": "Reno",
+        "name_fr": "Le Rhin",
+        "name_en": "Rhine",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_es": "Rin",
+        "name_de": "Rhein",
+        "iso_3166_2": "CH-BS",
+        "class": "river",
+        "name": "Rhein",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.592926025390625,
+            47.55781647172151
+          ],
+          [
+            7.591159790754318,
+            47.55886811632254
+          ],
+          [
+            7.5892312824726105,
+            47.56072066093171
+          ],
+          [
+            7.587234377861023,
+            47.5626274374099
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2781796311,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BS",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "Birsig",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.588108777999878,
+            47.56022653477453
+          ],
+          [
+            7.588791400194168,
+            47.56114057400296
+          ]
+        ]
+      }
+    },
+    {
+      "id": 244825971,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 60,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Ochsengasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591297924518585,
+            47.562151428519655
+          ],
+          [
+            7.59166806936264,
+            47.56165731585705
+          ]
+        ]
+      }
+    },
+    {
+      "id": 270329941,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 260,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street_limited",
+        "name": "Unterer Rheinweg"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.5898683071136475,
+            47.56158491800588
+          ],
+          [
+            7.589329183101654,
+            47.56214056895078
+          ],
+          [
+            7.589149475097656,
+            47.562363189662705
+          ],
+          [
+            7.588956356048584,
+            47.56258580942861
+          ],
+          [
+            7.5887806713581085,
+            47.56277856480318
+          ],
+          [
+            7.588596940040588,
+            47.56302380653153
+          ],
+          [
+            7.588574141263962,
+            47.563073578697896
+          ],
+          [
+            7.588572800159454,
+            47.563164073424645
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8454477211,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 30,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Webergasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591783404350281,
+            47.56226816874286
+          ],
+          [
+            7.591442763805389,
+            47.562179482395464
+          ],
+          [
+            7.591381072998047,
+            47.56216771786873
+          ]
+        ]
+      }
+    },
+    {
+      "id": 242857521,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 160,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Rappoltshof"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.592468708753586,
+            47.56317493278135
+          ],
+          [
+            7.59279191493988,
+            47.56270073877488
+          ],
+          [
+            7.592841535806656,
+            47.56264463156646
+          ],
+          [
+            7.5929394364356995,
+            47.56255775577034
+          ],
+          [
+            7.593116462230682,
+            47.562612053159796
+          ],
+          [
+            7.593951970338821,
+            47.56284824614903
+          ]
+        ]
+      }
+    },
+    {
+      "id": 132520321,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 70,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street_limited",
+        "name": "Untere Rebgasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.593365907669067,
+            47.56158491800588
+          ],
+          [
+            7.593305557966232,
+            47.56166998547073
+          ],
+          [
+            7.5932760536670685,
+            47.5617134241229
+          ],
+          [
+            7.593226432800293,
+            47.561784916826156
+          ],
+          [
+            7.59318619966507,
+            47.56182111562606
+          ],
+          [
+            7.592833489179611,
+            47.56211342001876
+          ]
+        ]
+      }
+    },
+    {
+      "id": 242860321,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 60,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Untere Rheingasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.590719908475876,
+            47.56146998621168
+          ],
+          [
+            7.590792328119278,
+            47.56131704508667
+          ],
+          [
+            7.590797692537308,
+            47.56127994095942
+          ],
+          [
+            7.590907663106918,
+            47.56113785905856
+          ],
+          [
+            7.590969353914261,
+            47.56106274554128
+          ],
+          [
+            7.590976059436798,
+            47.561056410661394
+          ],
+          [
+            7.591061890125275,
+            47.560965007309306
+          ],
+          [
+            7.591090053319931,
+            47.560939667737955
+          ]
+        ]
+      }
+    },
+    {
+      "id": 14661112581,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 60,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "Schifflände"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.587848603725433,
+            47.55994598488223
+          ],
+          [
+            7.587946504354477,
+            47.55991068978935
+          ],
+          [
+            7.588025629520416,
+            47.559882634698596
+          ],
+          [
+            7.5880832970142365,
+            47.559859104610894
+          ],
+          [
+            7.5881315767765045,
+            47.55983376450462
+          ],
+          [
+            7.588340789079666,
+            47.55969348869465
+          ],
+          [
+            7.588376998901367,
+            47.559674483555995
+          ],
+          [
+            7.588411867618561,
+            47.55965819343169
+          ],
+          [
+            7.588442713022232,
+            47.55964642833874
+          ],
+          [
+            7.588516473770142,
+            47.559631043213244
+          ],
+          [
+            7.588560730218887,
+            47.559629233198166
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1726121331,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 140,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Spiegelgasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.5872719287872314,
+            47.560570432593096
+          ],
+          [
+            7.5872451066970825,
+            47.560555047738916
+          ],
+          [
+            7.587214261293411,
+            47.56053423292903
+          ],
+          [
+            7.587187439203262,
+            47.56051341811087
+          ],
+          [
+            7.587151229381561,
+            47.560471788449746
+          ],
+          [
+            7.587030529975891,
+            47.560340564301384
+          ],
+          [
+            7.5869715213775635,
+            47.560269069627054
+          ],
+          [
+            7.58693665266037,
+            47.560191239870704
+          ],
+          [
+            7.586888372898102,
+            47.559956844906
+          ],
+          [
+            7.5868575274944305,
+            47.55978489426505
+          ],
+          [
+            7.586830705404282,
+            47.55958398280126
+          ],
+          [
+            7.58681058883667,
+            47.559410220913975
+          ],
+          [
+            7.586807906627655,
+            47.55936678035212
+          ],
+          [
+            7.586806565523148,
+            47.55932514977988
+          ],
+          [
+            7.586807906627655,
+            47.559298904402084
+          ]
+        ]
+      }
+    },
+    {
+      "id": 12408106011,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 90,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Blumenrain"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              7.586791813373566,
+              47.5610120664808
+            ],
+            [
+              7.586551755666733,
+              47.56116591347717
+            ]
+          ],
+          [
+            [
+              7.5872719287872314,
+              47.560570432593096
+            ],
+            [
+              7.587432861328125,
+              47.56034237429188
+            ]
+          ],
+          [
+            [
+              7.587848603725433,
+              47.55994598488223
+            ],
+            [
+              7.587828487157822,
+              47.559955939904114
+            ],
+            [
+              7.587766796350479,
+              47.5599885199625
+            ],
+            [
+              7.587709128856659,
+              47.560021100000654
+            ],
+            [
+              7.587652802467346,
+              47.56007630501904
+            ],
+            [
+              7.587562948465347,
+              47.56017856989939
+            ],
+            [
+              7.587455660104752,
+              47.560313414436564
+            ],
+            [
+              7.587432861328125,
+              47.56034237429188
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 5830280541,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "access": "restricted",
+        "iso_3166_2": "CH-BS",
+        "len": 130,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street_limited",
+        "name": "Marktgasse"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              7.587237060070038,
+              47.55935682521829
+            ],
+            [
+              7.587684988975525,
+              47.55980661437718
+            ],
+            [
+              7.587729245424271,
+              47.55984371954784
+            ],
+            [
+              7.587764114141464,
+              47.55987358466612
+            ],
+            [
+              7.5877708196640015,
+              47.55988082469224
+            ],
+            [
+              7.5877949595451355,
+              47.559899829756006
+            ],
+            [
+              7.587848603725433,
+              47.55994598488223
+            ]
+          ],
+          [
+            [
+              7.587127089500427,
+              47.55911790143881
+            ],
+            [
+              7.587127089500427,
+              47.55908622585591
+            ],
+            [
+              7.587129771709442,
+              47.55906722049701
+            ],
+            [
+              7.587174028158188,
+              47.5588816916312
+            ],
+            [
+              7.587214261293411,
+              47.558726932903994
+            ],
+            [
+              7.587238401174545,
+              47.558659961149345
+            ],
+            [
+              7.587258517742157,
+              47.55860475463854
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 261917491,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 30,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street_limited",
+        "name": "Greifengasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591177225112915,
+            47.56086364895026
+          ],
+          [
+            7.5910793244838715,
+            47.56082111458045
+          ],
+          [
+            7.590808421373367,
+            47.56069351126388
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1514067831,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 370,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street_limited",
+        "name": "Oberer Rheinweg"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591170519590378,
+            47.56035504422351
+          ],
+          [
+            7.591623812913895,
+            47.5599794699483
+          ],
+          [
+            7.591724395751953,
+            47.55997675494376
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1799136331,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 60,
+        "iso_3166_2": "CH-BS",
+        "layer": -1,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "tunnel",
+        "oneway": "false",
+        "class": "street_limited",
+        "name": "Unterer Rheinweg"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591057866811752,
+            47.560398483966
+          ],
+          [
+            7.590961307287216,
+            47.560490793299124
+          ],
+          [
+            7.590572386980057,
+            47.560861838977786
+          ],
+          [
+            7.590528130531311,
+            47.560903468329
+          ]
+        ]
+      }
+    },
+    {
+      "id": 242860491,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 60,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Ochsengasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.592071741819382,
+            47.56117586826727
+          ],
+          [
+            7.592058330774307,
+            47.56119215791969
+          ],
+          [
+            7.59166806936264,
+            47.56165731585705
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8399734411,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 150,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Utengasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.593242526054382,
+            47.56003377001002
+          ],
+          [
+            7.592880427837372,
+            47.56031250944082
+          ],
+          [
+            7.592856287956238,
+            47.560335134329534
+          ],
+          [
+            7.592794597148895,
+            47.56039214900579
+          ],
+          [
+            7.592652440071106,
+            47.56054871279767
+          ],
+          [
+            7.592082470655441,
+            47.561161388571946
+          ],
+          [
+            7.592071741819382,
+            47.56117586826727
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8454477181,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 30,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street_limited",
+        "name": "Rheingasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591381072998047,
+            47.5606926062747
+          ],
+          [
+            7.5915540754795074,
+            47.56054961778932
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1514067831,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 370,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street_limited",
+        "name": "Oberer Rheinweg"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591381072998047,
+            47.560180379895485
+          ],
+          [
+            7.591623812913895,
+            47.5599794699483
+          ],
+          [
+            7.591727077960968,
+            47.55997675494376
+          ],
+          [
+            7.59198322892189,
+            47.559767699169925
+          ],
+          [
+            7.5923091173172,
+            47.559520632179954
+          ],
+          [
+            7.592712789773941,
+            47.55925093867771
+          ],
+          [
+            7.593190222978592,
+            47.558961333371144
+          ],
+          [
+            7.593544274568558,
+            47.55876584888426
+          ],
+          [
+            7.594363689422607,
+            47.55833958157115
+          ],
+          [
+            7.594521939754486,
+            47.558262653979654
+          ],
+          [
+            7.594802230596542,
+            47.55812961423126
+          ]
+        ]
+      }
+    },
+    {
+      "id": 248270931,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 180,
+        "iso_3166_2": "CH-BS",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street_limited",
+        "name": "Greifengasse"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.591381072998047,
+            47.56093514281318
+          ],
+          [
+            7.591975182294846,
+            47.56114328894722
+          ],
+          [
+            7.592071741819382,
+            47.56117586826727
+          ],
+          [
+            7.592433840036392,
+            47.561303470409
+          ],
+          [
+            7.59280264377594,
+            47.56141749759186
+          ],
+          [
+            7.5930896401405334,
+            47.56150075537815
+          ],
+          [
+            7.59318083524704,
+            47.56151794990447
+          ],
+          [
+            7.5932277739048,
+            47.56152609467813
+          ],
+          [
+            7.593410164117813,
+            47.561567723501554
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

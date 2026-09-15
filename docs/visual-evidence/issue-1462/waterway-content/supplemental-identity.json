@@ -1,0 +1,152 @@
+[
+  {
+    "a": "3/geneva-confluence-z15/before-pdf/qgis.png",
+    "b": "3/geneva-confluence-z15/before/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/before-pdf/labels.json",
+    "b": "3/geneva-confluence-z15/before/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/before-pdf/runtime.json",
+    "b": "3/geneva-confluence-z15/before/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-pdf/qgis.png",
+    "b": "3/geneva-confluence-z15/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-pdf/labels.json",
+    "b": "3/geneva-confluence-z15/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-pdf/runtime.json",
+    "b": "3/geneva-confluence-z15/after/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/before-pdf/qgis.png",
+    "b": "3/basel-rhine-z14/before/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/before-pdf/labels.json",
+    "b": "3/basel-rhine-z14/before/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/before-pdf/runtime.json",
+    "b": "3/basel-rhine-z14/before/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/after-pdf/qgis.png",
+    "b": "3/basel-rhine-z14/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/after-pdf/labels.json",
+    "b": "3/basel-rhine-z14/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/basel-rhine-z14/after-pdf/runtime.json",
+    "b": "3/basel-rhine-z14/after/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-replay/qgis.png",
+    "b": "3/geneva-confluence-z15/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-replay/labels.json",
+    "b": "3/geneva-confluence-z15/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "3/geneva-confluence-z15/after-replay/runtime.json",
+    "b": "3/geneva-confluence-z15/after/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/before-pdf/qgis.png",
+    "b": "4/geneva-confluence-z15/before/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/before-pdf/labels.json",
+    "b": "4/geneva-confluence-z15/before/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/before-pdf/runtime.json",
+    "b": "4/geneva-confluence-z15/before/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-pdf/qgis.png",
+    "b": "4/geneva-confluence-z15/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-pdf/labels.json",
+    "b": "4/geneva-confluence-z15/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-pdf/runtime.json",
+    "b": "4/geneva-confluence-z15/after/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/before-pdf/qgis.png",
+    "b": "4/basel-rhine-z14/before/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/before-pdf/labels.json",
+    "b": "4/basel-rhine-z14/before/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/before-pdf/runtime.json",
+    "b": "4/basel-rhine-z14/before/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/after-pdf/qgis.png",
+    "b": "4/basel-rhine-z14/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/after-pdf/labels.json",
+    "b": "4/basel-rhine-z14/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/basel-rhine-z14/after-pdf/runtime.json",
+    "b": "4/basel-rhine-z14/after/runtime.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-replay/qgis.png",
+    "b": "4/geneva-confluence-z15/after/qgis.png",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-replay/labels.json",
+    "b": "4/geneva-confluence-z15/after/labels.json",
+    "byte_identical": true
+  },
+  {
+    "a": "4/geneva-confluence-z15/after-replay/runtime.json",
+    "b": "4/geneva-confluence-z15/after/runtime.json",
+    "byte_identical": true
+  }
+]

@@ -1,0 +1,1692 @@
+[
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000000005
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999999972
+    ],
+    "max_error_px": 3.296918293926865e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.0,
+      249.9999999999986
+    ],
+    "browser_pixel": [
+      340,
+      249.9999999999945
+    ],
+    "max_error_px": 4.121147867408581e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0,
+      649.9999999999995
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999999973
+    ],
+    "max_error_px": 2.2737367544323206e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.0,
+      649.9999999999995
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999999973
+    ],
+    "max_error_px": 2.2737367544323206e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0,
+      249.9999999999986
+    ],
+    "browser_pixel": [
+      940,
+      249.9999999999945
+    ],
+    "max_error_px": 4.121147867408581e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      639.9999999999999,
+      449.99999999999994
+    ],
+    "max_error_px": 1.1368683772161603e-13
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999999994,
+      249.9999999999996
+    ],
+    "browser_pixel": [
+      339.99999999999994,
+      249.99999999999997
+    ],
+    "max_error_px": 3.694822225952521e-13
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999993,
+      650.0000000000039
+    ],
+    "browser_pixel": [
+      939.9999999999999,
+      649.9999999999999
+    ],
+    "max_error_px": 3.979039320256561e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999999994,
+      650.0000000000039
+    ],
+    "browser_pixel": [
+      339.99999999999994,
+      649.9999999999999
+    ],
+    "max_error_px": 3.979039320256561e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999993,
+      249.9999999999996
+    ],
+    "browser_pixel": [
+      939.9999999999999,
+      249.99999999999997
+    ],
+    "max_error_px": 5.684341886080801e-13
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      640,
+      450.00000000004417
+    ],
+    "max_error_px": 4.416733645484783e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.9999999999992,
+      249.99999999998067
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 1.9326762412674725e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000009,
+      650.0000000000482
+    ],
+    "browser_pixel": [
+      940.0000000000883,
+      650.0000000000441
+    ],
+    "max_error_px": 8.742517820792273e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.9999999999992,
+      650.0000000000482
+    ],
+    "browser_pixel": [
+      340,
+      650.0000000000441
+    ],
+    "max_error_px": 4.092726157978177e-12
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000009,
+      249.99999999998067
+    ],
+    "browser_pixel": [
+      940.0000000000883,
+      250
+    ],
+    "max_error_px": 8.742517820792273e-11
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      640.0000000001766,
+      450
+    ],
+    "max_error_px": 1.765556589816697e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000000455,
+      249.99999999992272
+    ],
+    "browser_pixel": [
+      340.0000000001766,
+      250.0000000001766
+    ],
+    "max_error_px": 2.53891130341799e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999955,
+      649.9999999999034
+    ],
+    "browser_pixel": [
+      940.0000000001766,
+      649.9999999998234
+    ],
+    "max_error_px": 1.8110313249053434e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000000455,
+      649.9999999999034
+    ],
+    "browser_pixel": [
+      340.0000000001766,
+      649.9999999998234
+    ],
+    "max_error_px": 1.7206502889166586e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999955,
+      249.99999999992272
+    ],
+    "browser_pixel": [
+      940.0000000001766,
+      250.0000000001766
+    ],
+    "max_error_px": 2.53891130341799e-10
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000002318
+    ],
+    "browser_pixel": [
+      639.9999999992935,
+      450.00000000141284
+    ],
+    "max_error_px": 1.1810357136710081e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000003354,
+      250.00000000015453
+    ],
+    "browser_pixel": [
+      339.99999999929355,
+      250.00000000141284
+    ],
+    "max_error_px": 1.2583143416122766e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000244,
+      649.9999999998454
+    ],
+    "browser_pixel": [
+      939.9999999992935,
+      650.0000000014129
+    ],
+    "max_error_px": 1.5675141185056418e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000003354,
+      649.9999999998454
+    ],
+    "browser_pixel": [
+      339.99999999929355,
+      650.0000000014129
+    ],
+    "max_error_px": 1.5675141185056418e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000244,
+      250.00000000015453
+    ],
+    "browser_pixel": [
+      939.9999999992935,
+      250.00000000141284
+    ],
+    "max_error_px": 1.2583143416122766e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000031191
+    ],
+    "browser_pixel": [
+      640,
+      450
+    ],
+    "max_error_px": 3.1191120797302574e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000002741,
+      250.0000000027726
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 2.7725945983547717e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999997259,
+      650.0000000019062
+    ],
+    "browser_pixel": [
+      940,
+      650
+    ],
+    "max_error_px": 1.906187208078336e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000002741,
+      650.0000000019062
+    ],
+    "browser_pixel": [
+      340,
+      650
+    ],
+    "max_error_px": 1.906187208078336e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999997259,
+      250.0000000027726
+    ],
+    "browser_pixel": [
+      940,
+      250
+    ],
+    "max_error_px": 2.7725945983547717e-09
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000031191
+    ],
+    "browser_pixel": [
+      640.0000000113029,
+      450.00000000565143
+    ],
+    "max_error_px": 1.1302859093120787e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999998784,
+      249.99999999965343
+    ],
+    "browser_pixel": [
+      340.0000000113028,
+      250.0000000056514
+    ],
+    "max_error_px": 1.131496674133814e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999996223,
+      649.9999999972274
+    ],
+    "browser_pixel": [
+      940.0000000113029,
+      650
+    ],
+    "max_error_px": 1.1680526768031996e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999998784,
+      649.9999999972274
+    ],
+    "browser_pixel": [
+      340.0000000113028,
+      650
+    ],
+    "max_error_px": 1.131496674133814e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999996223,
+      249.99999999965343
+    ],
+    "browser_pixel": [
+      940.0000000113029,
+      250.0000000056514
+    ],
+    "max_error_px": 1.1680526768031996e-08
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000001949
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999996468
+    ],
+    "max_error_px": 5.481410880747717e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999999613,
+      250.00000000012994
+    ],
+    "browser_pixel": [
+      340,
+      249.99999999964677
+    ],
+    "max_error_px": 4.831690603168681e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000039,
+      650.0000000000649
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999996468
+    ],
+    "max_error_px": 4.1814018914010376e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "native_pixel": [
+      339.99999999999613,
+      650.0000000000649
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999996468
+    ],
+    "max_error_px": 4.1814018914010376e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "native_pixel": [
+      940.0000000000039,
+      250.00000000012994
+    ],
+    "browser_pixel": [
+      940,
+      249.99999999964677
+    ],
+    "max_error_px": 4.831690603168681e-10
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.00000000155956
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999971743
+    ],
+    "max_error_px": 4.385242391435895e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000002741,
+      249.99999999653429
+    ],
+    "browser_pixel": [
+      340,
+      249.9999999943486
+    ],
+    "max_error_px": 2.185686298616929e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999997259,
+      650.0000000003466
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999971743
+    ],
+    "max_error_px": 3.1723175197839737e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000002741,
+      650.0000000003466
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999971743
+    ],
+    "max_error_px": 3.1723175197839737e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999997259,
+      249.99999999653429
+    ],
+    "browser_pixel": [
+      940,
+      249.9999999943486
+    ],
+    "max_error_px": 2.185686298616929e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.0000000003899
+    ],
+    "browser_pixel": [
+      640.0000000014129,
+      450.00000000070645
+    ],
+    "max_error_px": 1.412900019204244e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000007617,
+      250.00000000060652
+    ],
+    "browser_pixel": [
+      340.00000000141284,
+      250.00000000070642
+    ],
+    "max_error_px": 1.3366729945119005e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999238,
+      649.9999999986137
+    ],
+    "browser_pixel": [
+      940.0000000014129,
+      649.9999999985871
+    ],
+    "max_error_px": 1.4890702004777268e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "native_pixel": [
+      340.00000000007617,
+      649.9999999986137
+    ],
+    "browser_pixel": [
+      340.00000000141284,
+      649.9999999985871
+    ],
+    "max_error_px": 1.3366729945119005e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999238,
+      250.00000000060652
+    ],
+    "browser_pixel": [
+      940.0000000014129,
+      250.00000000070642
+    ],
+    "max_error_px": 1.4890702004777268e-09
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.00000000009095
+    ],
+    "browser_pixel": [
+      640,
+      450
+    ],
+    "max_error_px": 9.094947017729282e-11
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000142,
+      250.00000000004042
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 4.04156708100345e-11
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999744,
+      650.0000000000506
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999998234
+    ],
+    "max_error_px": 2.2714630176778883e-10
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000142,
+      650.0000000000506
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999998234
+    ],
+    "max_error_px": 2.2714630176778883e-10
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999744,
+      250.00000000004042
+    ],
+    "browser_pixel": [
+      940,
+      250
+    ],
+    "max_error_px": 4.04156708100345e-11
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.00000000009754
+    ],
+    "browser_pixel": [
+      640.0000000003532,
+      450.0000000001766
+    ],
+    "max_error_px": 3.53225004801061e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000312,
+      249.99999999997834
+    ],
+    "browser_pixel": [
+      340.0000000003532,
+      250
+    ],
+    "max_error_px": 3.220179678464774e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999567,
+      650.0000000000217
+    ],
+    "browser_pixel": [
+      940.0000000003532,
+      650.0000000001766
+    ],
+    "max_error_px": 3.965396899729967e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000312,
+      650.0000000000217
+    ],
+    "browser_pixel": [
+      340.0000000003532,
+      650.0000000001766
+    ],
+    "max_error_px": 3.220179678464774e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999567,
+      249.99999999997834
+    ],
+    "browser_pixel": [
+      940.0000000003532,
+      250
+    ],
+    "max_error_px": 3.965396899729967e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "native_pixel": [
+      640.0,
+      450.00000000010454
+    ],
+    "browser_pixel": [
+      640.0000000000001,
+      450.00000000000006
+    ],
+    "max_error_px": 1.0447820386616513e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000151,
+      250.0000000001741
+    ],
+    "browser_pixel": [
+      340.0000000003533,
+      250.00000000000003
+    ],
+    "max_error_px": 3.381614988029469e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999718,
+      650.0000000000349
+    ],
+    "browser_pixel": [
+      940.0000000000001,
+      650.0000000000001
+    ],
+    "max_error_px": 3.4788172342814505e-11
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "native_pixel": [
+      340.0000000000151,
+      650.0000000000349
+    ],
+    "browser_pixel": [
+      340.0000000003533,
+      650.0000000000001
+    ],
+    "max_error_px": 3.381614988029469e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "native_pixel": [
+      939.9999999999718,
+      250.0000000001741
+    ],
+    "browser_pixel": [
+      940.0000000000001,
+      250.00000000000003
+    ],
+    "max_error_px": 1.7408297026122455e-10
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000000005
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999999972
+    ],
+    "max_error_px": 3.296918293926865e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.0,
+      249.9999999999986
+    ],
+    "browser_pixel": [
+      340,
+      249.9999999999945
+    ],
+    "max_error_px": 4.121147867408581e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0,
+      649.9999999999995
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999999973
+    ],
+    "max_error_px": 2.2737367544323206e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.0,
+      649.9999999999995
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999999973
+    ],
+    "max_error_px": 2.2737367544323206e-12
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0,
+      249.9999999999986
+    ],
+    "browser_pixel": [
+      940,
+      249.9999999999945
+    ],
+    "max_error_px": 4.121147867408581e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      639.9999999999999,
+      449.99999999999994
+    ],
+    "max_error_px": 1.1368683772161603e-13
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999999994,
+      249.9999999999996
+    ],
+    "browser_pixel": [
+      339.99999999999994,
+      249.99999999999997
+    ],
+    "max_error_px": 3.694822225952521e-13
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999993,
+      650.0000000000039
+    ],
+    "browser_pixel": [
+      939.9999999999999,
+      649.9999999999999
+    ],
+    "max_error_px": 3.979039320256561e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999999994,
+      650.0000000000039
+    ],
+    "browser_pixel": [
+      339.99999999999994,
+      649.9999999999999
+    ],
+    "max_error_px": 3.979039320256561e-12
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999993,
+      249.9999999999996
+    ],
+    "browser_pixel": [
+      939.9999999999999,
+      249.99999999999997
+    ],
+    "max_error_px": 5.684341886080801e-13
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      640,
+      450.00000000004417
+    ],
+    "max_error_px": 4.416733645484783e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.9999999999992,
+      249.99999999998067
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 1.9326762412674725e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000009,
+      650.0000000000482
+    ],
+    "browser_pixel": [
+      940.0000000000883,
+      650.0000000000441
+    ],
+    "max_error_px": 8.742517820792273e-11
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.9999999999992,
+      650.0000000000482
+    ],
+    "browser_pixel": [
+      340,
+      650.0000000000441
+    ],
+    "max_error_px": 4.092726157978177e-12
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000009,
+      249.99999999998067
+    ],
+    "browser_pixel": [
+      940.0000000000883,
+      250
+    ],
+    "max_error_px": 8.742517820792273e-11
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0
+    ],
+    "browser_pixel": [
+      640.0000000001766,
+      450
+    ],
+    "max_error_px": 1.765556589816697e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000000455,
+      249.99999999992272
+    ],
+    "browser_pixel": [
+      340.0000000001766,
+      250.0000000001766
+    ],
+    "max_error_px": 2.53891130341799e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999955,
+      649.9999999999034
+    ],
+    "browser_pixel": [
+      940.0000000001766,
+      649.9999999998234
+    ],
+    "max_error_px": 1.8110313249053434e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000000455,
+      649.9999999999034
+    ],
+    "browser_pixel": [
+      340.0000000001766,
+      649.9999999998234
+    ],
+    "max_error_px": 1.7206502889166586e-10
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999955,
+      249.99999999992272
+    ],
+    "browser_pixel": [
+      940.0000000001766,
+      250.0000000001766
+    ],
+    "max_error_px": 2.53891130341799e-10
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000002318
+    ],
+    "browser_pixel": [
+      639.9999999992935,
+      450.00000000141284
+    ],
+    "max_error_px": 1.1810357136710081e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000003354,
+      250.00000000015453
+    ],
+    "browser_pixel": [
+      339.99999999929355,
+      250.00000000141284
+    ],
+    "max_error_px": 1.2583143416122766e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000244,
+      649.9999999998454
+    ],
+    "browser_pixel": [
+      939.9999999992935,
+      650.0000000014129
+    ],
+    "max_error_px": 1.5675141185056418e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000003354,
+      649.9999999998454
+    ],
+    "browser_pixel": [
+      339.99999999929355,
+      650.0000000014129
+    ],
+    "max_error_px": 1.5675141185056418e-09
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000244,
+      250.00000000015453
+    ],
+    "browser_pixel": [
+      939.9999999992935,
+      250.00000000141284
+    ],
+    "max_error_px": 1.2583143416122766e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000031191
+    ],
+    "browser_pixel": [
+      640,
+      450
+    ],
+    "max_error_px": 3.1191120797302574e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000002741,
+      250.0000000027726
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 2.7725945983547717e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999997259,
+      650.0000000019062
+    ],
+    "browser_pixel": [
+      940,
+      650
+    ],
+    "max_error_px": 1.906187208078336e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000002741,
+      650.0000000019062
+    ],
+    "browser_pixel": [
+      340,
+      650
+    ],
+    "max_error_px": 1.906187208078336e-09
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999997259,
+      250.0000000027726
+    ],
+    "browser_pixel": [
+      940,
+      250
+    ],
+    "max_error_px": 2.7725945983547717e-09
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000031191
+    ],
+    "browser_pixel": [
+      640.0000000113029,
+      450.00000000565143
+    ],
+    "max_error_px": 1.1302859093120787e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999998784,
+      249.99999999965343
+    ],
+    "browser_pixel": [
+      340.0000000113028,
+      250.0000000056514
+    ],
+    "max_error_px": 1.131496674133814e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999996223,
+      649.9999999972274
+    ],
+    "browser_pixel": [
+      940.0000000113029,
+      650
+    ],
+    "max_error_px": 1.1680526768031996e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999998784,
+      649.9999999972274
+    ],
+    "browser_pixel": [
+      340.0000000113028,
+      650
+    ],
+    "max_error_px": 1.131496674133814e-08
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999996223,
+      249.99999999965343
+    ],
+    "browser_pixel": [
+      940.0000000113029,
+      250.0000000056514
+    ],
+    "max_error_px": 1.1680526768031996e-08
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000001949
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999996468
+    ],
+    "max_error_px": 5.481410880747717e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999999613,
+      250.00000000012994
+    ],
+    "browser_pixel": [
+      340,
+      249.99999999964677
+    ],
+    "max_error_px": 4.831690603168681e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000039,
+      650.0000000000649
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999996468
+    ],
+    "max_error_px": 4.1814018914010376e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "native_pixel": [
+      339.99999999999613,
+      650.0000000000649
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999996468
+    ],
+    "max_error_px": 4.1814018914010376e-10
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "native_pixel": [
+      940.0000000000039,
+      250.00000000012994
+    ],
+    "browser_pixel": [
+      940,
+      249.99999999964677
+    ],
+    "max_error_px": 4.831690603168681e-10
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.00000000155956
+    ],
+    "browser_pixel": [
+      640,
+      449.9999999971743
+    ],
+    "max_error_px": 4.385242391435895e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000002741,
+      249.99999999653429
+    ],
+    "browser_pixel": [
+      340,
+      249.9999999943486
+    ],
+    "max_error_px": 2.185686298616929e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999997259,
+      650.0000000003466
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999971743
+    ],
+    "max_error_px": 3.1723175197839737e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000002741,
+      650.0000000003466
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999971743
+    ],
+    "max_error_px": 3.1723175197839737e-09
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999997259,
+      249.99999999653429
+    ],
+    "browser_pixel": [
+      940,
+      249.9999999943486
+    ],
+    "max_error_px": 2.185686298616929e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.0000000003899
+    ],
+    "browser_pixel": [
+      640.0000000014129,
+      450.00000000070645
+    ],
+    "max_error_px": 1.412900019204244e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000007617,
+      250.00000000060652
+    ],
+    "browser_pixel": [
+      340.00000000141284,
+      250.00000000070642
+    ],
+    "max_error_px": 1.3366729945119005e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999238,
+      649.9999999986137
+    ],
+    "browser_pixel": [
+      940.0000000014129,
+      649.9999999985871
+    ],
+    "max_error_px": 1.4890702004777268e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "native_pixel": [
+      340.00000000007617,
+      649.9999999986137
+    ],
+    "browser_pixel": [
+      340.00000000141284,
+      649.9999999985871
+    ],
+    "max_error_px": 1.3366729945119005e-09
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999238,
+      250.00000000060652
+    ],
+    "browser_pixel": [
+      940.0000000014129,
+      250.00000000070642
+    ],
+    "max_error_px": 1.4890702004777268e-09
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.00000000009095
+    ],
+    "browser_pixel": [
+      640,
+      450
+    ],
+    "max_error_px": 9.094947017729282e-11
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000142,
+      250.00000000004042
+    ],
+    "browser_pixel": [
+      340,
+      250
+    ],
+    "max_error_px": 4.04156708100345e-11
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999744,
+      650.0000000000506
+    ],
+    "browser_pixel": [
+      940,
+      649.9999999998234
+    ],
+    "max_error_px": 2.2714630176778883e-10
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000142,
+      650.0000000000506
+    ],
+    "browser_pixel": [
+      340,
+      649.9999999998234
+    ],
+    "max_error_px": 2.2714630176778883e-10
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999744,
+      250.00000000004042
+    ],
+    "browser_pixel": [
+      940,
+      250
+    ],
+    "max_error_px": 4.04156708100345e-11
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.00000000009754
+    ],
+    "browser_pixel": [
+      640.0000000003532,
+      450.0000000001766
+    ],
+    "max_error_px": 3.53225004801061e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000312,
+      249.99999999997834
+    ],
+    "browser_pixel": [
+      340.0000000003532,
+      250
+    ],
+    "max_error_px": 3.220179678464774e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999567,
+      650.0000000000217
+    ],
+    "browser_pixel": [
+      940.0000000003532,
+      650.0000000001766
+    ],
+    "max_error_px": 3.965396899729967e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000312,
+      650.0000000000217
+    ],
+    "browser_pixel": [
+      340.0000000003532,
+      650.0000000001766
+    ],
+    "max_error_px": 3.220179678464774e-10
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999567,
+      249.99999999997834
+    ],
+    "browser_pixel": [
+      940.0000000003532,
+      250
+    ],
+    "max_error_px": 3.965396899729967e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "native_pixel": [
+      640.0,
+      450.00000000010454
+    ],
+    "browser_pixel": [
+      640.0000000000001,
+      450.00000000000006
+    ],
+    "max_error_px": 1.0447820386616513e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000151,
+      250.0000000001741
+    ],
+    "browser_pixel": [
+      340.0000000003533,
+      250.00000000000003
+    ],
+    "max_error_px": 3.381614988029469e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999718,
+      650.0000000000349
+    ],
+    "browser_pixel": [
+      940.0000000000001,
+      650.0000000000001
+    ],
+    "max_error_px": 3.4788172342814505e-11
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "native_pixel": [
+      340.0000000000151,
+      650.0000000000349
+    ],
+    "browser_pixel": [
+      340.0000000003533,
+      650.0000000000001
+    ],
+    "max_error_px": 3.381614988029469e-10
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "native_pixel": [
+      939.9999999999718,
+      250.0000000001741
+    ],
+    "browser_pixel": [
+      940.0000000000001,
+      250.00000000000003
+    ],
+    "max_error_px": 1.7408297026122455e-10
+  }
+]

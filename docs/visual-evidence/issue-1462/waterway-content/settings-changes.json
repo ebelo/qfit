@@ -1,0 +1,38 @@
+[
+  {
+    "runtime": "3",
+    "rule": "waterway-label-z13-to-z15",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "waterway-label-z15-to-z17",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "waterway-label-z17-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "waterway-label-z13-to-z15",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "waterway-label-z15-to-z17",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "waterway-label-z17-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  }
+]

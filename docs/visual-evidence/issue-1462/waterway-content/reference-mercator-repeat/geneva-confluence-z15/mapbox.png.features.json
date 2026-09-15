@@ -1,0 +1,2219 @@
+{
+  "features": [
+    {
+      "id": 832402271,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "School",
+        "name_script": "Latin",
+        "category_en": "School",
+        "maki": "school",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "学校",
+        "class": "education",
+        "name": "Ecole des Jardins-du-Rhône"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.113725304603577,
+          46.20384930378188
+        ]
+      }
+    },
+    {
+      "id": 7957875350,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Coop",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Coop"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.116243898868561,
+          46.20619010192428
+        ]
+      }
+    },
+    {
+      "id": 6886194990,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Denner",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Denner"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.123314201831818,
+          46.20463824372021
+        ]
+      }
+    },
+    {
+      "id": 110980918300,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Coop",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Coop"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.130175292491913,
+          46.20511160224484
+        ]
+      }
+    },
+    {
+      "id": 7957894640,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Coop",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Coop"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1274877190589905,
+          46.208046334059645
+        ]
+      }
+    },
+    {
+      "id": 37454019250,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Délices Parc"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.133214235305786,
+          46.20619010192428
+        ]
+      }
+    },
+    {
+      "id": 793939331,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "name_fr": "Musée Voltaire",
+        "name_en": "Voltaire Museum",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Musée Voltaire"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.133460998535156,
+          46.20762683108319
+        ]
+      }
+    },
+    {
+      "id": 9833660770,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "name_fr": "Musée des EAN",
+        "name_de": "Arquebusemuseum",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Musée des EAN"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.108983159065247,
+          46.19828185025605
+        ]
+      }
+    },
+    {
+      "id": 383585791,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 7,
+        "type": "Cemetery",
+        "name_script": "Latin",
+        "category_en": "Cemetery",
+        "maki": "cemetery",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "墓地",
+        "class": "park_like",
+        "name": "Cimetière de Saint-Georges"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.115795969963074,
+          46.19859189001036
+        ]
+      }
+    },
+    {
+      "id": 44105062930,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Place Of Worship",
+        "name_script": "Latin",
+        "name_fr": "Chapelle Ange-de-la-Consolation",
+        "category_en": "Place of Worship",
+        "maki": "place-of-worship",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "礼拜场所",
+        "class": "religion",
+        "name": "Chapelle Ange-de-la-Consolation"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.115535795688629,
+          46.19969465196516
+        ]
+      }
+    },
+    {
+      "id": 3966601181,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Bridge",
+        "name_script": "Latin",
+        "category_en": "Bridge",
+        "maki": "bridge",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "桥梁",
+        "class": "landmark",
+        "name": "Pont Butin"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.110748052597046,
+          46.20177572997076
+        ]
+      }
+    },
+    {
+      "id": 110932603900,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Tomb",
+        "name_script": "Latin",
+        "category_en": "Tomb",
+        "maki": "marker",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "陵墓",
+        "class": "historic",
+        "name": "Ferdinand Hodler"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1194223165512085,
+          46.197750879906835
+        ]
+      }
+    },
+    {
+      "id": 123781486010,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Theme Park",
+        "name_script": "Latin",
+        "category_en": "Theme Park",
+        "maki": "amusement-park",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "主题公园",
+        "class": "arts_and_entertainment",
+        "name": "Yatouland"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.129679083824158,
+          46.196371446943914
+        ]
+      }
+    },
+    {
+      "id": 41599363890,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Gallery",
+        "name_script": "Latin",
+        "category_en": "Art Gallery",
+        "maki": "art-gallery",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "美术馆",
+        "class": "arts_and_entertainment",
+        "name": "Usine kügler"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.125266849994659,
+          46.20158823197201
+        ]
+      }
+    },
+    {
+      "id": 9660278290,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Café de la Tour"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.12237811088562,
+          46.19967051768117
+        ]
+      }
+    },
+    {
+      "id": 1813531161,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "University",
+        "name_script": "Latin",
+        "category_en": "University",
+        "maki": "college",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "大学",
+        "class": "education",
+        "name": "Sciences II"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.132763624191284,
+          46.198153749487545
+        ]
+      }
+    },
+    {
+      "id": 135920466570,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Musée d'ethnographie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.136880815029144,
+          46.197871555436734
+        ]
+      }
+    },
+    {
+      "id": 1814331151,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "CADMUS"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.134590208530426,
+          46.200424244931355
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.12213134765625,
+            46.20164021167935
+          ],
+          [
+            6.1218443512916565,
+            46.201530682953006
+          ],
+          [
+            6.1191970109939575,
+            46.200888357552685
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.13311767578125,
+            46.20332395631539
+          ],
+          [
+            6.1328306794166565,
+            46.20324413276245
+          ],
+          [
+            6.132283508777618,
+            46.2031494581656
+          ],
+          [
+            6.1316075921058655,
+            46.203095623518124
+          ],
+          [
+            6.129475235939026,
+            46.20322371276515
+          ],
+          [
+            6.128557920455933,
+            46.20320514912467
+          ],
+          [
+            6.1274367570877075,
+            46.203082628940166
+          ],
+          [
+            6.125494837760925,
+            46.20268165188048
+          ],
+          [
+            6.124376356601715,
+            46.202421757778666
+          ],
+          [
+            6.123324930667877,
+            46.20209874482427
+          ],
+          [
+            6.1218443512916565,
+            46.201530682953006
+          ],
+          [
+            6.1191970109939575,
+            46.200888357552685
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.135421693325043,
+            46.2046141116077
+          ],
+          [
+            6.1352017521858215,
+            46.20446931871015
+          ],
+          [
+            6.134410500526428,
+            46.203890143303795
+          ],
+          [
+            6.133949160575867,
+            46.2036432493673
+          ],
+          [
+            6.133326888084412,
+            46.20338335981435
+          ],
+          [
+            6.1328306794166565,
+            46.20324413276245
+          ],
+          [
+            6.132283508777618,
+            46.2031494581656
+          ],
+          [
+            6.1316075921058655,
+            46.203095623518124
+          ],
+          [
+            6.129475235939026,
+            46.20322371276515
+          ],
+          [
+            6.128557920455933,
+            46.20320514912467
+          ],
+          [
+            6.12762451171875,
+            46.203103048989874
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.12213134765625,
+            46.20164021167935
+          ],
+          [
+            6.1218443512916565,
+            46.201530682953006
+          ],
+          [
+            6.1191970109939575,
+            46.200888357552685
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6803902801,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "L'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.13311767578125,
+            46.196596094510994
+          ],
+          [
+            6.13273948431015,
+            46.19679474903245
+          ],
+          [
+            6.129333078861237,
+            46.19904859209075
+          ],
+          [
+            6.12849086523056,
+            46.19951271633215
+          ],
+          [
+            6.127549409866333,
+            46.199930424797486
+          ],
+          [
+            6.125891804695129,
+            46.20047251282665
+          ],
+          [
+            6.124236881732941,
+            46.20076954509497
+          ],
+          [
+            6.122670471668243,
+            46.20093662504024
+          ],
+          [
+            6.121584177017212,
+            46.20094405080377
+          ],
+          [
+            6.1191970109939575,
+            46.200888357552685
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1442561681,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.13311767578125,
+            46.20332395631539
+          ],
+          [
+            6.1328306794166565,
+            46.20324413276245
+          ],
+          [
+            6.132283508777618,
+            46.2031494581656
+          ],
+          [
+            6.1316075921058655,
+            46.203095623518124
+          ],
+          [
+            6.129475235939026,
+            46.20322371276515
+          ],
+          [
+            6.128557920455933,
+            46.20320514912467
+          ],
+          [
+            6.1274367570877075,
+            46.203082628940166
+          ],
+          [
+            6.125494837760925,
+            46.20268165188048
+          ],
+          [
+            6.124376356601715,
+            46.202421757778666
+          ],
+          [
+            6.123324930667877,
+            46.20209874482427
+          ],
+          [
+            6.1218443512916565,
+            46.201530682953006
+          ],
+          [
+            6.1191970109939575,
+            46.200888357552685
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6803902801,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "class": "river",
+        "name": "L'Arve",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.139415502548218,
+            46.193140876237976
+          ],
+          [
+            6.139294803142548,
+            46.19334325664536
+          ],
+          [
+            6.138728857040405,
+            46.19385384610422
+          ],
+          [
+            6.135247349739075,
+            46.19567707593026
+          ],
+          [
+            6.133898198604584,
+            46.19618578710444
+          ],
+          [
+            6.13273948431015,
+            46.19679474903245
+          ],
+          [
+            6.129333078861237,
+            46.19904859209075
+          ],
+          [
+            6.12849086523056,
+            46.19951271633215
+          ],
+          [
+            6.12762451171875,
+            46.199897008237116
+          ]
+        ]
+      }
+    },
+    {
+      "id": 138731951,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 330,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "104",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "primary",
+        "name": "Avenue de l'Ain"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.10952764749527,
+              46.2086867195932
+            ],
+            [
+              6.109581291675568,
+              46.20805561506273
+            ]
+          ],
+          [
+            [
+              6.109771728515625,
+              46.207688086142326
+            ],
+            [
+              6.10952764749527,
+              46.2086867195932
+            ]
+          ],
+          [
+            [
+              6.110013127326965,
+              46.20571118385405
+            ],
+            [
+              6.110243797302246,
+              46.20433751971527
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 640437471,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 240,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Camille-Martin"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.115436553955078,
+            46.20720546867378
+          ],
+          [
+            6.115948855876923,
+            46.2070569701381
+          ],
+          [
+            6.118121445178986,
+            46.206492672041236
+          ],
+          [
+            6.118419170379639,
+            46.20639057801631
+          ]
+        ]
+      }
+    },
+    {
+      "id": 323049651,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "len": 240,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin de l'Essor"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.112840175628662,
+            46.20553298071559
+          ],
+          [
+            6.114114224910736,
+            46.20749318344434
+          ]
+        ]
+      }
+    },
+    {
+      "id": 801196351,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 80,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Avenue de la Concorde"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.112019419670105,
+            46.205752021991884
+          ],
+          [
+            6.111002862453461,
+            46.20602675049358
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13553480891,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 400,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Avenue Henri-Golay"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.11426442861557,
+              46.210487183841934
+            ],
+            [
+              6.114224195480347,
+              46.21044634922444
+            ]
+          ],
+          [
+            [
+              6.113092303276062,
+              46.209327097660776
+            ],
+            [
+              6.112791895866394,
+              46.20904496099743
+            ],
+            [
+              6.1125558614730835,
+              46.20878324082324
+            ],
+            [
+              6.112309098243713,
+              46.208549362165655
+            ],
+            [
+              6.112158894538879,
+              46.20827279008711
+            ],
+            [
+              6.111574172973633,
+              46.2074096535049
+            ],
+            [
+              6.111077964305878,
+              46.20671727822821
+            ],
+            [
+              6.110697090625763,
+              46.206217945869724
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 138735451,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 20,
+        "iso_3166_2": "CH-GE",
+        "layer": 2,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "bridge",
+        "oneway": "false",
+        "class": "street",
+        "name": "Chemin des Sports"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.11651211977005,
+            46.20846583383235
+          ],
+          [
+            6.116689145565033,
+            46.20867372633771
+          ]
+        ]
+      }
+    },
+    {
+      "id": 51308211,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 10,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Avenue Wendt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.126894950866699,
+            46.20840829201771
+          ],
+          [
+            6.126905679702759,
+            46.20850481373702
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2206304341,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "bike_lane": "both",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 360,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "109",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Rue de Lyon"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.125612854957581,
+            46.208486251881084
+          ],
+          [
+            6.1251139640808105,
+            46.20855678690026
+          ],
+          [
+            6.124588251113892,
+            46.208653308358635
+          ],
+          [
+            6.12124890089035,
+            46.209345659232525
+          ],
+          [
+            6.1204952001571655,
+            46.2095127130963
+          ]
+        ]
+      }
+    },
+    {
+      "id": 7952942281,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 290,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Avenue d'Aïre"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.125645041465759,
+            46.207992504210864
+          ],
+          [
+            6.125545799732208,
+            46.20787741952964
+          ],
+          [
+            6.125451922416687,
+            46.207806883638085
+          ],
+          [
+            6.1236682534217834,
+            46.20740779728257
+          ],
+          [
+            6.122281551361084,
+            46.207101519740945
+          ],
+          [
+            6.122209131717682,
+            46.20722588719107
+          ]
+        ]
+      }
+    },
+    {
+      "id": 83675201,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 210,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue des Confessions"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.124354898929596,
+            46.20547914840384
+          ],
+          [
+            6.124711632728577,
+            46.2055422621433
+          ],
+          [
+            6.125454604625702,
+            46.20561094465981
+          ],
+          [
+            6.1256906390190125,
+            46.205568250132615
+          ],
+          [
+            6.125982999801636,
+            46.20555711242443
+          ],
+          [
+            6.126420199871063,
+            46.20551813042795
+          ],
+          [
+            6.127294600009918,
+            46.20539004653048
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6969541701,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 320,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue de Saint-Jean"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.127399206161499,
+            46.204641956351935
+          ],
+          [
+            6.1296093463897705,
+            46.20493710977314
+          ],
+          [
+            6.129952669143677,
+            46.20496681065853
+          ],
+          [
+            6.130714416503906,
+            46.20506705102815
+          ]
+        ]
+      }
+    },
+    {
+      "id": 814274861,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 300,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Charles-Giron"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.130228936672211,
+            46.20595621222557
+          ],
+          [
+            6.12998753786087,
+            46.205935793236364
+          ],
+          [
+            6.129815876483917,
+            46.20594136205233
+          ],
+          [
+            6.129375994205475,
+            46.205993337641075
+          ],
+          [
+            6.128917336463928,
+            46.206088007337
+          ],
+          [
+            6.128480136394501,
+            46.206197526977775
+          ],
+          [
+            6.126607954502106,
+            46.20683979030673
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1801854791,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 20,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin François-Furet"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.121482253074646,
+            46.20692517735142
+          ],
+          [
+            6.12125962972641,
+            46.20702355791224
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13524411481,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "bike_lane": "left",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 220,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "109",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Rue Voltaire"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.135064959526062,
+            46.20832105108698
+          ],
+          [
+            6.136014461517334,
+            46.208144712612494
+          ],
+          [
+            6.13798052072525,
+            46.20770664826799
+          ]
+        ]
+      }
+    },
+    {
+      "id": 50703991,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "bike_lane": "both",
+        "len": 50,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Rue de Sous-Terre"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.132012605667114,
+            46.2036321112688
+          ],
+          [
+            6.132079660892487,
+            46.20373421042038
+          ],
+          [
+            6.132170855998993,
+            46.20383074035277
+          ],
+          [
+            6.132315695285797,
+            46.203949546190586
+          ],
+          [
+            6.1324819922447205,
+            46.20404421940867
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2174627341,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "bike_lane": "both",
+        "len": 130,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Rue de Saint-Jean"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.135263442993164,
+              46.20580214148316
+            ],
+            [
+              6.135974228382111,
+              46.20593393696424
+            ],
+            [
+              6.136513352394104,
+              46.20606573212913
+            ]
+          ],
+          [
+            [
+              6.137065887451172,
+              46.2062235146571
+            ],
+            [
+              6.137503087520599,
+              46.206359021642925
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 284828501,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "bike_lane": "both",
+        "len": 160,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "secondary",
+        "name": "Rue de Lyon"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.137964427471161,
+            46.20903753632882
+          ],
+          [
+            6.135896444320679,
+            46.20854379361407
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2748133601,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "bike_lane": "left",
+        "len": 80,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "Quai du Seujet"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.132884323596954,
+            46.203723072340324
+          ],
+          [
+            6.133452951908112,
+            46.20389571232715
+          ],
+          [
+            6.133651435375214,
+            46.20397553493336
+          ],
+          [
+            6.1338794231414795,
+            46.20408877145485
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1770244121,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 110,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "Rue de la Dôle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.1312562227249146,
+            46.20733911701271
+          ],
+          [
+            6.131240129470825,
+            46.20727414911079
+          ],
+          [
+            6.130797564983368,
+            46.20662446586559
+          ],
+          [
+            6.130620539188385,
+            46.20639243427297
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1945797121,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 50,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue du Tir"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.136360466480255,
+            46.20326455275213
+          ],
+          [
+            6.136435568332672,
+            46.20277818366233
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1770244101,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 110,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Cavour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.132310330867767,
+            46.2069715832983
+          ],
+          [
+            6.131637096405029,
+            46.206019325416975
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13523733501,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 1460,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "104",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "primary",
+        "name": "Route du Pont-Butin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.111748516559601,
+              46.19702867773509
+            ],
+            [
+              6.111635863780975,
+              46.197281171090225
+            ],
+            [
+              6.111568808555603,
+              46.19751509772212
+            ],
+            [
+              6.111177206039429,
+              46.1997280686486
+            ]
+          ],
+          [
+            [
+              6.111067235469818,
+              46.19971692975642
+            ],
+            [
+              6.111448109149933,
+              46.197557798507745
+            ],
+            [
+              6.111496388912201,
+              46.197370286115046
+            ],
+            [
+              6.111587584018707,
+              46.197121506309344
+            ],
+            [
+              6.111700236797333,
+              46.19690985693123
+            ],
+            [
+              6.112150847911835,
+              46.19615422486933
+            ],
+            [
+              6.112217903137207,
+              46.1960001266377
+            ],
+            [
+              6.112271547317505,
+              46.19578475971039
+            ],
+            [
+              6.112303733825684,
+              46.195561965449144
+            ],
+            [
+              6.112311780452728,
+              46.195300181037965
+            ],
+            [
+              6.112284958362579,
+              46.1948044582044
+            ]
+          ],
+          [
+            [
+              6.112392246723175,
+              46.1948044582044
+            ],
+            [
+              6.112421751022339,
+              46.19524633869946
+            ],
+            [
+              6.1124056577682495,
+              46.195649226642416
+            ],
+            [
+              6.1123573780059814,
+              46.19591472261234
+            ],
+            [
+              6.112303733825684,
+              46.19609667015868
+            ],
+            [
+              6.112185716629028,
+              46.19631946225209
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 279127711,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 460,
+        "iso_3166_2": "CH-GE",
+        "layer": 1,
+        "name_script": "Latin",
+        "ref": "104",
+        "structure": "bridge",
+        "oneway": "true",
+        "class": "primary",
+        "name": "Pont Butin"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.111177206039429,
+            46.1997280686486
+          ],
+          [
+            6.110619306564331,
+            46.20288399715136
+          ]
+        ]
+      }
+    },
+    {
+      "id": 329413701,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 250,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin Daniel-Ihly"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.113556325435638,
+            46.19560466775252
+          ],
+          [
+            6.1165764927864075,
+            46.19614308525263
+          ],
+          [
+            6.116686463356018,
+            46.196152368266695
+          ],
+          [
+            6.116766929626465,
+            46.19613194563365
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1286117831,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "bike_lane": "right",
+        "len": 320,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "Voie Centrale"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.1279356479644775,
+              46.196642509183135
+            ],
+            [
+              6.1280375719070435,
+              46.19631389246078
+            ],
+            [
+              6.1280375719070435,
+              46.1948044582044
+            ]
+          ],
+          [
+            [
+              6.128169000148773,
+              46.19527975808819
+            ],
+            [
+              6.128166317939758,
+              46.19646242003628
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13553347241,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 1060,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "103",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "secondary",
+        "name": "Route de Chancy"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.127879321575165,
+              46.198740411428616
+            ],
+            [
+              6.127895414829254,
+              46.19879239383016
+            ],
+            [
+              6.127965152263641,
+              46.19888521942488
+            ],
+            [
+              6.128144860267639,
+              46.199022601017305
+            ]
+          ],
+          [
+            [
+              6.128005385398865,
+              46.19908757867785
+            ],
+            [
+              6.127855181694031,
+              46.198955766772
+            ],
+            [
+              6.127798855304718,
+              46.19884066315902
+            ],
+            [
+              6.12675279378891,
+              46.19548770049468
+            ],
+            [
+              6.126669645309448,
+              46.19527418819149
+            ],
+            [
+              6.126540899276733,
+              46.19506253169823
+            ],
+            [
+              6.126422882080078,
+              46.19493256678089
+            ],
+            [
+              6.126267313957214,
+              46.1948044582044
+            ]
+          ],
+          [
+            [
+              6.127627193927765,
+              46.197960669504084
+            ],
+            [
+              6.127809584140778,
+              46.19852691176362
+            ]
+          ],
+          [
+            [
+              6.126409471035004,
+              46.1948044582044
+            ],
+            [
+              6.126503348350525,
+              46.194876867436506
+            ],
+            [
+              6.126696467399597,
+              46.195120087492
+            ],
+            [
+              6.126801073551178,
+              46.1953503100643
+            ],
+            [
+              6.127589643001556,
+              46.19784556380654
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 9770370161,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 360,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Avenue de la Jonction"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.130153834819794,
+            46.20125407553647
+          ],
+          [
+            6.128313839435577,
+            46.201220659781114
+          ],
+          [
+            6.128201186656952,
+            46.2012280855063
+          ],
+          [
+            6.128050982952118,
+            46.20125964482705
+          ],
+          [
+            6.126830577850342,
+            46.201242936953605
+          ],
+          [
+            6.126543581485748,
+            46.201185387572906
+          ],
+          [
+            6.125374138355255,
+            46.20113897673809
+          ]
+        ]
+      }
+    },
+    {
+      "id": 648332121,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "bike_lane": "left",
+        "len": 170,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "Boulevard de Saint-Georges"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.131985783576965,
+              46.201281921983735
+            ],
+            [
+              6.133074760437012,
+              46.20130048627408
+            ]
+          ],
+          [
+            [
+              6.137800812721252,
+              46.20135060982659
+            ],
+            [
+              6.137951016426086,
+              46.20138588192876
+            ],
+            [
+              6.139042675495148,
+              46.201413728309234
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2785880401,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "bike_lane": "both",
+        "len": 310,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "Boulevard Carl-Vogt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.136271953582764,
+            46.19776387574586
+          ],
+          [
+            6.133788228034973,
+            46.19917297777198
+          ],
+          [
+            6.132988929748535,
+            46.199611110167695
+          ]
+        ]
+      }
+    },
+    {
+      "id": 81594581,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 310,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "Rue des Maraîchers"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.133643388748169,
+            46.20006594730617
+          ],
+          [
+            6.136835217475891,
+            46.19827999372529
+          ]
+        ]
+      }
+    },
+    {
+      "id": 50731451,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "bike_lane": "no",
+        "len": 330,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "Boulevard D'Yvoy"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.132173538208008,
+            46.19903559655555
+          ],
+          [
+            6.13436222076416,
+            46.19781400252475
+          ],
+          [
+            6.134397089481354,
+            46.19775459300402
+          ],
+          [
+            6.135523617267609,
+            46.19712521944905
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

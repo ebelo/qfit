@@ -1,0 +1,19 @@
+{
+  "captured_date_utc": "2026-09-15",
+  "assembled_at_utc": "2026-09-15T11:47:18.736114+00:00",
+  "baseline_commit": "78b183beb8d069f53d31bdec808a113c801a99d0",
+  "candidate_runtime_commit": "09c87150404384f4d7134fffb599f1391a3fa7bf",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "native_matrix_png": 104,
+  "browser_png": 52,
+  "actual_pdfs": 16,
+  "pdf_companion_png": 8,
+  "source_property_replay": "16 camera/property sets, all observed river class, each through 3 native bands per variant/runtime; not unique rivers or native decode/fetch equivalence",
+  "gateway_preflight": "same active run, exit0, ok:true, reason:mapbox_authorized, http_status:200, TLS verified",
+  "live_container_preflights": "every successful live container independently authorized with unchanged inherited protected environment",
+  "capture_failures": 0,
+  "runtime_source_files": 233,
+  "scope": "Light waterway content. Original source-globe reference and explicit Mercator diagnostic separate. Native PNG DPI100/96; source/native style zoom and QGIS4 PDF density/detail remain open. Live upstream vector-tile bytes unarchived. No RTL shaping, long-name rendering, native decoder trace, accessibility, real activity, packaged desktop or full atlas certification.",
+  "public_worker_replay_png": 2,
+  "supplemental_byte_identity_pairs": 30
+}

@@ -1,0 +1,1146 @@
+[
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 5.35,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        -315391.9260596817,
+        5045903.47656141,
+        2141031.575069368,
+        6773076.250792773
+      ],
+      "map_scale": 7555436.457705,
+      "tile_render_scale": 7555436.457705,
+      "vector_tile_zoom": 5.270208288101648,
+      "integer_render_zoom": 5,
+      "integer_fetch_zoom": 5
+    },
+    "reference": {
+      "before_mae": 0.03364307598039215,
+      "after_mae": 0.03364307598039215,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.021072873547567175,
+      "after_mae": 0.021072873547567175,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 8.2,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        780320.1684168805,
+        5884545.688159028,
+        1121016.734332232,
+        6124097.96106826
+      ],
+      "map_scale": 1047910.2052022377,
+      "tile_render_scale": 1047910.2052022377,
+      "vector_tile_zoom": 8.080675923441609,
+      "integer_render_zoom": 8,
+      "integer_fetch_zoom": 8
+    },
+    "reference": {
+      "before_mae": 0.02049176652142338,
+      "after_mae": 0.02049176652142338,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.02049176652142338,
+      "after_mae": 0.02049176652142338,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 10.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        706930.5793611014,
+        5830298.7658473775,
+        789203.3769004953,
+        5888146.826617263
+      ],
+      "map_scale": 253053.63416398215,
+      "tile_render_scale": 253053.63416398215,
+      "vector_tile_zoom": 10.146055147472122,
+      "integer_render_zoom": 10,
+      "integer_fetch_zoom": 10
+    },
+    "reference": {
+      "before_mae": 0.007600727351125635,
+      "after_mae": 0.007600727351125635,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007600727351125635,
+      "after_mae": 0.007600727351125635,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 63263.4085409959,
+      "tile_render_scale": 63263.4085409959,
+      "vector_tile_zoom": 12.146055147472111,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.007182750090777052,
+      "after_mae": 0.007182750090777052,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007182750090777052,
+      "after_mae": 0.007182750090777052,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "3",
+    "changed_pixels": 2469,
+    "context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15815.852135248975,
+      "tile_render_scale": 15815.852135248975,
+      "vector_tile_zoom": 14.146055147472111,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.010529205246913581,
+      "after_mae": 0.010472334558823529,
+      "relative_change_percent": -0.5401232738503502
+    },
+    "reference-mercator": {
+      "before_mae": 0.010529205246913581,
+      "after_mae": 0.010472334558823529,
+      "relative_change_percent": -0.5401232738503502
+    }
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 17.0,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        950475.5093674791,
+        6003543.480950285,
+        951239.879650331,
+        6004080.928805415
+      ],
+      "map_scale": 2351.040486133914,
+      "tile_render_scale": 2351.040486133914,
+      "vector_tile_zoom": 16.89763779527545,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.008118471995279592,
+      "after_mae": 0.008118471995279592,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008118471995279592,
+      "after_mae": 0.008118471995279592,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "3",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 18.0,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ],
+      "map_scale": 1175.5202430665988,
+      "tile_render_scale": 1175.5202430665988,
+      "vector_tile_zoom": 17.897637795275788,
+      "integer_render_zoom": 18,
+      "integer_fetch_zoom": 18
+    },
+    "reference": {
+      "before_mae": 0.006925111201888163,
+      "after_mae": 0.006925111201888163,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.006925111201888163,
+      "after_mae": 0.006925111201888163,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "3",
+    "changed_pixels": 527,
+    "context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        841857.4539895394,
+        6031979.368466844,
+        847972.4162523536,
+        6036278.951307884
+      ],
+      "map_scale": 18808.32388906916,
+      "tile_render_scale": 18808.32388906916,
+      "vector_tile_zoom": 13.897637795275577,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.014839992964778505,
+      "after_mae": 0.014839696804647784,
+      "relative_change_percent": -0.001995689158508486
+    },
+    "reference-mercator": {
+      "before_mae": 0.014839992964778505,
+      "after_mae": 0.014839696804647784,
+      "relative_change_percent": -0.001995689158508486
+    }
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "3",
+    "changed_pixels": 617,
+    "context": {
+      "requested_camera_zoom": 17,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        844532.7499795206,
+        6033860.435959799,
+        845297.1202623724,
+        6034397.883814929
+      ],
+      "map_scale": 2351.040486133914,
+      "tile_render_scale": 2351.040486133914,
+      "vector_tile_zoom": 16.89763779527545,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.0054673792665214235,
+      "after_mae": 0.005467568763616558,
+      "relative_change_percent": 0.0034659584765734386
+    },
+    "reference-mercator": {
+      "before_mae": 0.0054673792665214235,
+      "after_mae": 0.005467568763616558,
+      "relative_change_percent": 0.0034659584765734386
+    }
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "3",
+    "changed_pixels": 4149,
+    "context": {
+      "requested_camera_zoom": 15,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        680080.5015615101,
+        5811704.267566347,
+        683137.982692918,
+        5813854.058986868
+      ],
+      "map_scale": 9404.161944537087,
+      "tile_render_scale": 9404.161944537087,
+      "vector_tile_zoom": 14.897637795275283,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.019242043391430645,
+      "after_mae": 0.019212217456427014,
+      "relative_change_percent": -0.15500398994481845
+    },
+    "reference-mercator": {
+      "before_mae": 0.019242043391430645,
+      "after_mae": 0.019212217456427014,
+      "relative_change_percent": -0.15500398994481845
+    }
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "3",
+    "changed_pixels": 3277,
+    "context": {
+      "requested_camera_zoom": 12.9,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675055.3878495186,
+        5808170.9844876025,
+        688163.0964049096,
+        5817387.342065612
+      ],
+      "map_scale": 40316.52483818608,
+      "tile_render_scale": 40316.52483818608,
+      "vector_tile_zoom": 12.818517442873286,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.006100268927015251,
+      "after_mae": 0.00605460466594045,
+      "relative_change_percent": -0.74856144247305
+    },
+    "reference-mercator": {
+      "before_mae": 0.006100268927015251,
+      "after_mae": 0.00605460466594045,
+      "relative_change_percent": -0.74856144247305
+    }
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "3",
+    "changed_pixels": 2660,
+    "context": {
+      "requested_camera_zoom": 13,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675494.2798643995,
+        5808479.580435566,
+        687724.2043900287,
+        5817078.746117649
+      ],
+      "map_scale": 37616.64777814119,
+      "tile_render_scale": 37616.64777814119,
+      "vector_tile_zoom": 12.897637795275493,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.007245209241103849,
+      "after_mae": 0.007234789170297748,
+      "relative_change_percent": -0.14382015010671487
+    },
+    "reference-mercator": {
+      "before_mae": 0.007245209241103849,
+      "after_mae": 0.007234789170297748,
+      "relative_change_percent": -0.14382015010671487
+    }
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "3",
+    "changed_pixels": 3209,
+    "context": {
+      "requested_camera_zoom": 13.1,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675903.7805940054,
+        5808767.51063607,
+        687314.7036604228,
+        5816790.8159171445
+      ],
+      "map_scale": 35097.573408026125,
+      "tile_render_scale": 35097.573408026125,
+      "vector_tile_zoom": 12.971459694368763,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.006963672158678286,
+      "after_mae": 0.006966173066448801,
+      "relative_change_percent": 0.03591363455268665
+    },
+    "reference-mercator": {
+      "before_mae": 0.006963672158678286,
+      "after_mae": 0.006966173066448801,
+      "relative_change_percent": 0.03591363455268665
+    }
+  },
+  {
+    "camera": "switzerland-alps-z5-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 5.35,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        -315391.9260596817,
+        5045903.47656141,
+        2141031.575069368,
+        6773076.250792773
+      ],
+      "map_scale": 7253218.9993968,
+      "tile_render_scale": 6853860.215203822,
+      "vector_tile_zoom": 5.430831804206495,
+      "integer_render_zoom": 5,
+      "integer_fetch_zoom": 5
+    },
+    "reference": {
+      "before_mae": 0.03313677378358751,
+      "after_mae": 0.03313677378358751,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.02046116784676834,
+      "after_mae": 0.02046116784676834,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "zurich-region-z8-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 8.2,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        780320.1684168805,
+        5884545.688159028,
+        1121016.734332232,
+        6124097.96106826
+      ],
+      "map_scale": 1005993.7969941482,
+      "tile_render_scale": 950604.2575763157,
+      "vector_tile_zoom": 8.258898873407745,
+      "integer_render_zoom": 8,
+      "integer_fetch_zoom": 8
+    },
+    "reference": {
+      "before_mae": 0.02089546568627451,
+      "after_mae": 0.02089546568627451,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.02089546568627451,
+      "after_mae": 0.02089546568627451,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "lausanne-lavaux-z10-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 10.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        706930.5793611014,
+        5830298.7658473775,
+        789203.3769004953,
+        5888146.826617263
+      ],
+      "map_scale": 242931.48879742288,
+      "tile_render_scale": 229555.79670589813,
+      "vector_tile_zoom": 10.318207169492569,
+      "integer_render_zoom": 10,
+      "integer_fetch_zoom": 10
+    },
+    "reference": {
+      "before_mae": 0.008125325662672477,
+      "after_mae": 0.008125325662672477,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008125325662672477,
+      "after_mae": 0.008125325662672477,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "bern-urban-z12-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 57388.94917647486,
+      "vector_tile_zoom": 12.318207169492558,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.007279479847494554,
+      "after_mae": 0.007279479847494554,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007279479847494554,
+      "after_mae": 0.007279479847494554,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "geneva-urban-z14-light",
+    "runtime": "4",
+    "changed_pixels": 1572,
+    "context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 14347.237294118715,
+      "vector_tile_zoom": 14.318207169492558,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.010571867057007989,
+      "after_mae": 0.010563272739651417,
+      "relative_change_percent": -0.08129422466465036
+    },
+    "reference-mercator": {
+      "before_mae": 0.010571867057007989,
+      "after_mae": 0.010563272739651417,
+      "relative_change_percent": -0.08129422466465036
+    }
+  },
+  {
+    "camera": "zurich-streets-z17-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 17.0,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        950475.5093674791,
+        6003543.480950285,
+        951239.879650331,
+        6004080.928805415
+      ],
+      "map_scale": 2256.9988666885574,
+      "tile_render_scale": 2132.729583850051,
+      "vector_tile_zoom": 16.999999999999872,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.008193611564996369,
+      "after_mae": 0.008193611564996369,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008193611564996369,
+      "after_mae": 0.008193611564996369,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "geneva-streets-z18-light",
+    "runtime": "4",
+    "changed_pixels": 0,
+    "context": {
+      "requested_camera_zoom": 18.0,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ],
+      "map_scale": 1128.499433343935,
+      "tile_render_scale": 1066.3647919247005,
+      "vector_tile_zoom": 18.000000000000355,
+      "integer_render_zoom": 18,
+      "integer_fetch_zoom": 18
+    },
+    "reference": {
+      "before_mae": 0.0069738130900508346,
+      "after_mae": 0.0069738130900508346,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.0069738130900508346,
+      "after_mae": 0.0069738130900508346,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "camera": "basel-rhine-z14",
+    "runtime": "4",
+    "changed_pixels": 387,
+    "context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        841857.4539895394,
+        6031979.368466844,
+        847972.4162523536,
+        6036278.951307884
+      ],
+      "map_scale": 18055.990933506397,
+      "tile_render_scale": 17061.836670798457,
+      "vector_tile_zoom": 13.999999999999988,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.014956093409586056,
+      "after_mae": 0.014956138798111838,
+      "relative_change_percent": 0.00030347848558167354
+    },
+    "reference-mercator": {
+      "before_mae": 0.014956093409586056,
+      "after_mae": 0.014956138798111838,
+      "relative_change_percent": 0.00030347848558167354
+    }
+  },
+  {
+    "camera": "basel-rhine-z17",
+    "runtime": "4",
+    "changed_pixels": 232,
+    "context": {
+      "requested_camera_zoom": 17,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        844532.7499795206,
+        6033860.435959799,
+        845297.1202623724,
+        6034397.883814929
+      ],
+      "map_scale": 2256.9988666885574,
+      "tile_render_scale": 2132.729583850051,
+      "vector_tile_zoom": 16.999999999999872,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.005434399963689179,
+      "after_mae": 0.0054343954248366015,
+      "relative_change_percent": -8.352076784862881e-05
+    },
+    "reference-mercator": {
+      "before_mae": 0.005434399963689179,
+      "after_mae": 0.0054343954248366015,
+      "relative_change_percent": -8.352076784862881e-05
+    }
+  },
+  {
+    "camera": "geneva-confluence-z15",
+    "runtime": "4",
+    "changed_pixels": 1085,
+    "context": {
+      "requested_camera_zoom": 15,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        680080.5015615101,
+        5811704.267566347,
+        683137.982692918,
+        5813854.058986868
+      ],
+      "map_scale": 9027.995466755605,
+      "tile_render_scale": 8530.918335401502,
+      "vector_tile_zoom": 14.999999999999721,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.019180894834785765,
+      "after_mae": 0.019166065268700072,
+      "relative_change_percent": -0.07731425573951212
+    },
+    "reference-mercator": {
+      "before_mae": 0.019180894834785765,
+      "after_mae": 0.019166065268700072,
+      "relative_change_percent": -0.07731425573951212
+    }
+  },
+  {
+    "camera": "geneva-confluence-z12p9",
+    "runtime": "4",
+    "changed_pixels": 1141,
+    "context": {
+      "requested_camera_zoom": 12.9,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675055.3878495186,
+        5808170.9844876025,
+        688163.0964049096,
+        5817387.342065612
+      ],
+      "map_scale": 38703.86384465864,
+      "tile_render_scale": 36572.847531783096,
+      "vector_tile_zoom": 12.928226537463622,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.00592625612745098,
+      "after_mae": 0.005904707924836602,
+      "relative_change_percent": -0.363605658462259
+    },
+    "reference-mercator": {
+      "before_mae": 0.00592625612745098,
+      "after_mae": 0.005904707924836602,
+      "relative_change_percent": -0.363605658462259
+    }
+  },
+  {
+    "camera": "geneva-confluence-z13",
+    "runtime": "4",
+    "changed_pixels": 1259,
+    "context": {
+      "requested_camera_zoom": 13,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675494.2798643995,
+        5808479.580435566,
+        687724.2043900287,
+        5817078.746117649
+      ],
+      "map_scale": 36111.981867015544,
+      "tile_render_scale": 34123.67334159951,
+      "vector_tile_zoom": 12.999999999999911,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.007139210012708787,
+      "after_mae": 0.007115651098402323,
+      "relative_change_percent": -0.32999329427941804
+    },
+    "reference-mercator": {
+      "before_mae": 0.007139210012708787,
+      "after_mae": 0.007115651098402323,
+      "relative_change_percent": -0.32999329427941804
+    }
+  },
+  {
+    "camera": "geneva-confluence-z13p1",
+    "runtime": "4",
+    "changed_pixels": 1164,
+    "context": {
+      "requested_camera_zoom": 13.1,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        675903.7805940054,
+        5808767.51063607,
+        687314.7036604228,
+        5816790.8159171445
+      ],
+      "map_scale": 33693.67047170508,
+      "tile_render_scale": 31838.51302013799,
+      "vector_tile_zoom": 13.133934016926185,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "reference": {
+      "before_mae": 0.006705681508714596,
+      "after_mae": 0.006690670388525781,
+      "relative_change_percent": -0.22385674251464158
+    },
+    "reference-mercator": {
+      "before_mae": 0.006705681508714596,
+      "after_mae": 0.006690670388525781,
+      "relative_change_percent": -0.22385674251464158
+    }
+  }
+]
