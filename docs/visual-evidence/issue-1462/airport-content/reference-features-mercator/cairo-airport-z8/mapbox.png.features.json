@@ -1,0 +1,1380 @@
+{
+  "features": [
+    {
+      "id": 275650200,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Alejandría",
+        "disputed": "false",
+        "name_vi": "Alexandria",
+        "iso_3166_1": "EG",
+        "capital": 4,
+        "iso_3166_2": "EG-ALX",
+        "filterrank": 1,
+        "name_fr": "Alexandrie",
+        "name_ar": "الإسكندرية",
+        "name_de": "Alexandria",
+        "name_en": "Alexandria",
+        "name_ja": "アレクサンドリア",
+        "symbolrank": 7,
+        "name_ko": "알렉산드리아",
+        "name_pt": "Alexandria",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "亚历山大",
+        "name_ru": "Александрия",
+        "name_script": "Arabic",
+        "name_zh-Hant": "亞歷山大港",
+        "name_it": "Alessandria",
+        "class": "settlement",
+        "name": "الإسكندرية",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.895172119140625,
+          31.199293685369994
+        ]
+      }
+    },
+    {
+      "id": 315824340,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "曼蘇拉",
+        "name_script": "Arabic",
+        "name_ru": "Эль Мансура",
+        "name_zh-Hans": "曼苏拉",
+        "name_pt": "Almançora",
+        "name_ko": "만수라",
+        "symbolrank": 9,
+        "name_ja": "マンスーラ",
+        "name_it": "Mansura",
+        "name_en": "El Mansura",
+        "name_de": "Mansura",
+        "name_ar": "المنصورة",
+        "name_fr": "Mansourah",
+        "filterrank": 2,
+        "iso_3166_2": "EG-DK",
+        "disputed": "false",
+        "name_vi": "Mansoura",
+        "iso_3166_1": "EG",
+        "name_es": "El Mansurá",
+        "class": "settlement",
+        "name": "المنصورة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.386566162109375,
+          31.037638436134372
+        ]
+      }
+    },
+    {
+      "id": 27421021940,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "坦塔",
+        "name_script": "Arabic",
+        "name_ru": "Танта",
+        "name_zh-Hans": "坦塔",
+        "name_pt": "Tanta",
+        "name_ko": "탄타",
+        "symbolrank": 9,
+        "name_ja": "タンタ",
+        "name_it": "Tanta",
+        "name_en": "Tanta",
+        "name_de": "Tanta",
+        "name_ar": "طنطا",
+        "name_fr": "Tanta",
+        "filterrank": 1,
+        "iso_3166_2": "EG-GH",
+        "disputed": "false",
+        "name_vi": "Tanta",
+        "iso_3166_1": "EG",
+        "name_es": "Tanta",
+        "class": "settlement",
+        "name": "طنطا",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.998268127441406,
+          30.783432839899376
+        ]
+      }
+    },
+    {
+      "id": 315824510,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "大邁哈萊",
+        "name_script": "Arabic",
+        "name_ru": "Эль-Махалла-эль-Кубра",
+        "name_zh-Hans": "大迈哈莱",
+        "name_pt": "Al-Mahalla Al-Kubra",
+        "name_ko": "마할랄알쿠브라",
+        "symbolrank": 9,
+        "name_ja": "エル=マハッラ・エル=コブラ",
+        "name_it": "El-Mahalla El-Kubra",
+        "name_en": "El Mahalla El Kubra",
+        "name_de": "Mahalla al Kubra",
+        "name_ar": "محلة الكبرى",
+        "name_fr": "Mahalla al Kubra",
+        "filterrank": 1,
+        "iso_3166_2": "EG-GH",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_es": "El-Mahalla El-Kubra",
+        "class": "settlement",
+        "name": "المحلة الكبرى",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.168212890625,
+          30.97231057216355
+        ]
+      }
+    },
+    {
+      "id": 2716137660,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "El Cairo",
+        "disputed": "false",
+        "name_vi": "Cairo",
+        "iso_3166_1": "EG",
+        "capital": 2,
+        "iso_3166_2": "EG-C",
+        "filterrank": 1,
+        "name_fr": "Le Caire",
+        "name_ar": "القاهرة",
+        "name_de": "Kairo",
+        "name_en": "Cairo",
+        "name_ja": "カイロ",
+        "symbolrank": 6,
+        "name_ko": "카이로",
+        "name_pt": "Cairo",
+        "text_anchor": "bottom-left",
+        "name_zh-Hans": "开罗",
+        "name_ru": "Каир",
+        "name_script": "Arabic",
+        "name_zh-Hant": "開羅",
+        "name_it": "Il Cairo",
+        "class": "settlement",
+        "name": "القاهرة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.23584747314453,
+          30.044430015213962
+        ]
+      }
+    },
+    {
+      "id": 7685958720,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "伊斯梅利亞",
+        "name_script": "Arabic",
+        "name_ru": "Исмаилия",
+        "name_zh-Hans": "伊斯梅利亚",
+        "name_pt": "Ismaília",
+        "name_ko": "이스마일리아주",
+        "symbolrank": 9,
+        "name_ja": "イスマイリア",
+        "name_it": "Ismailia",
+        "name_en": "Al Ismailiya",
+        "name_de": "Al Ismailiya",
+        "name_ar": "الإسماعيلية",
+        "name_fr": "Al Ismailiya",
+        "filterrank": 1,
+        "iso_3166_2": "EG-IS",
+        "capital": 4,
+        "disputed": "false",
+        "name_vi": "Ismailia",
+        "iso_3166_1": "EG",
+        "name_es": "Ismailía",
+        "class": "settlement",
+        "name": "الإسماعيلية",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.27714538574219,
+          30.60423095372707
+        ]
+      }
+    },
+    {
+      "id": 2994984640,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "宰加濟格",
+        "name_script": "Arabic",
+        "name_ru": "Эз-Заказик",
+        "name_zh-Hans": "宰加济格",
+        "name_pt": "Zagazig",
+        "name_ko": "자가지그",
+        "symbolrank": 9,
+        "name_ja": "ザガジグ",
+        "name_it": "Zagazig",
+        "name_en": "Zagazig",
+        "name_de": "Zagazig",
+        "name_ar": "الزقازيق",
+        "name_fr": "Zagazig",
+        "filterrank": 1,
+        "iso_3166_2": "EG-SHR",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_es": "Zaqaziq",
+        "class": "settlement",
+        "name": "الزقازيق",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.503639221191406,
+          30.58531714508875
+        ]
+      }
+    },
+    {
+      "id": 275649660,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Suez",
+        "disputed": "false",
+        "name_vi": "Suez",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-SUZ",
+        "filterrank": 1,
+        "name_fr": "Suez",
+        "name_ar": "السويس",
+        "name_de": "Sues",
+        "name_en": "Suez",
+        "name_ja": "スエズ",
+        "symbolrank": 9,
+        "name_ko": "수에즈",
+        "name_pt": "Suez",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "苏伊士",
+        "name_ru": "Суэц",
+        "name_script": "Arabic",
+        "name_zh-Hant": "蘇伊士",
+        "name_it": "Suez",
+        "class": "settlement",
+        "name": "السويس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.53704071044922,
+          29.974565047100967
+        ]
+      }
+    },
+    {
+      "id": 7685555450,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "法尤姆",
+        "name_script": "Arabic",
+        "name_ru": "Файюм",
+        "name_zh-Hans": "法尤姆",
+        "name_pt": "Faium",
+        "name_ko": "파이윰",
+        "symbolrank": 9,
+        "name_ja": "ファイユーム",
+        "name_it": "Fayyum",
+        "name_en": "Faiyum",
+        "name_de": "Al-Fayyum",
+        "name_ar": "الفيوم",
+        "name_fr": "Médinet el-Fayoum",
+        "filterrank": 1,
+        "iso_3166_2": "EG-FYM",
+        "disputed": "false",
+        "name_vi": "Faiyum",
+        "iso_3166_1": "EG",
+        "name_es": "Fayún",
+        "class": "settlement",
+        "name": "الفيوم",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.839996337890625,
+          29.30735761920954
+        ]
+      }
+    },
+    {
+      "id": 105621285460,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_de": "Borg el-Arab el-Gedida",
+        "symbolrank": 11,
+        "disputed": "false",
+        "name_it": "Borg El Arab",
+        "filterrank": 2,
+        "name_es": "Borg El Arab",
+        "iso_3166_2": "EG-ALX",
+        "iso_3166_1": "EG",
+        "name_ar": "برج العرب الجديدة",
+        "name_ru": "Новый Борг-эль-Араб",
+        "name_en": "New Borj El Arab",
+        "name_fr": "Borg el-Arab el-Gedida",
+        "name_script": "Arabic",
+        "text_anchor": "bottom",
+        "class": "settlement",
+        "name": "برج العرب الجديدة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.600257873535156,
+          30.86952003545146
+        ]
+      }
+    },
+    {
+      "id": 2995694470,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "迪斯沃克",
+        "name_script": "Arabic",
+        "name_ru": "Дисук",
+        "name_zh-Hans": "迪斯沃克",
+        "name_pt": "Desouk",
+        "name_ko": "데수크",
+        "symbolrank": 10,
+        "name_ja": "ディスーク",
+        "name_it": "Disuq",
+        "name_en": "Dusuq",
+        "name_de": "Disuq",
+        "name_ar": "دسوق",
+        "name_fr": "Dessouk",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "disputed": "false",
+        "name_vi": "Desouk",
+        "name_es": "Desouk",
+        "iso_3166_2": "EG-KFS",
+        "class": "settlement",
+        "name": "دسوق",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.6463623046875,
+          31.128199299111955
+        ]
+      }
+    },
+    {
+      "id": 2994993760,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "達曼胡爾",
+        "name_script": "Arabic",
+        "name_ru": "Даманхур",
+        "name_zh-Hans": "达曼胡尔",
+        "name_pt": "Damanhur",
+        "name_ko": "다만후르",
+        "symbolrank": 10,
+        "name_ja": "ダマンフール",
+        "name_it": "Damanhur",
+        "name_en": "Damanhur",
+        "name_de": "Damanhur",
+        "name_ar": "دمنهور",
+        "name_fr": "Damanhour",
+        "filterrank": 1,
+        "iso_3166_2": "EG-BH",
+        "disputed": "false",
+        "name_vi": "Damanhur",
+        "iso_3166_1": "EG",
+        "name_es": "Damanhur",
+        "class": "settlement",
+        "name": "دمنهور",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.470924377441406,
+          31.037638436134372
+        ]
+      }
+    },
+    {
+      "id": 65806036480,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "謝赫村",
+        "name_vi": "Kafr el-Sheikh",
+        "name_script": "Arabic",
+        "name_ru": "Кафр-эш-Шейх",
+        "name_zh-Hans": "谢赫村",
+        "name_pt": "Kafr el-Sheikh",
+        "name_ko": "카프르엘셰이크주",
+        "symbolrank": 10,
+        "name_ja": "カフル・アッシャイフ",
+        "name_it": "Kafr el-Sheikh",
+        "name_en": "Kafr Al Sheikh",
+        "name_de": "Kafr asch Scheich",
+        "name_ar": "كفر الشيخ",
+        "name_es": "Kafr el-Sheikh",
+        "iso_3166_1": "EG",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "EG-KFS",
+        "name_fr": "Kafr el-Cheikh",
+        "class": "settlement",
+        "name": "كفر الشيخ",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.942649841308594,
+          31.108800665173177
+        ]
+      }
+    },
+    {
+      "id": 3362129890,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_script": "Arabic",
+        "name_fr": "Bir Qatia",
+        "symbolrank": 14,
+        "name_ar": "بئر قطية",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-SIN",
+        "name_en": "Bir Qatia",
+        "class": "settlement",
+        "name": "بئر قطية",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.74578094482422,
+          30.95435228555111
+        ]
+      }
+    },
+    {
+      "id": 3362142860,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_de": "Bir al-Abd",
+        "name_ja": "ビール・アルアベド",
+        "symbolrank": 11,
+        "filterrank": 1,
+        "name_es": "Bir al-Abed",
+        "name_en": "Bir al-Abd",
+        "disputed": "false",
+        "iso_3166_2": "EG-SIN",
+        "iso_3166_1": "EG",
+        "name_ar": "بئر العبد",
+        "name_ru": "Бир-эль-Абд",
+        "name_fr": "Un Puit Trimer",
+        "name_pt": "Bir al-Abd",
+        "name_script": "Arabic",
+        "class": "settlement",
+        "name": "بئر العبد",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.01185607910156,
+          31.01822131502992
+        ]
+      }
+    },
+    {
+      "id": 7685864110,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Arabic",
+        "name_fr": "Qasr al Sagha",
+        "name_en": "Qasr al Sagha",
+        "name_ar": "قصر الصاغة",
+        "symbolrank": 15,
+        "name_de": "Qasr al Sagha",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-FYM",
+        "class": "settlement",
+        "name": "قصر الصاغة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.677947998046875,
+          29.595252222097642
+        ]
+      }
+    },
+    {
+      "id": 109403909490,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "薩達特城",
+        "name_script": "Arabic",
+        "name_ru": "Мадинат-эс-Садат",
+        "name_zh-Hans": "萨达特城",
+        "name_pt": "Sadat",
+        "name_ko": "사닷",
+        "symbolrank": 13,
+        "name_ja": "サダト",
+        "name_it": "Sadat",
+        "name_en": "Sadat City",
+        "name_de": "Madinat as-Sadat",
+        "name_ar": "السادات",
+        "name_es": "Sadat",
+        "disputed": "false",
+        "name_vi": "Sadat",
+        "iso_3166_1": "EG",
+        "filterrank": 1,
+        "iso_3166_2": "EG-MNF",
+        "name_fr": "Sadat",
+        "class": "settlement",
+        "name": "السادات",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.507659912109375,
+          30.36517361244144
+        ]
+      }
+    },
+    {
+      "id": 36695250440,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "filterrank": 1,
+        "disputed": "false",
+        "name_de": "al-Nubariyya al-Jadida",
+        "symbolrank": 12,
+        "name_en": "Al Nubaria",
+        "iso_3166_2": "EG-BH",
+        "iso_3166_1": "EG",
+        "name_fr": "Al Nubaria",
+        "name_ar": "النوبارية الجديدة",
+        "name_ru": "Новая Нубария",
+        "name_script": "Arabic",
+        "type": "city",
+        "text_anchor": "bottom",
+        "class": "settlement",
+        "name": "النوبارية الجديدة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.076446533203125,
+          30.666265946323293
+        ]
+      }
+    },
+    {
+      "id": 7035278850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "比勒拜斯",
+        "name_script": "Arabic",
+        "name_ru": "Бильбейс",
+        "name_zh-Hans": "比勒拜斯",
+        "name_pt": "Bilbeis",
+        "name_ko": "빌베이스",
+        "symbolrank": 10,
+        "name_ja": "ビルベース",
+        "name_it": "Bilbeis",
+        "name_en": "Bilbeis",
+        "name_es": "Bilbeis",
+        "disputed": "false",
+        "name_de": "Bilbeis",
+        "filterrank": 2,
+        "iso_3166_2": "EG-SHR",
+        "iso_3166_1": "EG",
+        "name_fr": "Bilbéis",
+        "name_ar": "بلبيس",
+        "class": "settlement",
+        "name": "بلبيس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.56475067138672,
+          30.418775835973136
+        ]
+      }
+    },
+    {
+      "id": 313533190,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "本哈",
+        "name_script": "Arabic",
+        "name_ru": "Бенха",
+        "name_zh-Hans": "本哈",
+        "name_pt": "Banha",
+        "name_ko": "벤하",
+        "symbolrank": 10,
+        "name_ja": "バンハー",
+        "name_it": "Banha",
+        "name_en": "Banha",
+        "name_de": "Banha",
+        "name_ar": "بنها",
+        "name_fr": "Banha",
+        "filterrank": 2,
+        "iso_3166_2": "EG-KB",
+        "disputed": "false",
+        "name_vi": "Banha",
+        "iso_3166_1": "EG",
+        "name_es": "Banha",
+        "class": "settlement",
+        "name": "بنها",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.184005737304688,
+          30.462583411533927
+        ]
+      }
+    },
+    {
+      "id": 114898331460,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "艾因·蘇克納",
+        "name_zh-Hans": "艾因·苏克纳",
+        "name_script": "Arabic",
+        "name_ru": "Айн-Сохна",
+        "name_ko": "아인 수크나",
+        "symbolrank": 11,
+        "name_ja": "アイン・スクナ",
+        "name_it": "Ain Sokhna",
+        "name_en": "Ain Sokhna",
+        "name_vi": "Ain Sokhna",
+        "name_de": "Ain Suchna",
+        "name_es": "Ain Sujna",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "EG-SUZ",
+        "iso_3166_1": "EG",
+        "name_fr": "Ain Soukhna",
+        "name_ar": "العين السخنة",
+        "class": "settlement",
+        "name": "العين السخنة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.305641174316406,
+          29.63972359762026
+        ]
+      }
+    },
+    {
+      "id": 101547697960,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "symbolrank": 10,
+        "name_de": "Al-Aschir min Ramadan",
+        "filterrank": 2,
+        "name_en": "Tenth Of Ramadan",
+        "disputed": "false",
+        "iso_3166_2": "EG-SHR",
+        "name_zh-Hans": "斋月十日城",
+        "iso_3166_1": "EG",
+        "name_ar": "العاشر من رمضان",
+        "name_ru": "Эль-Ашир-мин-Рамадан",
+        "name_fr": "10ème Ramadan",
+        "name_script": "Arabic",
+        "name_zh-Hant": "齋月十日城",
+        "class": "settlement",
+        "name": "العاشر من رمضان",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.739158630371094,
+          30.31539496677952
+        ]
+      }
+    },
+    {
+      "id": 2995278030,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "希賓庫姆",
+        "name_script": "Arabic",
+        "name_ru": "Шибин-эль-Ком",
+        "name_zh-Hans": "希宾库姆",
+        "name_pt": "Xibin el-Kom",
+        "name_ko": "시빈엘콤",
+        "symbolrank": 10,
+        "name_ja": "シビーン・コーム",
+        "name_it": "Shibin el-Kom",
+        "name_en": "Shibin El Kawm",
+        "name_de": "Schibin Al Kaum",
+        "name_ar": "شبين الكوم",
+        "name_fr": "Shibin El Kom",
+        "filterrank": 1,
+        "iso_3166_2": "EG-MNF",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_es": "Shibin el-Kom",
+        "class": "settlement",
+        "name": "شبين الكوم",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.00994110107422,
+          30.55457433439868
+        ]
+      }
+    },
+    {
+      "id": 71527754570,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "新行政首都",
+        "name_script": "Arabic",
+        "name_ru": "Новая административная столица Египта",
+        "name_zh-Hans": "新行政首都",
+        "name_pt": "Nova capital administrativa egípcia",
+        "name_ko": "신행정수도",
+        "symbolrank": 10,
+        "name_ja": "エジプト新行政首都",
+        "name_it": "Nuova capitale amministrativa dell'Egitto",
+        "name_en": "New Administrative Capital",
+        "name_es": "Nueva Capital Administrativa",
+        "name_de": "Neue Verwaltungshauptstadt",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_fr": "Nouvelle capitale administrative",
+        "name_ar": "العاصمة الإدارية الجديدة",
+        "class": "settlement",
+        "name": "العاصمة الإدارية الجديدة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.75495147705078,
+          30.023921574501372
+        ]
+      }
+    },
+    {
+      "id": 295555310,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_script": "Arabic",
+        "name_fr": "Cap de Sudr",
+        "name_en": "Sudr Cape",
+        "name_ru": "Рас-Сидр",
+        "name_ar": "رأس سدر",
+        "disputed": "false",
+        "symbolrank": 13,
+        "name_es": "Capa de Sudr",
+        "name_de": "Sudr Kap",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-JS",
+        "class": "settlement",
+        "name": "رأس سدر",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.718658447265625,
+          29.593461017526067
+        ]
+      }
+    },
+    {
+      "id": 3325684550,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_script": "Arabic",
+        "name_fr": "Sinnuris",
+        "name_ru": "Синнурис",
+        "name_ar": "سنورس",
+        "name_en": "Sinnuris",
+        "iso_3166_2": "EG-FYM",
+        "symbolrank": 13,
+        "name_de": "Sinnuris",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "disputed": "false",
+        "class": "settlement",
+        "name": "سنورس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.868148803710938,
+          29.413582019830542
+        ]
+      }
+    },
+    {
+      "id": 3319534470,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "美杜姆",
+        "name_script": "Arabic",
+        "name_ru": "Медум",
+        "name_zh-Hans": "美杜姆",
+        "name_pt": "Meidum",
+        "symbolrank": 12,
+        "name_ja": "メイドゥーム",
+        "name_it": "Meidum",
+        "name_en": "Meidoum",
+        "name_de": "Meidum",
+        "name_es": "Meidum",
+        "disputed": "false",
+        "name_vi": "Meidum",
+        "iso_3166_1": "EG",
+        "filterrank": 2,
+        "iso_3166_2": "EG-BNS",
+        "name_fr": "Meïdoum",
+        "name_ar": "ميدوم",
+        "class": "settlement",
+        "name": "ميدوم",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.171302795410156,
+          29.37290069432646
+        ]
+      }
+    },
+    {
+      "id": 7685860660,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "貝尼蘇韋夫",
+        "name_script": "Arabic",
+        "name_ru": "Бени Суэйф",
+        "name_zh-Hans": "贝尼苏韦夫",
+        "name_pt": "Beni Suef",
+        "name_ko": "베니수에프",
+        "symbolrank": 10,
+        "name_ja": "ベニ・スエフ",
+        "name_it": "Beni Suef",
+        "name_en": "Beni Suef",
+        "name_de": "Beni Suef",
+        "name_ar": "بني سويف",
+        "name_fr": "Beni Suef",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "disputed": "false",
+        "name_vi": "Beni Suef",
+        "name_es": "Beni Suef",
+        "iso_3166_2": "EG-BNS",
+        "class": "settlement",
+        "name": "بني سويف",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.098175048828125,
+          29.072974690644912
+        ]
+      }
+    },
+    {
+      "id": 7687335900,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "阿布 澤尼馬",
+        "name_script": "Arabic",
+        "name_ru": "Абу Зенима",
+        "name_zh-Hans": "阿布 泽尼马",
+        "name_pt": "Abu Zenima",
+        "name_ko": "아부 제니마",
+        "symbolrank": 13,
+        "name_ja": "アブ・ゼニマ",
+        "name_it": "Abu Zenima",
+        "name_en": "Abu Zenima",
+        "name_de": "Abu Zenima",
+        "name_ar": "أبو زنيمة",
+        "name_fr": "Abu Zenima",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "disputed": "false",
+        "name_vi": "Abu Zenima",
+        "name_es": "Abu Zenima",
+        "iso_3166_2": "EG-JS",
+        "class": "settlement",
+        "name": "أبو زنيمة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.104209899902344,
+          29.051067646579938
+        ]
+      }
+    },
+    {
+      "id": 1358964731,
+      "owner": "airport-label",
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      }
+    },
+    {
+      "id": 2202895161,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Protected Area",
+        "name_script": "Arabic",
+        "name_fr": "Wadi Elrayan",
+        "name_en": "Wadi Al Rayyan National Park",
+        "sizerank": 11,
+        "name_ar": "محمية وادي الريان",
+        "maki": "park",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-FYM",
+        "class": "park_like",
+        "name": "محمية وادي الريان"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.3057861328125,
+          29.21091188130761
+        ]
+      }
+    },
+    {
+      "id": 59259184,
+      "owner": "water-point-label",
+      "properties": {
+        "name_script": "Arabic",
+        "name_pt": "Lago Bardawil",
+        "name_fr": "Lac Bardawil",
+        "name_en": "Lake Bardawil",
+        "sizerank": 13,
+        "name_ru": "Бардавиль",
+        "name_ar": "بحيرة البردويل",
+        "maki": "marker",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "name_es": "Lago Bardawil",
+        "iso_3166_2": "EG-SIN",
+        "class": "bay",
+        "name": "بحيرة البردويل",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.26179504394531,
+          31.1279054099992
+        ]
+      }
+    }
+  ],
+  "source_features": [
+    {
+      "id": 1358964731,
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      }
+    },
+    {
+      "id": 4782044651,
+      "properties": {
+        "maki": "airport",
+        "name_zh-Hans": "首都国际机场",
+        "name_zh-Hant": "首都國際機場",
+        "name_de": "Capital International Airport",
+        "name_es": "Aeropuerto Internacional de la Capital",
+        "iso_3166_1": "EG",
+        "ref": "CCE",
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "name_ar": "مطار العاصمة الدولي",
+        "sizerank": 15,
+        "name_en": "Capital International Airport",
+        "name_fr": "Capital International Airport",
+        "name_script": "Latin",
+        "class": "civil",
+        "name": "Capital International Airport",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.839752197265625,
+          30.05483122485245
+        ]
+      }
+    },
+    {
+      "id": 6703380331,
+      "properties": {
+        "name_script": "Arabic",
+        "sizerank": 16,
+        "name_ar": "مطار بلبيس",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_de": "Flughafen Bilbeis",
+        "iso_3166_2": "EG-SHR",
+        "maki": "airport",
+        "name_en": "Bilbeis Airport",
+        "name_fr": "Aéroport de Bilbéis",
+        "class": "military",
+        "name": "مطار بلبيس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.600112915039062,
+          30.393903323454268
+        ]
+      }
+    },
+    {
+      "id": 10420430800,
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      }
+    },
+    {
+      "id": 10420430800,
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      }
+    },
+    {
+      "id": 1358964731,
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      }
+    },
+    {
+      "id": 4782044651,
+      "properties": {
+        "maki": "airport",
+        "name_zh-Hans": "首都国际机场",
+        "name_zh-Hant": "首都國際機場",
+        "name_de": "Capital International Airport",
+        "name_es": "Aeropuerto Internacional de la Capital",
+        "iso_3166_1": "EG",
+        "ref": "CCE",
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "name_ar": "مطار العاصمة الدولي",
+        "sizerank": 15,
+        "name_en": "Capital International Airport",
+        "name_fr": "Capital International Airport",
+        "name_script": "Latin",
+        "class": "civil",
+        "name": "Capital International Airport",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.839752197265625,
+          30.05483122485245
+        ]
+      }
+    },
+    {
+      "id": 6703380331,
+      "properties": {
+        "name_script": "Arabic",
+        "sizerank": 16,
+        "name_ar": "مطار بلبيس",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_de": "Flughafen Bilbeis",
+        "iso_3166_2": "EG-SHR",
+        "maki": "airport",
+        "name_en": "Bilbeis Airport",
+        "name_fr": "Aéroport de Bilbéis",
+        "class": "military",
+        "name": "مطار بلبيس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.600112915039062,
+          30.393903323454268
+        ]
+      }
+    },
+    {
+      "id": 10420430800,
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      }
+    },
+    {
+      "id": 10420430800,
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      }
+    }
+  ]
+}

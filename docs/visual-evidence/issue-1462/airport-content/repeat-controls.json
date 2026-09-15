@@ -1,0 +1,1778 @@
+[
+  {
+    "a": "reference/bern-urban-z12-light/mapbox.png",
+    "b": "reference-repeat/bern-urban-z12-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+    "sha256_b": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1"
+  },
+  {
+    "a": "reference/cairo-airport-z14/mapbox.png",
+    "b": "reference-repeat/cairo-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f",
+    "sha256_b": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f"
+  },
+  {
+    "a": "reference/cairo-airport-z8/mapbox.png",
+    "b": "reference-repeat/cairo-airport-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f",
+    "sha256_b": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f"
+  },
+  {
+    "a": "reference/geneva-airport-z10/mapbox.png",
+    "b": "reference-repeat/geneva-airport-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37",
+    "sha256_b": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37"
+  },
+  {
+    "a": "reference/geneva-airport-z14/mapbox.png",
+    "b": "reference-repeat/geneva-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642",
+    "sha256_b": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642"
+  },
+  {
+    "a": "reference/geneva-streets-z18-light/mapbox.png",
+    "b": "reference-repeat/geneva-streets-z18-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+    "sha256_b": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc"
+  },
+  {
+    "a": "reference/geneva-urban-z14-light/mapbox.png",
+    "b": "reference-repeat/geneva-urban-z14-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+    "sha256_b": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76"
+  },
+  {
+    "a": "reference/lausanne-lavaux-z10-light/mapbox.png",
+    "b": "reference-repeat/lausanne-lavaux-z10-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+    "sha256_b": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97"
+  },
+  {
+    "a": "reference/switzerland-alps-z5-light/mapbox.png",
+    "b": "reference-repeat/switzerland-alps-z5-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+    "sha256_b": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803"
+  },
+  {
+    "a": "reference/zurich-region-z8-light/mapbox.png",
+    "b": "reference-repeat/zurich-region-z8-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+    "sha256_b": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313"
+  },
+  {
+    "a": "reference/zurich-streets-z17-light/mapbox.png",
+    "b": "reference-repeat/zurich-streets-z17-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+    "sha256_b": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab"
+  },
+  {
+    "a": "reference-mercator/bern-urban-z12-light/mapbox.png",
+    "b": "reference-mercator-repeat/bern-urban-z12-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+    "sha256_b": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1"
+  },
+  {
+    "a": "reference-mercator/cairo-airport-z14/mapbox.png",
+    "b": "reference-mercator-repeat/cairo-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f",
+    "sha256_b": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f"
+  },
+  {
+    "a": "reference-mercator/cairo-airport-z8/mapbox.png",
+    "b": "reference-mercator-repeat/cairo-airport-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f",
+    "sha256_b": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f"
+  },
+  {
+    "a": "reference-mercator/geneva-airport-z10/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-airport-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37",
+    "sha256_b": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37"
+  },
+  {
+    "a": "reference-mercator/geneva-airport-z14/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642",
+    "sha256_b": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642"
+  },
+  {
+    "a": "reference-mercator/geneva-streets-z18-light/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-streets-z18-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+    "sha256_b": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc"
+  },
+  {
+    "a": "reference-mercator/geneva-urban-z14-light/mapbox.png",
+    "b": "reference-mercator-repeat/geneva-urban-z14-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+    "sha256_b": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76"
+  },
+  {
+    "a": "reference-mercator/lausanne-lavaux-z10-light/mapbox.png",
+    "b": "reference-mercator-repeat/lausanne-lavaux-z10-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+    "sha256_b": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97"
+  },
+  {
+    "a": "reference-mercator/switzerland-alps-z5-light/mapbox.png",
+    "b": "reference-mercator-repeat/switzerland-alps-z5-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+    "sha256_b": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d"
+  },
+  {
+    "a": "reference-mercator/zurich-region-z8-light/mapbox.png",
+    "b": "reference-mercator-repeat/zurich-region-z8-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+    "sha256_b": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313"
+  },
+  {
+    "a": "reference-mercator/zurich-streets-z17-light/mapbox.png",
+    "b": "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+    "sha256_b": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before-final/qgis.png",
+    "b": "3/bern-urban-z12-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+    "sha256_b": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before-final/labels.json",
+    "b": "3/bern-urban-z12-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before-final/runtime.json",
+    "b": "3/bern-urban-z12-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+    "sha256_b": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318"
+  },
+  {
+    "a": "3/bern-urban-z12-light/before-final/placed-labels.json",
+    "b": "3/bern-urban-z12-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "1dd36f538d9be821cadcad2fb1aee7664925ff87b986d7903ec8a89949f426b1",
+    "sha256_b": "1dd36f538d9be821cadcad2fb1aee7664925ff87b986d7903ec8a89949f426b1"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after-final/qgis.png",
+    "b": "3/bern-urban-z12-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b40c2a8f2a226bfbaa60ef16e8771c43c0f2b8bedeb5093dcb168bd8273b1400",
+    "sha256_b": "b40c2a8f2a226bfbaa60ef16e8771c43c0f2b8bedeb5093dcb168bd8273b1400"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after-final/labels.json",
+    "b": "3/bern-urban-z12-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after-final/runtime.json",
+    "b": "3/bern-urban-z12-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+    "sha256_b": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318"
+  },
+  {
+    "a": "3/bern-urban-z12-light/after-final/placed-labels.json",
+    "b": "3/bern-urban-z12-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "a06da7ae2fdb7f3aca8d085ddb429207e7bc8cde453c3ae06f1d6c96bd5657ec",
+    "sha256_b": "a06da7ae2fdb7f3aca8d085ddb429207e7bc8cde453c3ae06f1d6c96bd5657ec"
+  },
+  {
+    "a": "3/cairo-airport-z14/before-final/qgis.png",
+    "b": "3/cairo-airport-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2ba03787f93305952eadd951fec1b5965ea0efa5bc7215bf93d3b9048338760e",
+    "sha256_b": "2ba03787f93305952eadd951fec1b5965ea0efa5bc7215bf93d3b9048338760e"
+  },
+  {
+    "a": "3/cairo-airport-z14/before-final/labels.json",
+    "b": "3/cairo-airport-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/cairo-airport-z14/before-final/runtime.json",
+    "b": "3/cairo-airport-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0fa72d7988959dcc098c472c25c9a3c3009e2b42c20fa2d5a2718af5526b657a",
+    "sha256_b": "0fa72d7988959dcc098c472c25c9a3c3009e2b42c20fa2d5a2718af5526b657a"
+  },
+  {
+    "a": "3/cairo-airport-z14/before-final/placed-labels.json",
+    "b": "3/cairo-airport-z14/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "75b40b57ddaa442a73b2a00cfa44bb234d6b47433a951c22d9281916ab908829",
+    "sha256_b": "75b40b57ddaa442a73b2a00cfa44bb234d6b47433a951c22d9281916ab908829"
+  },
+  {
+    "a": "3/cairo-airport-z14/after-final/qgis.png",
+    "b": "3/cairo-airport-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "c46fca383bcd59d67cf202056d2368fab86e2f6e591465f24fc7c4cd6c5bd36e",
+    "sha256_b": "c46fca383bcd59d67cf202056d2368fab86e2f6e591465f24fc7c4cd6c5bd36e"
+  },
+  {
+    "a": "3/cairo-airport-z14/after-final/labels.json",
+    "b": "3/cairo-airport-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/cairo-airport-z14/after-final/runtime.json",
+    "b": "3/cairo-airport-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0fa72d7988959dcc098c472c25c9a3c3009e2b42c20fa2d5a2718af5526b657a",
+    "sha256_b": "0fa72d7988959dcc098c472c25c9a3c3009e2b42c20fa2d5a2718af5526b657a"
+  },
+  {
+    "a": "3/cairo-airport-z14/after-final/placed-labels.json",
+    "b": "3/cairo-airport-z14/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "f19fe329a1cbb7ecb69edbfc915cd14d0e7277579e9b7b760bd35dac9c8040a5",
+    "sha256_b": "f19fe329a1cbb7ecb69edbfc915cd14d0e7277579e9b7b760bd35dac9c8040a5"
+  },
+  {
+    "a": "3/cairo-airport-z8/before-final/qgis.png",
+    "b": "3/cairo-airport-z8/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "8d59430b4794ad2000e94bc4ba98811bf39f56dc32376a7c589f093454f06004",
+    "sha256_b": "8d59430b4794ad2000e94bc4ba98811bf39f56dc32376a7c589f093454f06004"
+  },
+  {
+    "a": "3/cairo-airport-z8/before-final/labels.json",
+    "b": "3/cairo-airport-z8/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/cairo-airport-z8/before-final/runtime.json",
+    "b": "3/cairo-airport-z8/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "8f5655e61e32e6c88351855b17f63f5da67d728871ffcb6e9c78e82f9525662f",
+    "sha256_b": "8f5655e61e32e6c88351855b17f63f5da67d728871ffcb6e9c78e82f9525662f"
+  },
+  {
+    "a": "3/cairo-airport-z8/before-final/placed-labels.json",
+    "b": "3/cairo-airport-z8/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "581c746f0b9b344a4ab1fd8b769ae6e1d779b50d3ee373e1dedc68516b31b89a",
+    "sha256_b": "581c746f0b9b344a4ab1fd8b769ae6e1d779b50d3ee373e1dedc68516b31b89a"
+  },
+  {
+    "a": "3/cairo-airport-z8/after-final/qgis.png",
+    "b": "3/cairo-airport-z8/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "021356e4e3ad7ec28d0e5aa214b31a3fb676b306d58a3933728c25133a25df26",
+    "sha256_b": "021356e4e3ad7ec28d0e5aa214b31a3fb676b306d58a3933728c25133a25df26"
+  },
+  {
+    "a": "3/cairo-airport-z8/after-final/labels.json",
+    "b": "3/cairo-airport-z8/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/cairo-airport-z8/after-final/runtime.json",
+    "b": "3/cairo-airport-z8/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "8f5655e61e32e6c88351855b17f63f5da67d728871ffcb6e9c78e82f9525662f",
+    "sha256_b": "8f5655e61e32e6c88351855b17f63f5da67d728871ffcb6e9c78e82f9525662f"
+  },
+  {
+    "a": "3/cairo-airport-z8/after-final/placed-labels.json",
+    "b": "3/cairo-airport-z8/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "0885955f6e0b6f5739620635e4820788e0b4665841fd198a702dad3472b37d12",
+    "sha256_b": "0885955f6e0b6f5739620635e4820788e0b4665841fd198a702dad3472b37d12"
+  },
+  {
+    "a": "3/geneva-airport-z10/before-final/qgis.png",
+    "b": "3/geneva-airport-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "c70ca62075000998e3d161255373d0b19af54bed810978eff9e322fc2609d51d",
+    "sha256_b": "c70ca62075000998e3d161255373d0b19af54bed810978eff9e322fc2609d51d"
+  },
+  {
+    "a": "3/geneva-airport-z10/before-final/labels.json",
+    "b": "3/geneva-airport-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/geneva-airport-z10/before-final/runtime.json",
+    "b": "3/geneva-airport-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9c4511823f27c4c98d30b1ba3bd780022c5d6415d3641fa7b74f1649eb433e27",
+    "sha256_b": "9c4511823f27c4c98d30b1ba3bd780022c5d6415d3641fa7b74f1649eb433e27"
+  },
+  {
+    "a": "3/geneva-airport-z10/before-final/placed-labels.json",
+    "b": "3/geneva-airport-z10/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "53a7cb2e573031ee8f50fb0ead8c4c2c121f8b56bf798727bc48ac5c85cc2d3d",
+    "sha256_b": "53a7cb2e573031ee8f50fb0ead8c4c2c121f8b56bf798727bc48ac5c85cc2d3d"
+  },
+  {
+    "a": "3/geneva-airport-z10/after-final/qgis.png",
+    "b": "3/geneva-airport-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9ca0affe12ac5e7e006caf7f15aa38c38cd90aeca933c8b80ba20764e4318674",
+    "sha256_b": "9ca0affe12ac5e7e006caf7f15aa38c38cd90aeca933c8b80ba20764e4318674"
+  },
+  {
+    "a": "3/geneva-airport-z10/after-final/labels.json",
+    "b": "3/geneva-airport-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/geneva-airport-z10/after-final/runtime.json",
+    "b": "3/geneva-airport-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9c4511823f27c4c98d30b1ba3bd780022c5d6415d3641fa7b74f1649eb433e27",
+    "sha256_b": "9c4511823f27c4c98d30b1ba3bd780022c5d6415d3641fa7b74f1649eb433e27"
+  },
+  {
+    "a": "3/geneva-airport-z10/after-final/placed-labels.json",
+    "b": "3/geneva-airport-z10/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "9fbd6ba9ed576f8e277611013f0ade7fdbeac86c3bae82a8cba987d826d6725e",
+    "sha256_b": "9fbd6ba9ed576f8e277611013f0ade7fdbeac86c3bae82a8cba987d826d6725e"
+  },
+  {
+    "a": "3/geneva-airport-z14/before-final/qgis.png",
+    "b": "3/geneva-airport-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "3f3a403003aa89495ca9c918f1f1c701e0cef45efac33edce607194388194840",
+    "sha256_b": "3f3a403003aa89495ca9c918f1f1c701e0cef45efac33edce607194388194840"
+  },
+  {
+    "a": "3/geneva-airport-z14/before-final/labels.json",
+    "b": "3/geneva-airport-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/geneva-airport-z14/before-final/runtime.json",
+    "b": "3/geneva-airport-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd",
+    "sha256_b": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd"
+  },
+  {
+    "a": "3/geneva-airport-z14/before-final/placed-labels.json",
+    "b": "3/geneva-airport-z14/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "901b03b1ad65df4d3d36dddca161cb80f5cde08f9e273945aacee4ea78ad71c3",
+    "sha256_b": "901b03b1ad65df4d3d36dddca161cb80f5cde08f9e273945aacee4ea78ad71c3"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-final/qgis.png",
+    "b": "3/geneva-airport-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000",
+    "sha256_b": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-final/labels.json",
+    "b": "3/geneva-airport-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-final/runtime.json",
+    "b": "3/geneva-airport-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd",
+    "sha256_b": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-final/placed-labels.json",
+    "b": "3/geneva-airport-z14/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "175229551f556a92d4b98a9643b3001bd8c29f5c38c83ce517fd96abcd87e70b",
+    "sha256_b": "175229551f556a92d4b98a9643b3001bd8c29f5c38c83ce517fd96abcd87e70b"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before-final/qgis.png",
+    "b": "3/geneva-streets-z18-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+    "sha256_b": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before-final/labels.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before-final/runtime.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+    "sha256_b": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before-final/placed-labels.json",
+    "b": "3/geneva-streets-z18-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7",
+    "sha256_b": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after-final/qgis.png",
+    "b": "3/geneva-streets-z18-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+    "sha256_b": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after-final/labels.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after-final/runtime.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+    "sha256_b": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after-final/placed-labels.json",
+    "b": "3/geneva-streets-z18-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7",
+    "sha256_b": "89dcff53c9681fc1c19959c66e09b05c3ea341eae91218af7042c2f0a0ea85c7"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before-final/qgis.png",
+    "b": "3/geneva-urban-z14-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+    "sha256_b": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before-final/labels.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before-final/runtime.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+    "sha256_b": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/before-final/placed-labels.json",
+    "b": "3/geneva-urban-z14-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "1d15ec9a275ca1b02ec6b17047b1f1f7a9e8b8ccb77a462ffcbe958f3c8e39bd",
+    "sha256_b": "1d15ec9a275ca1b02ec6b17047b1f1f7a9e8b8ccb77a462ffcbe958f3c8e39bd"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after-final/qgis.png",
+    "b": "3/geneva-urban-z14-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+    "sha256_b": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after-final/labels.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after-final/runtime.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+    "sha256_b": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917"
+  },
+  {
+    "a": "3/geneva-urban-z14-light/after-final/placed-labels.json",
+    "b": "3/geneva-urban-z14-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "1d15ec9a275ca1b02ec6b17047b1f1f7a9e8b8ccb77a462ffcbe958f3c8e39bd",
+    "sha256_b": "1d15ec9a275ca1b02ec6b17047b1f1f7a9e8b8ccb77a462ffcbe958f3c8e39bd"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before-final/qgis.png",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+    "sha256_b": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before-final/labels.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before-final/runtime.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+    "sha256_b": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/before-final/placed-labels.json",
+    "b": "3/lausanne-lavaux-z10-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6",
+    "sha256_b": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after-final/qgis.png",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+    "sha256_b": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after-final/labels.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after-final/runtime.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+    "sha256_b": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91"
+  },
+  {
+    "a": "3/lausanne-lavaux-z10-light/after-final/placed-labels.json",
+    "b": "3/lausanne-lavaux-z10-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6",
+    "sha256_b": "7bfcf9166f49a6627f3e58d5dd1d3bef343ebc9155262c029a8daef9ea5f9bc6"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before-final/qgis.png",
+    "b": "3/switzerland-alps-z5-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+    "sha256_b": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before-final/labels.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before-final/runtime.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+    "sha256_b": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/before-final/placed-labels.json",
+    "b": "3/switzerland-alps-z5-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0",
+    "sha256_b": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after-final/qgis.png",
+    "b": "3/switzerland-alps-z5-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+    "sha256_b": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after-final/labels.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after-final/runtime.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+    "sha256_b": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0"
+  },
+  {
+    "a": "3/switzerland-alps-z5-light/after-final/placed-labels.json",
+    "b": "3/switzerland-alps-z5-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0",
+    "sha256_b": "85023e6bc7e6c9dc5982d765794dace8f9cca6a36848bd9068390d4ac1f8a8b0"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before-final/qgis.png",
+    "b": "3/zurich-region-z8-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+    "sha256_b": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before-final/labels.json",
+    "b": "3/zurich-region-z8-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before-final/runtime.json",
+    "b": "3/zurich-region-z8-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+    "sha256_b": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515"
+  },
+  {
+    "a": "3/zurich-region-z8-light/before-final/placed-labels.json",
+    "b": "3/zurich-region-z8-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "895e4b0dc1d334f3b9cffae01a8293ae0595a710dd23d311265093e27b89c425",
+    "sha256_b": "895e4b0dc1d334f3b9cffae01a8293ae0595a710dd23d311265093e27b89c425"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after-final/qgis.png",
+    "b": "3/zurich-region-z8-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "53a2bfcb2c728770608b68c6588c52a3b1b23a0dfbc130b6d9210b1d7be9fbec",
+    "sha256_b": "53a2bfcb2c728770608b68c6588c52a3b1b23a0dfbc130b6d9210b1d7be9fbec"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after-final/labels.json",
+    "b": "3/zurich-region-z8-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after-final/runtime.json",
+    "b": "3/zurich-region-z8-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+    "sha256_b": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515"
+  },
+  {
+    "a": "3/zurich-region-z8-light/after-final/placed-labels.json",
+    "b": "3/zurich-region-z8-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d",
+    "sha256_b": "ea901a7b17f3a35afe6937e593c237455c2455849163c674f93d1ece3e83384d"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before-final/qgis.png",
+    "b": "3/zurich-streets-z17-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+    "sha256_b": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before-final/labels.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+    "sha256_b": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before-final/runtime.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+    "sha256_b": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/before-final/placed-labels.json",
+    "b": "3/zurich-streets-z17-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801",
+    "sha256_b": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after-final/qgis.png",
+    "b": "3/zurich-streets-z17-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+    "sha256_b": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after-final/labels.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after-final/runtime.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+    "sha256_b": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789"
+  },
+  {
+    "a": "3/zurich-streets-z17-light/after-final/placed-labels.json",
+    "b": "3/zurich-streets-z17-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801",
+    "sha256_b": "24cf54155b5ddeb9a056ee3d6ae88f19c27a4a101022c6d01f9e0e0187592801"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before-final/qgis.png",
+    "b": "4/bern-urban-z12-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+    "sha256_b": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before-final/labels.json",
+    "b": "4/bern-urban-z12-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before-final/runtime.json",
+    "b": "4/bern-urban-z12-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+    "sha256_b": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf"
+  },
+  {
+    "a": "4/bern-urban-z12-light/before-final/placed-labels.json",
+    "b": "4/bern-urban-z12-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "b70222d9555c8270a9b039857ce140456f99d0a9b80efd02e0c617e0da798335",
+    "sha256_b": "b70222d9555c8270a9b039857ce140456f99d0a9b80efd02e0c617e0da798335"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after-final/qgis.png",
+    "b": "4/bern-urban-z12-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "74223d89ae8953dfb741339f42c291a78a16653b650b3406519ba48fb9200d8c",
+    "sha256_b": "74223d89ae8953dfb741339f42c291a78a16653b650b3406519ba48fb9200d8c"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after-final/labels.json",
+    "b": "4/bern-urban-z12-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after-final/runtime.json",
+    "b": "4/bern-urban-z12-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+    "sha256_b": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf"
+  },
+  {
+    "a": "4/bern-urban-z12-light/after-final/placed-labels.json",
+    "b": "4/bern-urban-z12-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "b41247d1594ad89812702c44cb1eba62b4cf2061a3341180b112bcb8faae2dda",
+    "sha256_b": "b41247d1594ad89812702c44cb1eba62b4cf2061a3341180b112bcb8faae2dda"
+  },
+  {
+    "a": "4/cairo-airport-z14/before-final/qgis.png",
+    "b": "4/cairo-airport-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "17d7113157f246e4506fb9d4c010deacd15236188e02b5d8b9081b5a4eebca8d",
+    "sha256_b": "17d7113157f246e4506fb9d4c010deacd15236188e02b5d8b9081b5a4eebca8d"
+  },
+  {
+    "a": "4/cairo-airport-z14/before-final/labels.json",
+    "b": "4/cairo-airport-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/cairo-airport-z14/before-final/runtime.json",
+    "b": "4/cairo-airport-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2a2d1ab821325ca1687caa38a5e298757b9252c009d8e6f9372d194c69219143",
+    "sha256_b": "2a2d1ab821325ca1687caa38a5e298757b9252c009d8e6f9372d194c69219143"
+  },
+  {
+    "a": "4/cairo-airport-z14/before-final/placed-labels.json",
+    "b": "4/cairo-airport-z14/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "baf83462a61a80c80a1b975a33bee5fd252256fe21dfee82efd599b3306608a9",
+    "sha256_b": "baf83462a61a80c80a1b975a33bee5fd252256fe21dfee82efd599b3306608a9"
+  },
+  {
+    "a": "4/cairo-airport-z14/after-final/qgis.png",
+    "b": "4/cairo-airport-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "fbf906c0787b01ce7cf007d86dcec61209be206e62a5240db7cd5598ade2a603",
+    "sha256_b": "fbf906c0787b01ce7cf007d86dcec61209be206e62a5240db7cd5598ade2a603"
+  },
+  {
+    "a": "4/cairo-airport-z14/after-final/labels.json",
+    "b": "4/cairo-airport-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/cairo-airport-z14/after-final/runtime.json",
+    "b": "4/cairo-airport-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2a2d1ab821325ca1687caa38a5e298757b9252c009d8e6f9372d194c69219143",
+    "sha256_b": "2a2d1ab821325ca1687caa38a5e298757b9252c009d8e6f9372d194c69219143"
+  },
+  {
+    "a": "4/cairo-airport-z14/after-final/placed-labels.json",
+    "b": "4/cairo-airport-z14/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "3c3a3216e64a899182ca0a1510fe134f1f6a59b17d1cd9d97f99e528e9112457",
+    "sha256_b": "3c3a3216e64a899182ca0a1510fe134f1f6a59b17d1cd9d97f99e528e9112457"
+  },
+  {
+    "a": "4/cairo-airport-z8/before-final/qgis.png",
+    "b": "4/cairo-airport-z8/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9e543ac3232dd91021c6bc049d81ee7ae28cb72a5c99b697df80fc7297f13139",
+    "sha256_b": "9e543ac3232dd91021c6bc049d81ee7ae28cb72a5c99b697df80fc7297f13139"
+  },
+  {
+    "a": "4/cairo-airport-z8/before-final/labels.json",
+    "b": "4/cairo-airport-z8/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/cairo-airport-z8/before-final/runtime.json",
+    "b": "4/cairo-airport-z8/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "5a1eefb374415c89560b633890e0b99d107954a2dfbeb4edd20139eb3387e28d",
+    "sha256_b": "5a1eefb374415c89560b633890e0b99d107954a2dfbeb4edd20139eb3387e28d"
+  },
+  {
+    "a": "4/cairo-airport-z8/before-final/placed-labels.json",
+    "b": "4/cairo-airport-z8/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "76035f086e7111413139f912a2bd90a4dd7b5f05150856ef022e66a77eab2736",
+    "sha256_b": "76035f086e7111413139f912a2bd90a4dd7b5f05150856ef022e66a77eab2736"
+  },
+  {
+    "a": "4/cairo-airport-z8/after-final/qgis.png",
+    "b": "4/cairo-airport-z8/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a3d11eea60a46fa62a173697b5347da3dffaa8c88c874544e53e6ba9a0df9eb5",
+    "sha256_b": "a3d11eea60a46fa62a173697b5347da3dffaa8c88c874544e53e6ba9a0df9eb5"
+  },
+  {
+    "a": "4/cairo-airport-z8/after-final/labels.json",
+    "b": "4/cairo-airport-z8/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/cairo-airport-z8/after-final/runtime.json",
+    "b": "4/cairo-airport-z8/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "5a1eefb374415c89560b633890e0b99d107954a2dfbeb4edd20139eb3387e28d",
+    "sha256_b": "5a1eefb374415c89560b633890e0b99d107954a2dfbeb4edd20139eb3387e28d"
+  },
+  {
+    "a": "4/cairo-airport-z8/after-final/placed-labels.json",
+    "b": "4/cairo-airport-z8/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "1ee50bca75d4c7be99ff5ab115d4750d3e0c6204be3515e88b6e4638a2f35486",
+    "sha256_b": "1ee50bca75d4c7be99ff5ab115d4750d3e0c6204be3515e88b6e4638a2f35486"
+  },
+  {
+    "a": "4/geneva-airport-z10/before-final/qgis.png",
+    "b": "4/geneva-airport-z10/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9d57f66a0bf6e57a9cc3b0bdcd7fc050d0cec9665ba9c34a4612de289cb26d7a",
+    "sha256_b": "9d57f66a0bf6e57a9cc3b0bdcd7fc050d0cec9665ba9c34a4612de289cb26d7a"
+  },
+  {
+    "a": "4/geneva-airport-z10/before-final/labels.json",
+    "b": "4/geneva-airport-z10/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/geneva-airport-z10/before-final/runtime.json",
+    "b": "4/geneva-airport-z10/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "5ab9b75639ff4b42d8083de724644559cc0d6b4ac691f6aa69cd5dc6ac4c2e56",
+    "sha256_b": "5ab9b75639ff4b42d8083de724644559cc0d6b4ac691f6aa69cd5dc6ac4c2e56"
+  },
+  {
+    "a": "4/geneva-airport-z10/before-final/placed-labels.json",
+    "b": "4/geneva-airport-z10/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "63a8d614c63a7d8965ec2a9a7541e7b83bcc9839beba5a95d98a2cf6de1a1e95",
+    "sha256_b": "63a8d614c63a7d8965ec2a9a7541e7b83bcc9839beba5a95d98a2cf6de1a1e95"
+  },
+  {
+    "a": "4/geneva-airport-z10/after-final/qgis.png",
+    "b": "4/geneva-airport-z10/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "98e5413824612d57820228358a3f80c7d6813e85b88fbd084343abdfefa7a1b3",
+    "sha256_b": "98e5413824612d57820228358a3f80c7d6813e85b88fbd084343abdfefa7a1b3"
+  },
+  {
+    "a": "4/geneva-airport-z10/after-final/labels.json",
+    "b": "4/geneva-airport-z10/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/geneva-airport-z10/after-final/runtime.json",
+    "b": "4/geneva-airport-z10/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "5ab9b75639ff4b42d8083de724644559cc0d6b4ac691f6aa69cd5dc6ac4c2e56",
+    "sha256_b": "5ab9b75639ff4b42d8083de724644559cc0d6b4ac691f6aa69cd5dc6ac4c2e56"
+  },
+  {
+    "a": "4/geneva-airport-z10/after-final/placed-labels.json",
+    "b": "4/geneva-airport-z10/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "cc4fabf6684e6d45a96b900459376239d8f8c023f5297bf16b52b4962a2d674b",
+    "sha256_b": "cc4fabf6684e6d45a96b900459376239d8f8c023f5297bf16b52b4962a2d674b"
+  },
+  {
+    "a": "4/geneva-airport-z14/before-final/qgis.png",
+    "b": "4/geneva-airport-z14/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "7c862165a1b1511566dc6b3efad1349d0c871b798d7f6248b0137913b4c5c95a",
+    "sha256_b": "7c862165a1b1511566dc6b3efad1349d0c871b798d7f6248b0137913b4c5c95a"
+  },
+  {
+    "a": "4/geneva-airport-z14/before-final/labels.json",
+    "b": "4/geneva-airport-z14/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/geneva-airport-z14/before-final/runtime.json",
+    "b": "4/geneva-airport-z14/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c",
+    "sha256_b": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c"
+  },
+  {
+    "a": "4/geneva-airport-z14/before-final/placed-labels.json",
+    "b": "4/geneva-airport-z14/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "bbe1f6d4c963486a4b6515e9ac4e098e0a531760dcb7ed4764fa870be0ca8867",
+    "sha256_b": "bbe1f6d4c963486a4b6515e9ac4e098e0a531760dcb7ed4764fa870be0ca8867"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-final/qgis.png",
+    "b": "4/geneva-airport-z14/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d",
+    "sha256_b": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-final/labels.json",
+    "b": "4/geneva-airport-z14/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-final/runtime.json",
+    "b": "4/geneva-airport-z14/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c",
+    "sha256_b": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-final/placed-labels.json",
+    "b": "4/geneva-airport-z14/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "c8e120290ee1482d10af02a488fe7fda96839d200e4908e2afaa9267a60f34c2",
+    "sha256_b": "c8e120290ee1482d10af02a488fe7fda96839d200e4908e2afaa9267a60f34c2"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before-final/qgis.png",
+    "b": "4/geneva-streets-z18-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+    "sha256_b": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before-final/labels.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before-final/runtime.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+    "sha256_b": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before-final/placed-labels.json",
+    "b": "4/geneva-streets-z18-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e",
+    "sha256_b": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after-final/qgis.png",
+    "b": "4/geneva-streets-z18-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+    "sha256_b": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after-final/labels.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after-final/runtime.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+    "sha256_b": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after-final/placed-labels.json",
+    "b": "4/geneva-streets-z18-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e",
+    "sha256_b": "4ad2524adbbd349c9dbfef1537f57b5687897300236e9fad80011a9cd0a7ff5e"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before-final/qgis.png",
+    "b": "4/geneva-urban-z14-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+    "sha256_b": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before-final/labels.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before-final/runtime.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+    "sha256_b": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/before-final/placed-labels.json",
+    "b": "4/geneva-urban-z14-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "a1c685c1123b47ce12f05a0e27d964e041211783307a378e0580f8700cd65024",
+    "sha256_b": "a1c685c1123b47ce12f05a0e27d964e041211783307a378e0580f8700cd65024"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after-final/qgis.png",
+    "b": "4/geneva-urban-z14-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+    "sha256_b": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after-final/labels.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after-final/runtime.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+    "sha256_b": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50"
+  },
+  {
+    "a": "4/geneva-urban-z14-light/after-final/placed-labels.json",
+    "b": "4/geneva-urban-z14-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "a1c685c1123b47ce12f05a0e27d964e041211783307a378e0580f8700cd65024",
+    "sha256_b": "a1c685c1123b47ce12f05a0e27d964e041211783307a378e0580f8700cd65024"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before-final/qgis.png",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+    "sha256_b": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before-final/labels.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before-final/runtime.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+    "sha256_b": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/before-final/placed-labels.json",
+    "b": "4/lausanne-lavaux-z10-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46",
+    "sha256_b": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after-final/qgis.png",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+    "sha256_b": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after-final/labels.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after-final/runtime.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+    "sha256_b": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5"
+  },
+  {
+    "a": "4/lausanne-lavaux-z10-light/after-final/placed-labels.json",
+    "b": "4/lausanne-lavaux-z10-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46",
+    "sha256_b": "f151f7ae71ad1898d4b22dfbe932b98d0c34dd5884fcc3b172508e4b281a8c46"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before-final/qgis.png",
+    "b": "4/switzerland-alps-z5-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+    "sha256_b": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before-final/labels.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before-final/runtime.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+    "sha256_b": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/before-final/placed-labels.json",
+    "b": "4/switzerland-alps-z5-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9",
+    "sha256_b": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after-final/qgis.png",
+    "b": "4/switzerland-alps-z5-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+    "sha256_b": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after-final/labels.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after-final/runtime.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+    "sha256_b": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6"
+  },
+  {
+    "a": "4/switzerland-alps-z5-light/after-final/placed-labels.json",
+    "b": "4/switzerland-alps-z5-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9",
+    "sha256_b": "abb8e00606c9a83df65b805ba965ed374fa42259c4040b2a94e25bde495c78a9"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before-final/qgis.png",
+    "b": "4/zurich-region-z8-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+    "sha256_b": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before-final/labels.json",
+    "b": "4/zurich-region-z8-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before-final/runtime.json",
+    "b": "4/zurich-region-z8-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+    "sha256_b": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c"
+  },
+  {
+    "a": "4/zurich-region-z8-light/before-final/placed-labels.json",
+    "b": "4/zurich-region-z8-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "0ff1fbcf64d3fae5e877d874683c68cd3596dce192cf28b4a7d04f8491d735a7",
+    "sha256_b": "0ff1fbcf64d3fae5e877d874683c68cd3596dce192cf28b4a7d04f8491d735a7"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after-final/qgis.png",
+    "b": "4/zurich-region-z8-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "3faef369a1984ec94ec949bd31e3baaf0724ee2d15d9dfcd64c72ab0b82a22f8",
+    "sha256_b": "3faef369a1984ec94ec949bd31e3baaf0724ee2d15d9dfcd64c72ab0b82a22f8"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after-final/labels.json",
+    "b": "4/zurich-region-z8-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after-final/runtime.json",
+    "b": "4/zurich-region-z8-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+    "sha256_b": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c"
+  },
+  {
+    "a": "4/zurich-region-z8-light/after-final/placed-labels.json",
+    "b": "4/zurich-region-z8-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450",
+    "sha256_b": "d376a87f83d847f33c54f5af34ebef9bffd29363a19fb5ac3edf2e5ead11a450"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before-final/qgis.png",
+    "b": "4/zurich-streets-z17-light/before-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+    "sha256_b": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before-final/labels.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+    "sha256_b": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before-final/runtime.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+    "sha256_b": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/before-final/placed-labels.json",
+    "b": "4/zurich-streets-z17-light/before-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd",
+    "sha256_b": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after-final/qgis.png",
+    "b": "4/zurich-streets-z17-light/after-repeat/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+    "sha256_b": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after-final/labels.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after-final/runtime.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+    "sha256_b": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3"
+  },
+  {
+    "a": "4/zurich-streets-z17-light/after-final/placed-labels.json",
+    "b": "4/zurich-streets-z17-light/after-repeat/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd",
+    "sha256_b": "5bcafd0846edd9dbee5e71c74b81cf863e65c4c9db1c7b349069cc0c012addfd"
+  },
+  {
+    "a": "3/cairo-airport-z14/before-pdf/qgis.png",
+    "b": "3/cairo-airport-z14/before-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "2ba03787f93305952eadd951fec1b5965ea0efa5bc7215bf93d3b9048338760e",
+    "sha256_b": "2ba03787f93305952eadd951fec1b5965ea0efa5bc7215bf93d3b9048338760e"
+  },
+  {
+    "a": "3/cairo-airport-z14/after-pdf/qgis.png",
+    "b": "3/cairo-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "c46fca383bcd59d67cf202056d2368fab86e2f6e591465f24fc7c4cd6c5bd36e",
+    "sha256_b": "c46fca383bcd59d67cf202056d2368fab86e2f6e591465f24fc7c4cd6c5bd36e"
+  },
+  {
+    "a": "3/geneva-airport-z14/before-pdf/qgis.png",
+    "b": "3/geneva-airport-z14/before-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "3f3a403003aa89495ca9c918f1f1c701e0cef45efac33edce607194388194840",
+    "sha256_b": "3f3a403003aa89495ca9c918f1f1c701e0cef45efac33edce607194388194840"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-pdf/qgis.png",
+    "b": "3/geneva-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000",
+    "sha256_b": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000"
+  },
+  {
+    "a": "4/cairo-airport-z14/before-pdf/qgis.png",
+    "b": "4/cairo-airport-z14/before-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "17d7113157f246e4506fb9d4c010deacd15236188e02b5d8b9081b5a4eebca8d",
+    "sha256_b": "17d7113157f246e4506fb9d4c010deacd15236188e02b5d8b9081b5a4eebca8d"
+  },
+  {
+    "a": "4/cairo-airport-z14/after-pdf/qgis.png",
+    "b": "4/cairo-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "fbf906c0787b01ce7cf007d86dcec61209be206e62a5240db7cd5598ade2a603",
+    "sha256_b": "fbf906c0787b01ce7cf007d86dcec61209be206e62a5240db7cd5598ade2a603"
+  },
+  {
+    "a": "4/geneva-airport-z14/before-pdf/qgis.png",
+    "b": "4/geneva-airport-z14/before-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "7c862165a1b1511566dc6b3efad1349d0c871b798d7f6248b0137913b4c5c95a",
+    "sha256_b": "7c862165a1b1511566dc6b3efad1349d0c871b798d7f6248b0137913b4c5c95a"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-pdf/qgis.png",
+    "b": "4/geneva-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d",
+    "sha256_b": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d"
+  },
+  {
+    "a": "reference-features-mercator/cairo-airport-z8/mapbox.png",
+    "b": "reference-features-mercator-repeat/cairo-airport-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f",
+    "sha256_b": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f"
+  },
+  {
+    "a": "reference-features-mercator/cairo-airport-z8/mapbox.png",
+    "b": "reference-mercator/cairo-airport-z8/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f",
+    "sha256_b": "e44d962678808ee5e8416205c1d04fe87132253a96460bd20b3a65d116ce880f"
+  },
+  {
+    "a": "reference-features-mercator/geneva-airport-z10/mapbox.png",
+    "b": "reference-features-mercator-repeat/geneva-airport-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37",
+    "sha256_b": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37"
+  },
+  {
+    "a": "reference-features-mercator/geneva-airport-z10/mapbox.png",
+    "b": "reference-mercator/geneva-airport-z10/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37",
+    "sha256_b": "6b85d30029558467d278a104ca709811b2fc75ed9361f83ffae27b1cb8c78b37"
+  },
+  {
+    "a": "reference-features-mercator/cairo-airport-z14/mapbox.png",
+    "b": "reference-features-mercator-repeat/cairo-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f",
+    "sha256_b": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f"
+  },
+  {
+    "a": "reference-features-mercator/cairo-airport-z14/mapbox.png",
+    "b": "reference-mercator/cairo-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f",
+    "sha256_b": "a47602666fdabf70ac93d1bb2d4177d858a58df9d863d429af865434ae1c1b7f"
+  },
+  {
+    "a": "reference-features-mercator/geneva-airport-z14/mapbox.png",
+    "b": "reference-features-mercator-repeat/geneva-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642",
+    "sha256_b": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642"
+  },
+  {
+    "a": "reference-features-mercator/geneva-airport-z14/mapbox.png",
+    "b": "reference-mercator/geneva-airport-z14/mapbox.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642",
+    "sha256_b": "0187a89195828141ae6b59c44f07e2753626e789dc3670f1b6a2285606248642"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-replay/qgis.png",
+    "b": "3/geneva-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000",
+    "sha256_b": "631ffd11fac580820ef61c556ff4545a5ce6b1346bcc4181ef3e3dc67fc4e000"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-replay/labels.json",
+    "b": "3/geneva-airport-z14/after-final/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de",
+    "sha256_b": "af1455b270dd0004406f205712bca3a8dfb01d0ea4f842ea370b7297736dd5de"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-replay/runtime.json",
+    "b": "3/geneva-airport-z14/after-final/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd",
+    "sha256_b": "50e08b2c4f45a2224ffc11f81885ed75374e175b09d691262beee36cad85bcbd"
+  },
+  {
+    "a": "3/geneva-airport-z14/after-replay/placed-labels.json",
+    "b": "3/geneva-airport-z14/after-final/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "175229551f556a92d4b98a9643b3001bd8c29f5c38c83ce517fd96abcd87e70b",
+    "sha256_b": "175229551f556a92d4b98a9643b3001bd8c29f5c38c83ce517fd96abcd87e70b"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-replay/qgis.png",
+    "b": "4/geneva-airport-z14/after-final/qgis.png",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d",
+    "sha256_b": "e85ea5b59c6576fe6f5e00c0febc9bf6f9346589334df1af9be157f8fbac007d"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-replay/labels.json",
+    "b": "4/geneva-airport-z14/after-final/labels.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0",
+    "sha256_b": "09ead16e2a946c0312b5fbeb6de5f8af1a4845fd67f7193e3cd2f99c90ec8ee0"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-replay/runtime.json",
+    "b": "4/geneva-airport-z14/after-final/runtime.json",
+    "kind": "bytes",
+    "identical": true,
+    "sha256_a": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c",
+    "sha256_b": "74a93950914d497fad736901c2bfade817bf54d75b4a8e8c5612dbe4a6c4345c"
+  },
+  {
+    "a": "4/geneva-airport-z14/after-replay/placed-labels.json",
+    "b": "4/geneva-airport-z14/after-final/placed-labels.json",
+    "kind": "placements",
+    "identical": true,
+    "sha256_a": "c8e120290ee1482d10af02a488fe7fda96839d200e4908e2afaa9267a60f34c2",
+    "sha256_b": "c8e120290ee1482d10af02a488fe7fda96839d200e4908e2afaa9267a60f34c2"
+  }
+]

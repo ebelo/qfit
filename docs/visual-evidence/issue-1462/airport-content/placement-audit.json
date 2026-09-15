@@ -1,0 +1,1300 @@
+[
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Flughafen Bern-Belp",
+        "provider_id": "28",
+        "feature_id": 94150011650048,
+        "unplaced": false,
+        "corners": [
+          [
+            834326.0623272499,
+            5927189.715391084
+          ],
+          [
+            835106.408563677,
+            5927189.715391084
+          ],
+          [
+            835106.408563677,
+            5927655.713658396
+          ],
+          [
+            834326.0623272499,
+            5927655.713658396
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "BRN -\nBern Airport",
+        "provider_id": "28",
+        "feature_id": 94150011650048,
+        "unplaced": false,
+        "corners": [
+          [
+            834240.8218036762,
+            5927189.715391084
+          ],
+          [
+            835191.6490872507,
+            5927189.715391084
+          ],
+          [
+            835191.6490872507,
+            5927655.713658396
+          ],
+          [
+            834240.8218036762,
+            5927655.713658396
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-airport-z14",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "مطار القاهرة الدولى",
+        "provider_id": "28",
+        "feature_id": 164243861143552,
+        "unplaced": false,
+        "corners": [
+          [
+            3496723.789885764,
+            3518230.4002958476
+          ],
+          [
+            3497003.9345802506,
+            3518230.4002958476
+          ],
+          [
+            3497003.9345802506,
+            3518368.9424096146
+          ],
+          [
+            3496723.789885764,
+            3518368.9424096146
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "CAI -\nCairo International Airport",
+        "provider_id": "28",
+        "feature_id": 164243861143552,
+        "unplaced": false,
+        "corners": [
+          [
+            3496717.221078646,
+            3518096.6354963486
+          ],
+          [
+            3497010.503387369,
+            3518096.6354963486
+          ],
+          [
+            3497010.503387369,
+            3518368.9424096146
+          ],
+          [
+            3496717.221078646,
+            3518368.9424096146
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-airport-z8",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Capital International Airport",
+        "provider_id": "28",
+        "feature_id": 165377732509697,
+        "unplaced": false,
+        "corners": [
+          [
+            3534999.967704475,
+            3497452.666216518
+          ],
+          [
+            3553770.0354627534,
+            3497452.666216518
+          ],
+          [
+            3553770.0354627534,
+            3510599.835081568
+          ],
+          [
+            3534999.967704475,
+            3510599.835081568
+          ]
+        ]
+      },
+      {
+        "text": "مطار القاهرة الدولى",
+        "provider_id": "28",
+        "feature_id": 165377732509696,
+        "unplaced": false,
+        "corners": [
+          [
+            3487914.7582808062,
+            3509491.498171433
+          ],
+          [
+            3505844.018727948,
+            3509491.498171433
+          ],
+          [
+            3505844.018727948,
+            3518358.1934525133
+          ],
+          [
+            3487914.7582808062,
+            3518358.1934525133
+          ]
+        ]
+      },
+      {
+        "text": "مطار المنصورة",
+        "provider_id": "28",
+        "feature_id": 165373437542400,
+        "unplaced": false,
+        "corners": [
+          [
+            3488846.334563032,
+            3624261.696141625
+          ],
+          [
+            3509651.5381994033,
+            3624261.696141625
+          ],
+          [
+            3509651.5381994033,
+            3628542.1697255946
+          ],
+          [
+            3488846.334563032,
+            3628542.1697255946
+          ]
+        ]
+      },
+      {
+        "text": "مطار بلبيس",
+        "provider_id": "28",
+        "feature_id": 165377732509698,
+        "unplaced": false,
+        "corners": [
+          [
+            3509596.5990853235,
+            3550003.1231625765
+          ],
+          [
+            3525820.3583388524,
+            3550003.1231625765
+          ],
+          [
+            3525820.3583388524,
+            3554283.596746546
+          ],
+          [
+            3509596.5990853235,
+            3554283.596746546
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "CCE",
+        "provider_id": "28",
+        "feature_id": 165377732509697,
+        "unplaced": false,
+        "corners": [
+          [
+            3541341.8523950106,
+            3506319.3614975982
+          ],
+          [
+            3547428.1507722177,
+            3506319.3614975982
+          ],
+          [
+            3547428.1507722177,
+            3510599.835081568
+          ],
+          [
+            3541341.8523950106,
+            3510599.835081568
+          ]
+        ]
+      },
+      {
+        "text": "CAI",
+        "provider_id": "28",
+        "feature_id": 165377732509696,
+        "unplaced": false,
+        "corners": [
+          [
+            3494373.6871709037,
+            3514077.7198685436
+          ],
+          [
+            3499385.0898378505,
+            3514077.7198685436
+          ],
+          [
+            3499385.0898378505,
+            3518358.1934525133
+          ],
+          [
+            3494373.6871709037,
+            3518358.1934525133
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 6.092090414222007e-12,
+    "nonairport_text_and_corners_equal": false,
+    "other_removed_records": [
+      {
+        "provider": "33",
+        "text": "Tenth Of Ramadan",
+        "feature_id": 165373504651280,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shubra al Khayma",
+        "feature_id": 164282549403667,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shibin El Kawm",
+        "feature_id": 164278254436370,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Damanhur",
+        "feature_id": 164273976246273,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Beni Suef",
+        "feature_id": 165382061031427,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Faiyum",
+        "feature_id": 165377782841353,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Banha",
+        "feature_id": 165373504651288,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Tanta",
+        "feature_id": 165377782841358,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Cairo",
+        "feature_id": 165382061031426,
+        "records": 1
+      }
+    ],
+    "other_added_records": [
+      {
+        "provider": "33",
+        "text": "Tenth Of Ramadan",
+        "feature_id": 166477294469134,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shubra al Khayma",
+        "feature_id": 165382061031441,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shibin El Kawm",
+        "feature_id": 164273976246284,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Damanhur",
+        "feature_id": 164278254436353,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Beni Suef",
+        "feature_id": 164282549403655,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Faiyum",
+        "feature_id": 164282549403650,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Banha",
+        "feature_id": 164278254436377,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Tanta",
+        "feature_id": 164273976246285,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Cairo",
+        "feature_id": 164278254436361,
+        "records": 1
+      }
+    ],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-airport-z10",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Aéroport international de Genève",
+        "provider_id": "28",
+        "feature_id": 19151292727296,
+        "unplaced": false,
+        "corners": [
+          [
+            677022.4659431576,
+            5815013.809194521
+          ],
+          [
+            682792.2672501215,
+            5815013.809194521
+          ],
+          [
+            682792.2672501215,
+            5818300.601410784
+          ],
+          [
+            677022.4659431576,
+            5818300.601410784
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "GVA",
+        "provider_id": "28",
+        "feature_id": 19151292727296,
+        "unplaced": false,
+        "corners": [
+          [
+            679177.034677946,
+            5817230.483014791
+          ],
+          [
+            680637.698515333,
+            5817230.483014791
+          ],
+          [
+            680637.698515333,
+            5818300.601410784
+          ],
+          [
+            679177.034677946,
+            5818300.601410784
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-airport-z14",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Aéroport international de Genève",
+        "provider_id": "28",
+        "feature_id": 23867166818304,
+        "unplaced": false,
+        "corners": [
+          [
+            679724.074484381,
+            5818091.593911565
+          ],
+          [
+            680084.6870660663,
+            5818091.593911565
+          ],
+          [
+            680084.6870660663,
+            5818297.018425081
+          ],
+          [
+            679724.074484381,
+            5818297.018425081
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "GVA -\nGeneva International Airport",
+        "provider_id": "28",
+        "feature_id": 23867166818304,
+        "unplaced": false,
+        "corners": [
+          [
+            679757.7396208621,
+            5818024.711511815
+          ],
+          [
+            680051.0219295851,
+            5818024.711511815
+          ],
+          [
+            680051.0219295851,
+            5818297.018425081
+          ],
+          [
+            679757.7396208621,
+            5818297.018425081
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-streets-z18-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "lausanne-lavaux-z10-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "switzerland-alps-z5-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "zurich-region-z8-light",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Flughafen Zürich",
+        "provider_id": "28",
+        "feature_id": 146617315360768,
+        "unplaced": false,
+        "corners": [
+          [
+            941322.3539898627,
+            6013931.557117358
+          ],
+          [
+            962724.0205938715,
+            6013931.557117358
+          ],
+          [
+            962724.0205938715,
+            6017657.925807057
+          ],
+          [
+            941322.3539898627,
+            6017657.925807057
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "ZRH",
+        "provider_id": "28",
+        "feature_id": 146617315360768,
+        "unplaced": false,
+        "corners": [
+          [
+            949378.130945161,
+            6013931.557117358
+          ],
+          [
+            954668.2436385732,
+            6013931.557117358
+          ],
+          [
+            954668.2436385732,
+            6017657.925807057
+          ],
+          [
+            949378.130945161,
+            6017657.925807057
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "3",
+    "camera": "zurich-streets-z17-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Flughafen Bern-Belp",
+        "provider_id": "28",
+        "feature_id": 94150011650048,
+        "unplaced": false,
+        "corners": [
+          [
+            834326.0623272499,
+            5927231.896268728
+          ],
+          [
+            835106.408563677,
+            5927231.896268728
+          ],
+          [
+            835106.408563677,
+            5927655.713658396
+          ],
+          [
+            834326.0623272499,
+            5927655.713658396
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "BRN -\nBern Airport",
+        "provider_id": "28",
+        "feature_id": 94150011650048,
+        "unplaced": false,
+        "corners": [
+          [
+            834240.8218036762,
+            5927231.896268728
+          ],
+          [
+            835191.6490872507,
+            5927231.896268728
+          ],
+          [
+            835191.6490872507,
+            5927655.713658396
+          ],
+          [
+            834240.8218036762,
+            5927655.713658396
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-airport-z14",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "مطار القاهرة الدولى",
+        "provider_id": "28",
+        "feature_id": 164243861143552,
+        "unplaced": false,
+        "corners": [
+          [
+            3496723.789885764,
+            3518242.9407458007
+          ],
+          [
+            3497003.9345802506,
+            3518242.9407458007
+          ],
+          [
+            3497003.9345802506,
+            3518368.9424096146
+          ],
+          [
+            3496723.789885764,
+            3518368.9424096146
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "CAI -\nCairo International Airport",
+        "provider_id": "28",
+        "feature_id": 164243861143552,
+        "unplaced": false,
+        "corners": [
+          [
+            3496717.221078646,
+            3518116.939081987
+          ],
+          [
+            3497010.503387369,
+            3518116.939081987
+          ],
+          [
+            3497010.503387369,
+            3518368.9424096146
+          ],
+          [
+            3496717.221078646,
+            3518368.9424096146
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-airport-z8",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Capital International Airport",
+        "provider_id": "28",
+        "feature_id": 165377732509697,
+        "unplaced": false,
+        "corners": [
+          [
+            3534999.967704475,
+            3498503.6753554386
+          ],
+          [
+            3553770.0354627534,
+            3498503.6753554386
+          ],
+          [
+            3553770.0354627534,
+            3510599.835081568
+          ],
+          [
+            3534999.967704475,
+            3510599.835081568
+          ]
+        ]
+      },
+      {
+        "text": "مطار القاهرة الدولى",
+        "provider_id": "28",
+        "feature_id": 165377732509696,
+        "unplaced": false,
+        "corners": [
+          [
+            3487914.7582808062,
+            3510294.086968427
+          ],
+          [
+            3505844.018727948,
+            3510294.086968427
+          ],
+          [
+            3505844.018727948,
+            3518358.1934525133
+          ],
+          [
+            3487914.7582808062,
+            3518358.1934525133
+          ]
+        ]
+      },
+      {
+        "text": "مطار المنصورة",
+        "provider_id": "28",
+        "feature_id": 165373437542400,
+        "unplaced": false,
+        "corners": [
+          [
+            3488846.334563032,
+            3624510.1164835515
+          ],
+          [
+            3509651.5381994033,
+            3624510.1164835515
+          ],
+          [
+            3509651.5381994033,
+            3628542.1697255946
+          ],
+          [
+            3488846.334563032,
+            3628542.1697255946
+          ]
+        ]
+      },
+      {
+        "text": "مطار بلبيس",
+        "provider_id": "28",
+        "feature_id": 165377732509698,
+        "unplaced": false,
+        "corners": [
+          [
+            3509596.5990853235,
+            3550251.543504503
+          ],
+          [
+            3525820.3583388524,
+            3550251.543504503
+          ],
+          [
+            3525820.3583388524,
+            3554283.596746546
+          ],
+          [
+            3509596.5990853235,
+            3554283.596746546
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "CCE",
+        "provider_id": "28",
+        "feature_id": 165377732509697,
+        "unplaced": false,
+        "corners": [
+          [
+            3541341.8523950106,
+            3506567.781839525
+          ],
+          [
+            3547428.1507722177,
+            3506567.781839525
+          ],
+          [
+            3547428.1507722177,
+            3510599.835081568
+          ],
+          [
+            3541341.8523950106,
+            3510599.835081568
+          ]
+        ]
+      },
+      {
+        "text": "CAI",
+        "provider_id": "28",
+        "feature_id": 165377732509696,
+        "unplaced": false,
+        "corners": [
+          [
+            3494373.6871709037,
+            3514326.14021047
+          ],
+          [
+            3499385.0898378505,
+            3514326.14021047
+          ],
+          [
+            3499385.0898378505,
+            3518358.1934525133
+          ],
+          [
+            3494373.6871709037,
+            3518358.1934525133
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 6.092090414222007e-12,
+    "nonairport_text_and_corners_equal": false,
+    "other_removed_records": [
+      {
+        "provider": "33",
+        "text": "Tenth Of Ramadan",
+        "feature_id": 165373504651280,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shubra al Khayma",
+        "feature_id": 164282549403667,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shibin El Kawm",
+        "feature_id": 164278254436370,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Damanhur",
+        "feature_id": 164273976246273,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Beni Suef",
+        "feature_id": 165382061031427,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Faiyum",
+        "feature_id": 165377782841353,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Banha",
+        "feature_id": 165373504651288,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Tanta",
+        "feature_id": 165377782841358,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Cairo",
+        "feature_id": 165382061031426,
+        "records": 1
+      }
+    ],
+    "other_added_records": [
+      {
+        "provider": "33",
+        "text": "Tenth Of Ramadan",
+        "feature_id": 166477294469134,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shubra al Khayma",
+        "feature_id": 165382061031441,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Shibin El Kawm",
+        "feature_id": 164273976246284,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Damanhur",
+        "feature_id": 164278254436353,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Beni Suef",
+        "feature_id": 164282549403655,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Faiyum",
+        "feature_id": 164282549403650,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Banha",
+        "feature_id": 164278254436377,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Tanta",
+        "feature_id": 164273976246285,
+        "records": 1
+      },
+      {
+        "provider": "33",
+        "text": "Cairo",
+        "feature_id": 164278254436361,
+        "records": 1
+      }
+    ],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-airport-z10",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Aéroport international de Genève",
+        "provider_id": "28",
+        "feature_id": 19151292727296,
+        "unplaced": false,
+        "corners": [
+          [
+            677022.4659431576,
+            5815276.561479252
+          ],
+          [
+            682792.2672501215,
+            5815276.561479252
+          ],
+          [
+            682792.2672501215,
+            5818300.601410784
+          ],
+          [
+            677022.4659431576,
+            5818300.601410784
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "GVA",
+        "provider_id": "28",
+        "feature_id": 19151292727296,
+        "unplaced": false,
+        "corners": [
+          [
+            679177.034677946,
+            5817292.588100273
+          ],
+          [
+            680637.698515333,
+            5817292.588100273
+          ],
+          [
+            680637.698515333,
+            5818300.601410784
+          ],
+          [
+            679177.034677946,
+            5818300.601410784
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-airport-z14",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Aéroport international de Genève",
+        "provider_id": "28",
+        "feature_id": 24966678446080,
+        "unplaced": false,
+        "corners": [
+          [
+            679724.0744843829,
+            5818108.01592936
+          ],
+          [
+            680084.6870660682,
+            5818108.01592936
+          ],
+          [
+            680084.6870660682,
+            5818297.018425081
+          ],
+          [
+            679724.0744843829,
+            5818297.018425081
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "GVA -\nGeneva International Airport",
+        "provider_id": "28",
+        "feature_id": 24966678446080,
+        "unplaced": false,
+        "corners": [
+          [
+            679757.7396208639,
+            5818045.015097453
+          ],
+          [
+            680051.021929587,
+            5818045.015097453
+          ],
+          [
+            680051.021929587,
+            5818297.018425081
+          ],
+          [
+            679757.7396208639,
+            5818297.018425081
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-streets-z18-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "lausanne-lavaux-z10-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "switzerland-alps-z5-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "zurich-region-z8-light",
+    "airport_provider_index": "28",
+    "before_airports": [
+      {
+        "text": "Flughafen Zürich",
+        "provider_id": "28",
+        "feature_id": 146617315360768,
+        "unplaced": false,
+        "corners": [
+          [
+            941322.3539898627,
+            6014147.819585957
+          ],
+          [
+            962724.0205938715,
+            6014147.819585957
+          ],
+          [
+            962724.0205938715,
+            6017657.925807057
+          ],
+          [
+            941322.3539898627,
+            6017657.925807057
+          ]
+        ]
+      }
+    ],
+    "after_airports": [
+      {
+        "text": "ZRH",
+        "provider_id": "28",
+        "feature_id": 146617315360768,
+        "unplaced": false,
+        "corners": [
+          [
+            949378.130945161,
+            6014147.819585957
+          ],
+          [
+            954668.2436385732,
+            6014147.819585957
+          ],
+          [
+            954668.2436385732,
+            6017657.925807057
+          ],
+          [
+            949378.130945161,
+            6017657.925807057
+          ]
+        ]
+      }
+    ],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  },
+  {
+    "runtime": "4",
+    "camera": "zurich-streets-z17-light",
+    "airport_provider_index": "28",
+    "before_airports": [],
+    "after_airports": [],
+    "nonairport_text_population_equal": true,
+    "nonairport_max_corner_delta_px": 0.0,
+    "nonairport_text_and_corners_equal": true,
+    "other_removed_records": [],
+    "other_added_records": [],
+    "scope": "Actual native PNG placement records, not unique-feature/native-source-ID equivalence or PDF labels. Curved labels can emit multiple records."
+  }
+]

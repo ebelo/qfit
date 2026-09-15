@@ -1,0 +1,1721 @@
+{
+  "features": [
+    {
+      "id": 596464210,
+      "owner": "settlement-major-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 18,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "hamlet",
+        "class": "settlement",
+        "name": "Mategnin",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.0847413539886475,
+          46.24125300367007
+        ]
+      }
+    },
+    {
+      "id": 33476020390,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "symbolrank": 16,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_fr": "Cointrin",
+        "name_script": "Latin",
+        "class": "settlement_subdivision",
+        "name": "Cointrin",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.103484630584717,
+          46.22762390593306
+        ]
+      }
+    },
+    {
+      "id": 134063754760,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Octagon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.122034788131714,
+          46.23854081213071
+        ]
+      }
+    },
+    {
+      "id": 211543784,
+      "owner": "airport-label",
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 1,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107684969902039,
+          46.23629601048728
+        ]
+      }
+    },
+    {
+      "id": 688928011,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Netto",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "class": "food_and_drink_stores",
+        "name": "Netto"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.082375645637512,
+          46.24705538180925
+        ]
+      }
+    },
+    {
+      "id": 1074703141,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Centre Commercial E.Leclerc",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "class": "food_and_drink_stores",
+        "name": "Centre Commercial E.Leclerc"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.096602082252502,
+          46.244347187056206
+        ]
+      }
+    },
+    {
+      "id": 1074716341,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "brand": "Campanile",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "class": "lodging",
+        "name": "Campanile"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.099193096160889,
+          46.25127322159307
+        ]
+      }
+    },
+    {
+      "id": 2848801030,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "brand": "greet",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "class": "lodging",
+        "name": "Greet Hôtel Prévessin Genève Aéroport"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.088056564331055,
+          46.248542977102545
+        ]
+      }
+    },
+    {
+      "id": 1030852151,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 8,
+        "type": "Wood",
+        "category_en": "Wood",
+        "maki": "park",
+        "name_script": "Latin",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "category_zh-Hans": "树林",
+        "class": "park_like",
+        "name": "Bois de la Bagasse"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1100828647613525,
+          46.24571243071142
+        ]
+      }
+    },
+    {
+      "id": 733517011,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Auberge des Trois-Coqs"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.138895153999329,
+          46.24401700074392
+        ]
+      }
+    },
+    {
+      "id": 12699184,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "brand": "NH Hotels",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "lodging",
+        "name": "NH Geneva Airport"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.08542799949646,
+          46.22778719312987
+        ]
+      }
+    },
+    {
+      "id": 143633621,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Yes",
+        "name_script": "Latin",
+        "category_en": "Airport Terminal",
+        "maki": "marker",
+        "category_zh-Hans": "航站楼",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "sizerank": 14,
+        "maki_beta": "terminal",
+        "class": "building",
+        "name": "Terminal 1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107373833656311,
+          46.23056671203781
+        ]
+      }
+    },
+    {
+      "id": 115140524690,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Tomb",
+        "name_script": "Latin",
+        "category_en": "Tomb",
+        "maki": "marker",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "陵墓",
+        "class": "historic",
+        "name": "Mwabusa Mwami"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.094193458557129,
+          46.23446670752321
+        ]
+      }
+    },
+    {
+      "id": 4478084670,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Supermarket",
+        "name_script": "Latin",
+        "brand": "Migros",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Migros"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.112523674964905,
+          46.23276721929864
+        ]
+      }
+    },
+    {
+      "id": 22930421130,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Public Building",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "maki": "town-hall",
+        "name_script": "Latin",
+        "class": "public_facilities",
+        "name": "Inter-Parliamentary Union"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.121782660484314,
+          46.22713775253936
+        ]
+      }
+    },
+    {
+      "id": 5285174750,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Delice Ange'Vin"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.127431392669678,
+          46.23593609159903
+        ]
+      }
+    },
+    {
+      "id": 10058521241,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Transportation",
+        "name_script": "Latin",
+        "category_en": "Airport Terminal",
+        "maki": "marker",
+        "category_zh-Hans": "航站楼",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "sizerank": 15,
+        "maki_beta": "terminal",
+        "class": "building",
+        "name": "Aile Est"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.11089825630188,
+          46.23349451764457
+        ]
+      }
+    },
+    {
+      "id": 143638611,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Government",
+        "iso_3166_2": "CH-GE",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "maki": "marker",
+        "name_es": "Organización Mundial de la Salud",
+        "name_fr": "Organisation mondiale de la Santé",
+        "name_ar": "منظمة الصحة العالمية",
+        "name_ru": "Всемирная Организация Здравоохранения",
+        "name_de": "Weltgesundheitsorganisation",
+        "sizerank": 15,
+        "name_en": "World Health Organization",
+        "name_it": "Organizzazione Mondiale della Sanità",
+        "name_script": "Latin",
+        "class": "general",
+        "name": "Organisation mondiale de la Santé"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.134346127510071,
+          46.23274124417944
+        ]
+      }
+    },
+    {
+      "id": 758731641,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Castle",
+        "name_script": "Latin",
+        "category_en": "Castle",
+        "maki": "castle",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "城堡",
+        "class": "historic",
+        "name": "Château de Tournay"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.138004660606384,
+          46.237167969140614
+        ]
+      }
+    },
+    {
+      "id": 8514625581,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Arts Centre",
+        "name_script": "Latin",
+        "category_en": "Arts Center",
+        "maki": "art-gallery",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "艺术中心",
+        "class": "arts_and_entertainment",
+        "name": "Maison des compagnies"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.083630919456482,
+          46.22459929389487
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "reflen": 4,
+        "iso_3166_1": "FR",
+        "len": 1420,
+        "name_script": "Latin",
+        "ref": "D 35",
+        "shield_text_color": "black",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "rectangle-yellow-4",
+        "shield": "rectangle-yellow",
+        "class": "primary",
+        "name": "Rte de Meyrin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.10415518283844,
+              46.24932200093596
+            ],
+            [
+              6.1054158210754395,
+              46.24892878076483
+            ],
+            [
+              6.105946898460388,
+              46.24881749152536
+            ],
+            [
+              6.106617450714111,
+              46.24876184682094
+            ],
+            [
+              6.107250452041626,
+              46.24880265294303
+            ],
+            [
+              6.107690334320068,
+              46.248880555455486
+            ],
+            [
+              6.108425259590149,
+              46.249114262328874
+            ],
+            [
+              6.1090850830078125,
+              46.24940361231634
+            ]
+          ],
+          [
+            [
+              6.094719171524048,
+              46.24533402418882
+            ],
+            [
+              6.095384359359741,
+              46.245745819396944
+            ],
+            [
+              6.097358465194702,
+              46.2471221575251
+            ],
+            [
+              6.099992394447327,
+              46.24888797473659
+            ],
+            [
+              6.100593209266663,
+              46.249229260583604
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "len": 20,
+        "iso_3166_1": "FR",
+        "type": "unclassified",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue de Meyrin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.101778745651245,
+              46.2495408675459
+            ],
+            [
+              6.101821660995483,
+              46.249626188191115
+            ]
+          ],
+          [
+            [
+              6.101671457290649,
+              46.249607640236064
+            ],
+            [
+              6.101778745651245,
+              46.2495408675459
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "len": 520,
+        "iso_3166_1": "FR",
+        "type": "residential",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rte du Nant"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.086592078208923,
+              46.248617170325275
+            ],
+            [
+              6.087793707847595,
+              46.248906522935016
+            ],
+            [
+              6.088474988937378,
+              46.249095714200706
+            ],
+            [
+              6.090320348739624,
+              46.24971892787235
+            ]
+          ],
+          [
+            [
+              6.086356043815613,
+              46.24856523507992
+            ],
+            [
+              6.0857391357421875,
+              46.248409429048735
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "reflen": 4,
+        "iso_3166_1": "FR",
+        "len": 870,
+        "name_script": "Latin",
+        "ref": "D 35",
+        "shield_text_color": "black",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "rectangle-yellow-4",
+        "shield": "rectangle-yellow",
+        "class": "primary",
+        "name": "Rte de Meyrin"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.1077117919921875,
+            46.24888797473659
+          ],
+          [
+            6.108425259590149,
+            46.249114262328874
+          ],
+          [
+            6.1103081703186035,
+            46.24994150246758
+          ],
+          [
+            6.111193299293518,
+            46.25026052447902
+          ],
+          [
+            6.111837029457092,
+            46.25043858246926
+          ],
+          [
+            6.112475395202637,
+            46.25057583510886
+          ],
+          [
+            6.1140042543411255,
+            46.2508355013253
+          ],
+          [
+            6.114417314529419,
+            46.25093936746768
+          ],
+          [
+            6.1149001121521,
+            46.25113968018675
+          ],
+          [
+            6.115254163742065,
+            46.25136966796205
+          ],
+          [
+            6.11564040184021,
+            46.25172206671445
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "len": 620,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "secondary",
+        "name": "Route de Colovrex"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.130140423774719,
+              46.25576521668731
+            ],
+            [
+              6.130140423774719,
+              46.25561684947985
+            ],
+            [
+              6.130076050758362,
+              46.25548331864994
+            ]
+          ],
+          [
+            [
+              6.130247712135315,
+              46.25015665705112
+            ],
+            [
+              6.130269169807434,
+              46.250494225472636
+            ],
+            [
+              6.130215525627136,
+              46.25086146787933
+            ],
+            [
+              6.129754185676575,
+              46.25214123280841
+            ],
+            [
+              6.1296844482421875,
+              46.25244911382785
+            ],
+            [
+              6.129571795463562,
+              46.25433716565354
+            ],
+            [
+              6.129598617553711,
+              46.25470067308126
+            ],
+            [
+              6.129748821258545,
+              46.25503450431074
+            ],
+            [
+              6.130076050758362,
+              46.25548331864994
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "len": 420,
+        "iso_3166_2": "CH-GE",
+        "layer": -1,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "tunnel",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "Route Douanière"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.1209458112716675,
+            46.24820910635836
+          ],
+          [
+            6.121450066566467,
+            46.24765265060208
+          ],
+          [
+            6.1218202114105225,
+            46.24718522340436
+          ],
+          [
+            6.1221688985824585,
+            46.24671037264886
+          ],
+          [
+            6.122351288795471,
+            46.24640616922346
+          ],
+          [
+            6.122678518295288,
+            46.24570130114509
+          ],
+          [
+            6.122984290122986,
+            46.2446699515306
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 280,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Ch. du Nant"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.117947101593018,
+            46.25109145682126
+          ],
+          [
+            6.120838522911072,
+            46.25234154113798
+          ],
+          [
+            6.121004819869995,
+            46.2524528232272
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 370,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Ch. de Colovrex"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.11839234828949,
+            46.2506203494047
+          ],
+          [
+            6.119309663772583,
+            46.25106549037611
+          ],
+          [
+            6.1207205057144165,
+            46.25166642495674
+          ],
+          [
+            6.122705340385437,
+            46.25201140294479
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "len": 630,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "tertiary",
+        "name": "Avenue de la Foretaille"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.137521862983704,
+            46.24503352303199
+          ],
+          [
+            6.137334108352661,
+            46.245029813130884
+          ],
+          [
+            6.131084561347961,
+            46.243801822077614
+          ],
+          [
+            6.130655407905579,
+            46.243757302248156
+          ],
+          [
+            6.130344271659851,
+            46.243757302248156
+          ],
+          [
+            6.1296844482421875,
+            46.24380924204564
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 300,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin de Valérie"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.140086054801941,
+            46.25048680640879
+          ],
+          [
+            6.139399409294128,
+            46.25017891437366
+          ],
+          [
+            6.138551831245422,
+            46.24971892787235
+          ],
+          [
+            6.138069033622742,
+            46.24949264277464
+          ],
+          [
+            6.1373502016067505,
+            46.24922184134863
+          ],
+          [
+            6.1367011070251465,
+            46.24907716606626
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 610,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Avenue de Tournay"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.130934357643127,
+            46.24189114690151
+          ],
+          [
+            6.137291193008423,
+            46.24399845089215
+          ],
+          [
+            6.137714982032776,
+            46.24406894029556
+          ],
+          [
+            6.138315796852112,
+            46.24406894029556
+          ],
+          [
+            6.138428449630737,
+            46.24412458976059
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "bike_lane": "yes",
+        "len": 210,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "Rue Lect"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.082536578178406,
+              46.226295323868584
+            ],
+            [
+              6.082381010055542,
+              46.226035541494184
+            ],
+            [
+              6.082203984260559,
+              46.225838848307234
+            ],
+            [
+              6.082026958465576,
+              46.225686688943284
+            ],
+            [
+              6.081790924072266,
+              46.22553452915756
+            ]
+          ],
+          [
+            [
+              6.082987189292908,
+              46.226677572841254
+            ],
+            [
+              6.0835182666778564,
+              46.227772348859304
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "len": 460,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "secondary",
+        "name": "Avenue de Mategnin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.08518660068512,
+              46.238644701553625
+            ],
+            [
+              6.08517050743103,
+              46.23873374947385
+            ]
+          ],
+          [
+            [
+              6.08517050743103,
+              46.23443331197333
+            ],
+            [
+              6.085272431373596,
+              46.234615131943514
+            ]
+          ],
+          [
+            [
+              6.085149049758911,
+              46.23394721889099
+            ],
+            [
+              6.0851651430130005,
+              46.23352049240722
+            ],
+            [
+              6.085036396980286,
+              46.23156121865719
+            ],
+            [
+              6.085079312324524,
+              46.23084502727326
+            ],
+            [
+              6.085229516029358,
+              46.23009913926518
+            ]
+          ],
+          [
+            [
+              6.087042689323425,
+              46.22543432614148
+            ],
+            [
+              6.087069511413574,
+              46.225245053278826
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 470,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue de-Livron"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.078904867172241,
+              46.232440674048945
+            ],
+            [
+              6.079806089401245,
+              46.23303810195182
+            ],
+            [
+              6.079908013343811,
+              46.23315313390694
+            ]
+          ],
+          [
+            [
+              6.082322001457214,
+              46.22944230411858
+            ],
+            [
+              6.079210638999939,
+              46.23198796037525
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 750,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Robert-Adrien-Stierlin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.090974807739258,
+              46.239486940685
+            ],
+            [
+              6.09018087387085,
+              46.2388450591709
+            ]
+          ],
+          [
+            [
+              6.090196967124939,
+              46.239806023499
+            ],
+            [
+              6.090250611305237,
+              46.23980973375336
+            ],
+            [
+              6.091446876525879,
+              46.23926061337812
+            ],
+            [
+              6.092509031295776,
+              46.23862986021953
+            ],
+            [
+              6.0930562019348145,
+              46.23826624628049
+            ],
+            [
+              6.094558238983154,
+              46.23711602305582
+            ],
+            [
+              6.096124649047852,
+              46.2355873019705
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 620,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin de la Citadelle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.092948913574219,
+            46.238340453402515
+          ],
+          [
+            6.091784834861755,
+            46.23752787994917
+          ],
+          [
+            6.091586351394653,
+            46.237446250900604
+          ],
+          [
+            6.089215278625488,
+            46.2361438801112
+          ],
+          [
+            6.088464260101318,
+            46.23578396022512
+          ],
+          [
+            6.08668327331543,
+            46.23504184991572
+          ],
+          [
+            6.086511611938477,
+            46.23491569016508
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "bike_lane": "right",
+        "len": 700,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "Chemin Edouard-Sarasin"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.114084720611572,
+              46.22782801485317
+            ],
+            [
+              6.1145782470703125,
+              46.22834013934795
+            ]
+          ],
+          [
+            [
+              6.11539363861084,
+              46.22917882566446
+            ],
+            [
+              6.116192936897278,
+              46.22998781182744
+            ],
+            [
+              6.116579174995422,
+              46.23028097359452
+            ],
+            [
+              6.116927862167358,
+              46.230481361749526
+            ],
+            [
+              6.119974851608276,
+              46.23176531293632
+            ],
+            [
+              6.1212193965911865,
+              46.2322625576393
+            ],
+            [
+              6.121589541435242,
+              46.23244438480137
+            ],
+            [
+              6.121938228607178,
+              46.23265960801055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 770,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "106",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "tertiary",
+        "name": "Route de Ferney"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.12337589263916,
+              46.23947952013236
+            ],
+            [
+              6.123660206794739,
+              46.23765032329433
+            ]
+          ],
+          [
+            [
+              6.12337589263916,
+              46.23947952013236
+            ],
+            [
+              6.123322248458862,
+              46.240158496543444
+            ],
+            [
+              6.1233437061309814,
+              46.24032545666893
+            ],
+            [
+              6.1234670877456665,
+              46.24061114281636
+            ],
+            [
+              6.123719215393066,
+              46.24088940711425
+            ],
+            [
+              6.124051809310913,
+              46.24107491586216
+            ],
+            [
+              6.124228835105896,
+              46.24112685819921
+            ]
+          ],
+          [
+            [
+              6.123676300048828,
+              46.23427375517673
+            ],
+            [
+              6.123906970024109,
+              46.234782108936486
+            ],
+            [
+              6.124019622802734,
+              46.2353238530155
+            ],
+            [
+              6.123944520950317,
+              46.235988038800826
+            ],
+            [
+              6.123660206794739,
+              46.23765032329433
+            ]
+          ],
+          [
+            [
+              6.123327612876892,
+              46.23226626840375
+            ],
+            [
+              6.123182773590088,
+              46.232615079139975
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "len": 100,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Route François-Peyrot"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.116520166397095,
+              46.23490455840843
+            ],
+            [
+              6.116541624069214,
+              46.23509008739077
+            ]
+          ],
+          [
+            [
+              6.115248799324036,
+              46.23403256378958
+            ],
+            [
+              6.1155009269714355,
+              46.234166146842654
+            ],
+            [
+              6.116058826446533,
+              46.23457060465955
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 1040,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin du Jonc"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.114041805267334,
+              46.230377456871594
+            ],
+            [
+              6.115656495094299,
+              46.22946085889163
+            ]
+          ],
+          [
+            [
+              6.1077117919921875,
+              46.22682601832665
+            ],
+            [
+              6.108119487762451,
+              46.226844573984096
+            ],
+            [
+              6.108725666999817,
+              46.22676664018067
+            ],
+            [
+              6.1100345849990845,
+              46.22706353026834
+            ],
+            [
+              6.110726594924927,
+              46.22732330777785
+            ],
+            [
+              6.112217903137207,
+              46.22820283107538
+            ],
+            [
+              6.112604141235352,
+              46.228399515791864
+            ],
+            [
+              6.11288845539093,
+              46.22859248879098
+            ],
+            [
+              6.114551424980164,
+              46.230047186489
+            ],
+            [
+              6.115329265594482,
+              46.230644640446
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "bike_lane": "right",
+        "len": 320,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "primary",
+        "name": "Avenue Appia"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.135821342468262,
+            46.22732330777785
+          ],
+          [
+            6.135644316673279,
+            46.227590506219315
+          ],
+          [
+            6.135596036911011,
+            46.22781317059366
+          ],
+          [
+            6.135633587837219,
+            46.228061811410925
+          ],
+          [
+            6.1359769105911255,
+            46.22894132287547
+          ],
+          [
+            6.136094927787781,
+            46.22938663976183
+          ],
+          [
+            6.136057376861572,
+            46.229705781307956
+          ],
+          [
+            6.1359769105911255,
+            46.22985792953136
+          ],
+          [
+            6.13585352897644,
+            46.22999523366366
+          ],
+          [
+            6.135558485984802,
+            46.23019933376605
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 100,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Chemin de Machéry"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.1360251903533936,
+            46.23697131584589
+          ],
+          [
+            6.13585889339447,
+            46.237030682952536
+          ],
+          [
+            6.135665774345398,
+            46.23715312740714
+          ],
+          [
+            6.135048866271973,
+            46.237635481691285
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "access": "restricted",
+        "iso_3166_2": "CH-GE",
+        "len": 10,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street_limited",
+        "name": "Chemin de Bonvent"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.110565662384033,
+            46.22233536479564
+          ],
+          [
+            6.110715866088867,
+            46.222431862039116
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

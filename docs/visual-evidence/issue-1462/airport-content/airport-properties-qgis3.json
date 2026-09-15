@@ -1,0 +1,1217 @@
+{
+  "scope": "Replay observed airport properties through exact native content/filter snapshots.\n\nRun offline in QGIS: airport_property_audit.py EVIDENCE QGIS_MAJOR.\nRendered features and loaded source-tile features are separate populations;\nneither is a native-decoder/request trace or a count of unique visible airports.\n",
+  "summary": [
+    {
+      "camera": "cairo-airport-z14",
+      "population": "loaded-source",
+      "observed_records": 2,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "observed_records": 10,
+      "distinct_property_sets": 4,
+      "before_mismatches": 4,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "loaded-source",
+      "observed_records": 4,
+      "distinct_property_sets": 2,
+      "before_mismatches": 2,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "loaded-source",
+      "observed_records": 4,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "cairo-airport-z14",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-streets-z18-light",
+      "population": "rendered",
+      "observed_records": 0,
+      "distinct_property_sets": 0,
+      "before_mismatches": 0,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "population": "rendered",
+      "observed_records": 0,
+      "distinct_property_sets": 0,
+      "before_mismatches": 0,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "lausanne-lavaux-z10-light",
+      "population": "rendered",
+      "observed_records": 0,
+      "distinct_property_sets": 0,
+      "before_mismatches": 0,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "switzerland-alps-z5-light",
+      "population": "rendered",
+      "observed_records": 0,
+      "distinct_property_sets": 0,
+      "before_mismatches": 0,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "zurich-region-z8-light",
+      "population": "rendered",
+      "observed_records": 1,
+      "distinct_property_sets": 1,
+      "before_mismatches": 1,
+      "after_mismatches": 0
+    },
+    {
+      "camera": "zurich-streets-z17-light",
+      "population": "rendered",
+      "observed_records": 0,
+      "distinct_property_sets": 0,
+      "before_mismatches": 0,
+      "after_mismatches": 0
+    }
+  ],
+  "evaluations": [
+    {
+      "camera": "cairo-airport-z14",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.412862539291382,
+          30.11522021640613
+        ]
+      },
+      "properties": {
+        "sizerank": 1,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI -\nCairo International Airport",
+      "native_text": "مطار القاهرة الدولى",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z14",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.412862539291382,
+          30.11522021640613
+        ]
+      },
+      "properties": {
+        "sizerank": 1,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI -\nCairo International Airport",
+      "native_text": "CAI -\nCairo International Airport",
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI",
+      "native_text": "مطار القاهرة الدولى",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI",
+      "native_text": "CAI",
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 4782044651,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.839752197265625,
+          30.05483122485245
+        ]
+      },
+      "properties": {
+        "maki": "airport",
+        "name_zh-Hans": "首都国际机场",
+        "name_zh-Hant": "首都國際機場",
+        "name_de": "Capital International Airport",
+        "name_es": "Aeropuerto Internacional de la Capital",
+        "iso_3166_1": "EG",
+        "ref": "CCE",
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "name_ar": "مطار العاصمة الدولي",
+        "sizerank": 15,
+        "name_en": "Capital International Airport",
+        "name_fr": "Capital International Airport",
+        "name_script": "Latin",
+        "class": "civil",
+        "name": "Capital International Airport",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CCE",
+      "native_text": "Capital International Airport",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 4782044651,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.839752197265625,
+          30.05483122485245
+        ]
+      },
+      "properties": {
+        "maki": "airport",
+        "name_zh-Hans": "首都国际机场",
+        "name_zh-Hant": "首都國際機場",
+        "name_de": "Capital International Airport",
+        "name_es": "Aeropuerto Internacional de la Capital",
+        "iso_3166_1": "EG",
+        "ref": "CCE",
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "name_ar": "مطار العاصمة الدولي",
+        "sizerank": 15,
+        "name_en": "Capital International Airport",
+        "name_fr": "Capital International Airport",
+        "name_script": "Latin",
+        "class": "civil",
+        "name": "Capital International Airport",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CCE",
+      "native_text": "CCE",
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 6703380331,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.600112915039062,
+          30.393903323454268
+        ]
+      },
+      "properties": {
+        "name_script": "Arabic",
+        "sizerank": 16,
+        "name_ar": "مطار بلبيس",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_de": "Flughafen Bilbeis",
+        "iso_3166_2": "EG-SHR",
+        "maki": "airport",
+        "name_en": "Bilbeis Airport",
+        "name_fr": "Aéroport de Bilbéis",
+        "class": "military",
+        "name": "مطار بلبيس",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": null,
+      "native_text": "مطار بلبيس",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 6703380331,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.600112915039062,
+          30.393903323454268
+        ]
+      },
+      "properties": {
+        "name_script": "Arabic",
+        "sizerank": 16,
+        "name_ar": "مطار بلبيس",
+        "disputed": "false",
+        "iso_3166_1": "EG",
+        "name_de": "Flughafen Bilbeis",
+        "iso_3166_2": "EG-SHR",
+        "maki": "airport",
+        "name_en": "Bilbeis Airport",
+        "name_fr": "Aéroport de Bilbéis",
+        "class": "military",
+        "name": "مطار بلبيس",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": null,
+      "native_text": null,
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 10420430800,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      },
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": null,
+      "native_text": "مطار المنصورة",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 10420430800,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.434288024902344,
+          30.967600528646926
+        ]
+      },
+      "properties": {
+        "name_script": "Arabic",
+        "iso_3166_1": "EG",
+        "sizerank": 15,
+        "name_ar": "مطار المنصورة",
+        "disputed": "false",
+        "iso_3166_2": "EG-DK",
+        "maki": "airport",
+        "name_en": "Al Mansurah Airport",
+        "name_fr": "Al Mansurah",
+        "class": "civil",
+        "name": "مطار المنصورة",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": null,
+      "native_text": null,
+      "matches": true
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 6679382011,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.099815368652344,
+          45.9292444051284
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "阿訥西上薩瓦勃朗峰機場",
+        "name_script": "Latin",
+        "name_ru": "Аэропорт Анси Верхняя Савойя Монблан",
+        "name_zh-Hans": "阿讷西上萨瓦勃朗峰机场",
+        "name_pt": "Aeroporto de Annecy Haute-Savoie Mont Blanc",
+        "name_ko": "안시 오트사부아 몽블랑 에어포트",
+        "name_ja": "アヌシー・​オート・​サヴォワ・​モンブラン​空港",
+        "name_it": "Aeroporto di Annecy Alta Savoia Monte Bianco",
+        "name_en": "Annecy Haute-Savoie Mont Blanc Airport",
+        "name_de": "Flughafen Annecy Haute-Savoie Mont Blanc",
+        "name_ar": "مطار أنسي هوت سافوي مونت بلانك",
+        "name_fr": "Aéroport Annecy Haute-Savoie Mont Blanc",
+        "name_vi": "Sân bay Annecy Haute-Savoie Mont Blanc",
+        "disputed": "false",
+        "maki": "airport",
+        "ref": "NCY",
+        "iso_3166_1": "FR",
+        "name_es": "Aeropuerto de Annecy Alta Saboya Mont Blanc",
+        "class": "civil",
+        "name": "Aéroport Annecy Haute-Savoie Mont Blanc",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "NCY",
+      "native_text": "Aéroport Annecy Haute-Savoie Mont Blanc",
+      "matches": false
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 6679382011,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.099815368652344,
+          45.9292444051284
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "阿訥西上薩瓦勃朗峰機場",
+        "name_script": "Latin",
+        "name_ru": "Аэропорт Анси Верхняя Савойя Монблан",
+        "name_zh-Hans": "阿讷西上萨瓦勃朗峰机场",
+        "name_pt": "Aeroporto de Annecy Haute-Savoie Mont Blanc",
+        "name_ko": "안시 오트사부아 몽블랑 에어포트",
+        "name_ja": "アヌシー・​オート・​サヴォワ・​モンブラン​空港",
+        "name_it": "Aeroporto di Annecy Alta Savoia Monte Bianco",
+        "name_en": "Annecy Haute-Savoie Mont Blanc Airport",
+        "name_de": "Flughafen Annecy Haute-Savoie Mont Blanc",
+        "name_ar": "مطار أنسي هوت سافوي مونت بلانك",
+        "name_fr": "Aéroport Annecy Haute-Savoie Mont Blanc",
+        "name_vi": "Sân bay Annecy Haute-Savoie Mont Blanc",
+        "disputed": "false",
+        "maki": "airport",
+        "ref": "NCY",
+        "iso_3166_1": "FR",
+        "name_es": "Aeropuerto de Annecy Alta Saboya Mont Blanc",
+        "class": "civil",
+        "name": "Aéroport Annecy Haute-Savoie Mont Blanc",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "NCY",
+      "native_text": "NCY",
+      "matches": true
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1077117919921875,
+          46.236318273433795
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 15,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA",
+      "native_text": "Aéroport international de Genève",
+      "matches": false
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1077117919921875,
+          46.236318273433795
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 15,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA",
+      "native_text": "GVA",
+      "matches": true
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "loaded-source",
+      "variant": "before",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107684969902039,
+          46.23629601048728
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 1,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA -\nGeneva International Airport",
+      "native_text": "Aéroport international de Genève",
+      "matches": false
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "loaded-source",
+      "variant": "after",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107684969902039,
+          46.23629601048728
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 1,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA -\nGeneva International Airport",
+      "native_text": "GVA -\nGeneva International Airport",
+      "matches": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 3849089741,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.498383522033691,
+          46.911592963647706
+        ]
+      },
+      "properties": {
+        "sizerank": 14,
+        "name_zh-Hant": "伯爾尼-貝爾普機場",
+        "name_vi": "Sân bay Berne",
+        "name_script": "Latin",
+        "name_ru": "Берн",
+        "name_zh-Hans": "伯尔尼-贝尔普机场",
+        "name_pt": "Aeroporto de Berna",
+        "name_ko": "베른 공항",
+        "name_ja": "ベルン​空港",
+        "name_it": "Aeroporto Berna",
+        "name_en": "Bern Airport",
+        "disputed": "false",
+        "name_de": "Flughafen Bern-Belp",
+        "name_es": "Aeropuerto de Berna",
+        "ref": "BRN",
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "airport",
+        "name_fr": "Aéroport Berne",
+        "class": "civil",
+        "name": "Flughafen Bern-Belp",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "BRN -\nBern Airport",
+      "native_text": "Flughafen Bern-Belp",
+      "matches": false
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 3849089741,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.498383522033691,
+          46.911592963647706
+        ]
+      },
+      "properties": {
+        "sizerank": 14,
+        "name_zh-Hant": "伯爾尼-貝爾普機場",
+        "name_vi": "Sân bay Berne",
+        "name_script": "Latin",
+        "name_ru": "Берн",
+        "name_zh-Hans": "伯尔尼-贝尔普机场",
+        "name_pt": "Aeroporto de Berna",
+        "name_ko": "베른 공항",
+        "name_ja": "ベルン​空港",
+        "name_it": "Aeroporto Berna",
+        "name_en": "Bern Airport",
+        "disputed": "false",
+        "name_de": "Flughafen Bern-Belp",
+        "name_es": "Aeropuerto de Berna",
+        "ref": "BRN",
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-BE",
+        "maki": "airport",
+        "name_fr": "Aéroport Berne",
+        "class": "civil",
+        "name": "Flughafen Bern-Belp",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "BRN -\nBern Airport",
+      "native_text": "BRN -\nBern Airport",
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z14",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.412862539291382,
+          30.11522021640613
+        ]
+      },
+      "properties": {
+        "sizerank": 1,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI -\nCairo International Airport",
+      "native_text": "مطار القاهرة الدولى",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z14",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.412862539291382,
+          30.11522021640613
+        ]
+      },
+      "properties": {
+        "sizerank": 1,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI -\nCairo International Airport",
+      "native_text": "CAI -\nCairo International Airport",
+      "matches": true
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI",
+      "native_text": "مطار القاهرة الدولى",
+      "matches": false
+    },
+    {
+      "camera": "cairo-airport-z8",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 1358964731,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.413002014160156,
+          30.11513669062785
+        ]
+      },
+      "properties": {
+        "sizerank": 15,
+        "name_zh-Hant": "開羅國際機場",
+        "name_vi": "Sân bay quốc tế Cairo",
+        "name_script": "Arabic",
+        "name_ru": "Международный аэропорт Каир",
+        "name_zh-Hans": "开罗国际机场",
+        "name_pt": "Aeroporto Internacional do Cairo",
+        "name_ko": "카이로 국제공항",
+        "name_ja": "カイロ​国際​空港",
+        "name_it": "Aeroporto Internazionale del Cairo",
+        "name_es": "Aeropuerto Internacional de El Cairo",
+        "name_en": "Cairo International Airport",
+        "name_de": "Flughafen Kairo",
+        "name_ar": "مطار القاهرة الدولى",
+        "name_fr": "Aéroport International du Caire",
+        "disputed": "false",
+        "ref": "CAI",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "airport",
+        "class": "civil",
+        "name": "مطار القاهرة الدولى",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "CAI",
+      "native_text": "CAI",
+      "matches": true
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1077117919921875,
+          46.236318273433795
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 15,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA",
+      "native_text": "Aéroport international de Genève",
+      "matches": false
+    },
+    {
+      "camera": "geneva-airport-z10",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1077117919921875,
+          46.236318273433795
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 15,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA",
+      "native_text": "GVA",
+      "matches": true
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107684969902039,
+          46.23629601048728
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 1,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA -\nGeneva International Airport",
+      "native_text": "Aéroport international de Genève",
+      "matches": false
+    },
+    {
+      "camera": "geneva-airport-z14",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 211543784,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.107684969902039,
+          46.23629601048728
+        ]
+      },
+      "properties": {
+        "name_script": "Latin",
+        "disputed": "false",
+        "name_zh-Hant": "日內瓦國際機場",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦国际机场",
+        "iso_3166_2": "CH-GE",
+        "ref": "GVA",
+        "name_es": "Aeropuerto Internacional de Ginebra",
+        "maki": "airport",
+        "name_en": "Geneva International Airport",
+        "name_fr": "Aéroport international de Genève",
+        "sizerank": 1,
+        "name_ru": "Международный аэропорт Женева",
+        "class": "civil",
+        "name": "Aéroport international de Genève",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "GVA -\nGeneva International Airport",
+      "native_text": "GVA -\nGeneva International Airport",
+      "matches": true
+    },
+    {
+      "camera": "zurich-region-z8-light",
+      "population": "rendered",
+      "variant": "before",
+      "source_id": 133680294,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.552169799804688,
+          47.46105827584222
+        ]
+      },
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "蘇黎世機場",
+        "name_script": "Latin",
+        "name_ru": "Цюрих",
+        "name_zh-Hans": "苏黎世机场",
+        "name_pt": "Aeroporto de Zurique",
+        "name_ko": "취리히 공항",
+        "name_ja": "チューリッヒ​空港",
+        "name_it": "Aeroporto di Zurigo",
+        "name_es": "Aeropuerto Internacional de Zúrich",
+        "name_en": "Zürich Airport",
+        "name_de": "Flughafen Zürich",
+        "name_ar": "مطار زيورخ الدولي",
+        "name_fr": "Aéroport international de Zurich",
+        "name_vi": "Sân bay Zürich",
+        "disputed": "false",
+        "ref": "ZRH",
+        "iso_3166_1": "CH",
+        "maki": "airport",
+        "iso_3166_2": "CH-ZH",
+        "class": "civil",
+        "name": "Flughafen Zürich",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "ZRH",
+      "native_text": "Flughafen Zürich",
+      "matches": false
+    },
+    {
+      "camera": "zurich-region-z8-light",
+      "population": "rendered",
+      "variant": "after",
+      "source_id": 133680294,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.552169799804688,
+          47.46105827584222
+        ]
+      },
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "蘇黎世機場",
+        "name_script": "Latin",
+        "name_ru": "Цюрих",
+        "name_zh-Hans": "苏黎世机场",
+        "name_pt": "Aeroporto de Zurique",
+        "name_ko": "취리히 공항",
+        "name_ja": "チューリッヒ​空港",
+        "name_it": "Aeroporto di Zurigo",
+        "name_es": "Aeropuerto Internacional de Zúrich",
+        "name_en": "Zürich Airport",
+        "name_de": "Flughafen Zürich",
+        "name_ar": "مطار زيورخ الدولي",
+        "name_fr": "Aéroport international de Zurich",
+        "name_vi": "Sân bay Zürich",
+        "disputed": "false",
+        "ref": "ZRH",
+        "iso_3166_1": "CH",
+        "maki": "airport",
+        "iso_3166_2": "CH-ZH",
+        "class": "civil",
+        "name": "Flughafen Zürich",
+        "worldview": "all"
+      },
+      "source_selected": true,
+      "native_selected": true,
+      "source_text": "ZRH",
+      "native_text": "ZRH",
+      "matches": true
+    }
+  ]
+}

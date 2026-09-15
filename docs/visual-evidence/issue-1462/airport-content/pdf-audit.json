@@ -1,0 +1,218 @@
+[
+  {
+    "runtime": "3",
+    "camera": "cairo-airport-z14",
+    "variant": "before-pdf",
+    "a": "3/cairo-airport-z14/before-pdf/pdf150.png",
+    "b": "3/cairo-airport-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3492931.1272313492,
+        3515676.061463036,
+        3499046.089494164,
+        3519975.6443040776
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-airport-z14",
+    "variant": "after-pdf",
+    "a": "3/cairo-airport-z14/after-pdf/pdf150.png",
+    "b": "3/cairo-airport-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3492931.1272313492,
+        3515676.061463036,
+        3499046.089494164,
+        3519975.6443040776
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-airport-z14",
+    "variant": "before-pdf",
+    "a": "3/geneva-airport-z14/before-pdf/pdf150.png",
+    "b": "3/geneva-airport-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933506393,
+      "extent": [
+        676993.2881247011,
+        5816421.470291185,
+        683108.2503875153,
+        5820721.053132226
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-airport-z14",
+    "variant": "after-pdf",
+    "a": "3/geneva-airport-z14/after-pdf/pdf150.png",
+    "b": "3/geneva-airport-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933506393,
+      "extent": [
+        676993.2881247011,
+        5816421.470291185,
+        683108.2503875153,
+        5820721.053132226
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-airport-z14",
+    "variant": "before-pdf",
+    "a": "4/cairo-airport-z14/before-pdf/pdf150.png",
+    "b": "4/cairo-airport-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 880,
+    "max_channel_delta": 5,
+    "normalized_mae": 1.6498729121278142e-06,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3492931.1272313492,
+        3515676.061463036,
+        3499046.089494164,
+        3519975.6443040776
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-airport-z14",
+    "variant": "after-pdf",
+    "a": "4/cairo-airport-z14/after-pdf/pdf150.png",
+    "b": "4/cairo-airport-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 1175,
+    "max_channel_delta": 6,
+    "normalized_mae": 2.1321259985475674e-06,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3492931.1272313492,
+        3515676.061463036,
+        3499046.089494164,
+        3519975.6443040776
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-airport-z14",
+    "variant": "before-pdf",
+    "a": "4/geneva-airport-z14/before-pdf/pdf150.png",
+    "b": "4/geneva-airport-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 182,
+    "max_channel_delta": 48,
+    "normalized_mae": 1.1869099491648513e-06,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933506393,
+      "extent": [
+        676993.2881247011,
+        5816421.470291185,
+        683108.2503875153,
+        5820721.053132226
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-airport-z14",
+    "variant": "after-pdf",
+    "a": "4/geneva-airport-z14/after-pdf/pdf150.png",
+    "b": "4/geneva-airport-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 109,
+    "max_channel_delta": 11,
+    "normalized_mae": 5.798384168482208e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933506393,
+      "extent": [
+        676993.2881247011,
+        5816421.470291185,
+        683108.2503875153,
+        5820721.053132226
+      ]
+    }
+  }
+]

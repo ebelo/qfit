@@ -1,0 +1,14 @@
+[
+  {
+    "runtime": "3",
+    "owner": "airport-label",
+    "before": "\"name\"",
+    "after": "CASE WHEN \"sizerank\" IS NULL THEN NULL WHEN \"sizerank\" >= 15 THEN \"ref\" WHEN \"ref\" IS NOT NULL THEN concat(\"ref\", ' -\\n', coalesce(\"name_en\", \"name\")) ELSE coalesce(\"name_en\", \"name\") END"
+  },
+  {
+    "runtime": "4",
+    "owner": "airport-label",
+    "before": "\"name\"",
+    "after": "CASE WHEN \"sizerank\" IS NULL THEN NULL WHEN \"sizerank\" >= 15 THEN \"ref\" WHEN \"ref\" IS NOT NULL THEN concat(\"ref\", ' -\\n', coalesce(\"name_en\", \"name\")) ELSE coalesce(\"name_en\", \"name\") END"
+  }
+]
