@@ -1,0 +1,44 @@
+{
+  "verified_at_utc": "2026-09-15T11:53:08.364278+00:00",
+  "captured_after_commit": "09c87150404384f4d7134fffb599f1391a3fa7bf",
+  "final_review_head": "280a23596bf904e0ffc36c4fc3285180766ef67f",
+  "runtime_python_files": 233,
+  "runtime_bytes_identical": true,
+  "only_changes_since_capture": [
+    "docs/light-cartographic-assessment.md",
+    "docs/mapbox-outdoors-comparison-harness.md"
+  ],
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "native_matrix_png": 104,
+  "browser_png": 52,
+  "actual_pdfs": 16,
+  "pdf_companion_png": 8,
+  "public_worker_replay_png": 2,
+  "local_tests": {
+    "passed": 2684,
+    "skipped": 193,
+    "subtests": 344
+  },
+  "native_host_contract": {
+    "qgis": "3.34.4",
+    "tests": 1,
+    "subtests": 456
+  },
+  "complete_docker_suites": {
+    "3": {
+      "passed": 218,
+      "skipped": 82
+    },
+    "4": {
+      "passed": 218,
+      "skipped": 82
+    }
+  },
+  "zip_builds": [
+    3,
+    4
+  ],
+  "package_tests_passed": 9,
+  "git_diff_check": "pass",
+  "claim": "Runtime byte identity, not a fresh final-head recapture, complete atlas, desktop or frozen-provider parity."
+}

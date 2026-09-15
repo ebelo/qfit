@@ -153,3 +153,9 @@ No scope reduction or accepted limitation: seven other content owners, semantic
 zoom/handoff, remaining road/boundary paint, rural/topology/seams, long/RTL shaping,
 real activities/accessibility, packaged desktop, full atlas and map context remain
 required in the repository C01–C30 ledger. The issue remains OPEN.
+
+## Final review head
+
+[Final-head verification](final-head-verification.json) records the exact review head,
+233 runtime byte matches, documentation-only delta and completed local/native/package gates.
+No fresh final-head recapture is claimed.
