@@ -133,3 +133,60 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
     if changed:
         labeling.setStyles(styles)
     return changed
+
+
+_AIRPORT_LABEL_ID = "airport-label"
+_AIRPORT_TEXT_FIELD = [
+    "step", ["get", "sizerank"],
+    ["case", ["has", "ref"],
+     ["concat", ["get", "ref"], " -\n", _NAME_EN_FALLBACK], _NAME_EN_FALLBACK],
+    15, ["get", "ref"],
+]
+_AIRPORT_NATIVE_TEXT = (
+    'CASE WHEN "sizerank" IS NULL THEN NULL '
+    'WHEN "sizerank" >= 15 THEN "ref" '
+    'WHEN "ref" IS NOT NULL THEN concat("ref", \' -\\n\', coalesce("name_en", "name")) '
+    'ELSE coalesce("name_en", "name") END'
+)
+
+
+def _light_airport_content_owner(source_style):
+    if not _is_mapbox_light_style(source_style):
+        return False
+    owners = [layer for layer in source_style.get("layers", [])
+              if isinstance(layer, dict) and layer.get("id") == _AIRPORT_LABEL_ID]
+    if len(owners) != 1:
+        return False
+    owner = owners[0]
+    layout = owner.get("layout", {})
+    return (owner.get("type") == "symbol"
+            and owner.get("source-layer") == "airport_label"
+            and layout.get("symbol-placement", "point") == "point"
+            and layout.get("text-transform", "none") == "none"
+            and layout.get("text-field") == _AIRPORT_TEXT_FIELD)
+
+
+def apply_light_airport_content(labeling, source_style: dict) -> int:
+    """Restore the source's rank-dependent airport code/name on native MVT labels.
+
+    MVT has no explicit NULL property value: absent ref decodes to native NULL,
+    while an empty ref still exists and retains the source's separator. Request
+    all four text columns explicitly. Run before font splitting, retaining all
+    native feature/zoom eligibility and non-content settings.
+    """
+    if not _light_airport_content_owner(source_style):
+        return 0
+    styles = list(labeling.styles())
+    changed = 0
+    for label in styles:
+        if label.styleName() != _AIRPORT_LABEL_ID or label.layerName() != "airport_label":
+            continue
+        settings = label.labelSettings()
+        if settings.fieldName != '"name"' or not settings.isExpression:
+            continue
+        settings.fieldName = _AIRPORT_NATIVE_TEXT
+        label.setLabelSettings(settings)
+        changed += 1
+    if changed:
+        labeling.setStyles(styles)
+    return changed
