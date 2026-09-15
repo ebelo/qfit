@@ -732,3 +732,16 @@ C28 native rule-activation mechanism; it is **not** a Light reference matrix or
 a shipped density fix. Native clone loses the candidate calibration even though
 project save/reload preserves it; exact-boundary activation also remains open.
 See the [coverage ledger](light-cartographic-assessment.md) for scope and next work.
+
+
+### Light airport code/name content
+
+The native Light adapter preserves the recorded airport source's sizerank step:
+rank15+ uses `ref` alone; lower ranks use ref plus English/local name where ref
+exists, otherwise the English/local name. The actual numeric feature rank, not
+requested camera zoom, selects this branch. Explicit native field requests retain
+missing/empty semantics. Only the unique audited source owner and unsplit native
+`"name"` expression are adapted before font splitting; filters, zooms, typography,
+other roles/styles and text overrides remain unchanged. See the
+[airport coverage cells](light-cartographic-assessment.md) for Cairo/Geneva/Bern
+maps, no-ref removals, source-property replay, mixed fidelity and actual-PDF gaps.

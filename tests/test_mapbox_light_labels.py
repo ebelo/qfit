@@ -266,3 +266,58 @@ class LightLabelContentFixtureTests(unittest.TestCase):
         self.assertEqual(provenance["label_layers_sha256"], expected_hash)
         self.assertEqual(provenance["source_sha256"],
                          "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32")
+
+
+class LightAirportContentTests(unittest.TestCase):
+    def test_only_native_airport_content_changes_and_reapplication_is_noop(self):
+        import copy
+        style = LightRoadNameFallbackTests.source_style()
+        original = copy.deepcopy(style)
+        rule = LightNameFallbackTests.rule
+        owned = rule("airport-label", "airport_label")
+        literal = rule("airport-label", "airport_label")
+        literal.labelSettings().isExpression = False
+        others = [literal, rule("airport-label-custom", "airport_label"),
+                  rule("airport-label-barlow-z8-plus", "airport_label"),
+                  rule("airport-label", "place_label"),
+                  rule("airport-label", "airport_label", '"ref"'),
+                  rule("airport-label", "airport_label", 'upper("name")')]
+        labeling = MagicMock()
+        labeling.styles.return_value = [owned] + others
+        self.assertEqual(labels.apply_light_airport_content(labeling, style), 1)
+        self.assertEqual(owned.labelSettings().fieldName, labels._AIRPORT_NATIVE_TEXT)
+        for item in others:
+            item.setLabelSettings.assert_not_called()
+        self.assertEqual(style, original)
+        labeling.setStyles.assert_called_once_with([owned] + others)
+        self.assertEqual(labels.apply_light_airport_content(labeling, style), 0)
+
+    def test_changed_ambiguous_or_other_source_contract_is_untouched(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        owner = next(x for x in source['layers'] if x['id'] == 'airport-label')
+        style = {**source, 'layers': [owner]}
+        variants = [{}, {**style, 'owner': 'custom'}, {**style, 'id': 'outdoors-v12'},
+                    {**style, 'id': 'light-v10'}, {**style, 'layers': []},
+                    {**style, 'layers': [None, {'id': 'unrelated'}]},
+                    {**style, 'layers': [owner, copy.deepcopy(owner)]}]
+        for key, value in [('type', 'line'), ('source-layer', 'place_label'), ('layout', {})]:
+            variants.append({**style, 'layers': [{**owner, key: value}]})
+        for key, value in [('text-transform', 'uppercase'), ('symbol-placement', 'line'),
+                           ('text-field', ['coalesce', ['get', 'name_en'], ['get', 'name']]),
+                           ('text-field', ['get', 'ref'])]:
+            changed = copy.deepcopy(style)
+            changed['layers'][0]['layout'][key] = value
+            variants.append(changed)
+        changed = copy.deepcopy(style)
+        changed['layers'][0]['layout']['text-field'][3] = 14
+        variants.append(changed)
+        for candidate in variants:
+            with self.subTest(source=candidate):
+                labeling = MagicMock()
+                self.assertEqual(labels.apply_light_airport_content(labeling, candidate), 0)
+                labeling.styles.assert_not_called()
+        labeling = MagicMock()
+        labeling.styles.return_value = []
+        self.assertEqual(labels.apply_light_airport_content(labeling, style), 0)
+        labeling.setStyles.assert_not_called()

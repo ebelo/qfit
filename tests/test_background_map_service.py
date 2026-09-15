@@ -1265,6 +1265,99 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
                         self.assertEqual(None if actual == NULL else actual, expected)
 
+    def test_light_airport_content_preserves_rank_reference_and_native_settings(self):
+        import copy
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.validation.mapbox_outdoors_comparison import qgis_label_styles_snapshot
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch("qfit.visualization.infrastructure.mapbox_light_labels._light_airport_content_owner", return_value=False):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        for layer in (before_layer, after_layer):
+            layer.labeling.return_value = layer.setLabeling.call_args.args[0]
+        before = qgis_label_styles_snapshot(before_layer)
+        after = qgis_label_styles_snapshot(after_layer)
+        normalized = copy.deepcopy(after)
+        changed = []
+        for row in normalized:
+            if row["style_name"] == "airport-label":
+                self.assertNotEqual(row["label_settings"]["field_name"], '\"name\"')
+                row["label_settings"]["field_name"] = '\"name\"'
+                changed.append(row["style_name"])
+        self.assertEqual(changed, ["airport-label"])
+        self.assertEqual(normalized, before, "Only unsplit airport text may change")
+        rules = [r for r in after_layer.labeling().styles() if r.styleName() == "airport-label"]
+        self.assertEqual(len(rules), 1)
+        rule = rules[0]
+        self.assertEqual((rule.minZoomLevel(), rule.maxZoomLevel()), (8, -1))
+        settings = rule.labelSettings()
+        predicate = QgsExpression(rule.filterExpression())
+        expression = QgsExpression(settings.fieldName)
+        requested = settings.referencedFields(QgsRenderContext())
+        self.assertTrue({"name_en", "name", "ref", "sizerank"}.issubset(requested))
+        fields = QgsFields()
+        for name in sorted(requested | predicate.referencedColumns()):
+            fields.append(QgsField(name))
+        names = [
+            ({"name_en": "Geneva International Airport", "name": "Genève"}, "Geneva International Airport"),
+            ({"name_en": None, "name": "Genève"}, "Genève"),
+            ({"name": "القاهرة"}, "القاهرة"),
+            ({"name_en": "", "name": "local"}, ""),
+            ({"name_en": "Zürich / ירושלים 12", "name": "local"}, "Zürich / ירושלים 12"),
+            ({"name_en": "English only"}, "English only"),
+            ({}, None),
+        ]
+        for rank in (0, 9, 14.9, 15, 15.1, 20):
+            for ref in ({}, {"ref": "GVA"}, {"ref": ""}):
+                for properties, name in names:
+                    attributes = dict(properties, **ref, sizerank=rank, worldview="all")
+                    attributes["class"] = "civil"
+                    feature = QgsFeature(fields)
+                    feature.setGeometry(QgsGeometry.fromWkt("POINT (0 0)"))
+                    for key, value in attributes.items():
+                        if fields.indexFromName(key) >= 0:
+                            feature.setAttribute(key, value)
+                    context = QgsExpressionContext()
+                    context.setFields(fields)
+                    context.setFeature(feature)
+                    expected = ref.get("ref") if rank >= 15 else (
+                        ref["ref"] + " -\n" + (name or "") if "ref" in ref else name
+                    )
+                    with self.subTest(rank=rank, ref=ref, properties=properties):
+                        self.assertTrue(expression.prepare(context))
+                        actual = expression.evaluate(context)
+                        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                        self.assertEqual(None if actual == NULL else actual, expected)
+                        self.assertTrue(predicate.prepare(context))
+                        self.assertEqual(predicate.evaluate(context), 1)
+        # Numeric sizerank is required by the source step. Missing native values
+        # must not silently choose the name arm; source evaluation yields no text.
+        feature = QgsFeature(fields)
+        feature.setAttribute("name", "Do not label a missing rank")
+        context = QgsExpressionContext()
+        context.setFields(fields)
+        context.setFeature(feature)
+        self.assertEqual(expression.evaluate(context), NULL)
+        for airport_class in ("civil", "military", "disputed_civil", "disputed_military", "heliport", "other", None):
+            for worldview in ("all", "US", "CN", "", None):
+                feature.setAttribute("class", airport_class)
+                feature.setAttribute("worldview", worldview)
+                context.setFeature(feature)
+                with self.subTest(airport_class=airport_class, worldview=worldview):
+                    self.assertEqual(predicate.evaluate(context) == 1,
+                                     airport_class in ("civil", "military", "disputed_civil", "disputed_military")
+                                     and worldview in ("all", "US"))
+                    self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+
     def test_light_water_name_companions_select_exact_source_content(self):
         import json
         from pathlib import Path
