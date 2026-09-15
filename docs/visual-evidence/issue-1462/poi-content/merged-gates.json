@@ -1,0 +1,369 @@
+{
+  "verified_at_utc": "2026-09-15T13:44:08.731020+00:00",
+  "pr": "https://github.com/ebelo/qfit/pull/1480",
+  "merge": {
+    "headRefOid": "4b617d61a69ca4eb445f5e7b54c666c78413ef04",
+    "mergeCommit": {
+      "oid": "63784d05a474d6a65f0e8d706fe7765192b708ac"
+    },
+    "mergedAt": "2026-09-15T13:43:28Z",
+    "state": "MERGED",
+    "url": "https://github.com/ebelo/qfit/pull/1480"
+  },
+  "main_clean": true,
+  "main_equals_reviewed_head_tree": true,
+  "captured_runtime_files_match_merged_main": 233,
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:29Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976230792/job/104404524708",
+      "name": "Analyze (actions)",
+      "startedAt": "2026-09-15T13:37:52Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:39:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233355/job/104404527702",
+      "name": "sonarcloud",
+      "startedAt": "2026-09-15T13:37:52Z",
+      "status": "COMPLETED",
+      "workflowName": "SonarCloud"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233257/job/104404527997",
+      "name": "build",
+      "startedAt": "2026-09-15T13:37:52Z",
+      "status": "COMPLETED",
+      "workflowName": "build"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233227/job/104404527549",
+      "name": "plugin-security-scan",
+      "startedAt": "2026-09-15T13:37:53Z",
+      "status": "COMPLETED",
+      "workflowName": "plugin-security-scan"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:15Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233353/job/104404527873",
+      "name": "unit-tests",
+      "startedAt": "2026-09-15T13:37:53Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:45Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976230792/job/104404524384",
+      "name": "Analyze (python)",
+      "startedAt": "2026-09-15T13:37:52Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:39:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233353/job/104404528072",
+      "name": "docker-qgis3",
+      "startedAt": "2026-09-15T13:37:53Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:39:05Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/actions/runs/34976233353/job/104404528075",
+      "name": "docker-qgis4",
+      "startedAt": "2026-09-15T13:37:52Z",
+      "status": "COMPLETED",
+      "workflowName": "tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:38:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/ebelo/qfit/runs/104404719732",
+      "name": "CodeQL",
+      "startedAt": "2026-09-15T13:38:21Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:40:50Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://greptile.com/",
+      "name": "Greptile Review",
+      "startedAt": "2026-09-15T13:37:54Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-15T13:39:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://sonarcloud.io/dashboard?id=ebelo_qfit&pullRequest=1480",
+      "name": "SonarCloud Code Analysis",
+      "startedAt": "2026-09-15T13:38:55Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ],
+  "reviews": [],
+  "review_summary_comments": [
+    {
+      "id": "IC_kwDORsgCKs8AAAABUp8Ilg",
+      "author": {
+        "login": "chatgpt-codex-connector"
+      },
+      "authorAssociation": "NONE",
+      "body": "<!-- codex-pull-request-review-summary -->\n\n## Codex Review Summary\n\nThis comment shows the latest Codex review activity on this pull request.\n\n| Review | Status | Commit | Review trigger |\n| --- | --- | --- | --- |\n| \ud83d\udcdd **Code Review** | \u2705 **Completed** <relative-time datetime=\"2026-09-15T13:41:10.311062Z\">2026-09-15T13:41:10.311062Z</relative-time> | `4b617d6` | PR opened |\n\n\n\n<details> <summary>\u2139\ufe0f About Codex in GitHub</summary>\n<br/>\n\n[Your team has set up Codex to review pull requests in this repo](https://chatgpt.com/codex/cloud/settings/general). Reviews are triggered when you\n- Open a pull request for review\n- Mark a draft as ready\n- Comment \"@codex review\" or \"@codex security review\".\n\nCodex reacts with \ud83d\udc40 while any review is running, comments if it has suggestions, and reacts with \ud83d\udc4d once all reviews finish with no findings.\n\n</details>",
+      "createdAt": "2026-09-15T13:38:01Z",
+      "includesCreatedEdit": true,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/ebelo/qfit/pull/1480#issuecomment-5681121430",
+      "viewerDidAuthor": false
+    },
+    {
+      "id": "IC_kwDORsgCKs8AAAABUp-t1w",
+      "author": {
+        "login": "greptile-apps"
+      },
+      "authorAssociation": "NONE",
+      "body": "<!-- greptile_summary -->\n\n<h2><a href=\"https://app.greptile.com/api/retrigger?id=64455580\"><picture><source media=\"(prefers-color-scheme: dark)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/RetriggerDark.svg?v=2\"><source media=\"(prefers-color-scheme: light)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=2\"><img alt=\"Retrigger\" src=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=2\" align=\"right\"></picture></a>Confidence Score: 5/5</h2>\n\nThe PR appears safe to merge, with the POI name restoration narrowly scoped and supported by ownership, preservation, and integrated expression tests.\n\n<details><summary><h3>Summary</h3></summary>\n\nThis PR restores the source-requested English-first POI name expression for the three generated Mapbox Light density bands while preserving their filters, zoom ranges, and native label settings.\n\n- Resolves generated rule IDs from the validated source POI owner, including a single clipped band.\n- Applies `coalesce(\"name_en\", \"name\")` only to matching native POI rules still using the simplified `\"name\"` expression.\n- Adds focused ownership, collision, idempotency, expression, density-threshold, and preservation tests.\n- Documents the bounded content correction and the remaining collision, typography, zoom, and output-fidelity gaps.\n</details>\n\n<details open><summary><h3>Diagram</h3></summary>\n\n```mermaid\n%%{init: {'theme': 'neutral'}}%%\nflowchart LR\n  Source[Mapbox Light source style] --> Validate[Validate unique POI owner]\n  Validate --> Generate[Generate clipped density-band IDs]\n  Source --> Simplify[Simplify style for QGIS]\n  Simplify --> Convert[QGIS style conversion]\n  Generate --> Match[Match native POI rule IDs and source layer]\n  Convert --> Match\n  Match --> Guard{Native field is expression name?}\n  Guard -->|Yes| Restore[Set coalesce name_en, name]\n  Guard -->|No| Preserve[Preserve native override]\n  Restore --> Labeling[Install native labeling]\n  Preserve --> Labeling\n```\n</details>\n\n<sub>Reviews (1) \u00b7 Last reviewed commit: [\"docs: record POI content evidence and co...\"](https://github.com/ebelo/qfit/commit/4b617d61a69ca4eb445f5e7b54c666c78413ef04)</sub>",
+      "createdAt": "2026-09-15T13:40:50Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/ebelo/qfit/pull/1480#issuecomment-5681163735",
+      "viewerDidAuthor": false
+    }
+  ],
+  "reactions": [
+    {
+      "id": 506931361,
+      "node_id": "REA_lAHORsgCKs8AAAABRZlC_c4eNyih",
+      "user": {
+        "login": "greptile-apps[bot]",
+        "id": 165735046,
+        "node_id": "BOT_kgDOCeDqhg",
+        "avatar_url": "https://avatars.githubusercontent.com/in/867647?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/greptile-apps%5Bbot%5D",
+        "html_url": "https://github.com/greptile-apps%5Bbot%5D",
+        "followers_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/followers",
+        "following_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/following{/other_user}",
+        "gists_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/subscriptions",
+        "organizations_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/orgs",
+        "repos_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/repos",
+        "events_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/greptile-apps%5Bbot%5D/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "content": "+1",
+      "created_at": "2026-09-15T13:40:55Z"
+    },
+    {
+      "id": 506931890,
+      "node_id": "REA_lAHORsgCKs8AAAABRZlC_c4eNyqy",
+      "user": {
+        "login": "chatgpt-codex-connector[bot]",
+        "id": 199175422,
+        "node_id": "BOT_kgDOC98s_g",
+        "avatar_url": "https://avatars.githubusercontent.com/in/1144995?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D",
+        "html_url": "https://github.com/chatgpt-codex-connector%5Bbot%5D",
+        "followers_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/followers",
+        "following_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/following{/other_user}",
+        "gists_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/subscriptions",
+        "organizations_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/orgs",
+        "repos_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/repos",
+        "events_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/chatgpt-codex-connector%5Bbot%5D/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "content": "+1",
+      "created_at": "2026-09-15T13:41:13Z"
+    }
+  ],
+  "inline_findings": [],
+  "review_threads": {
+    "data": {
+      "repository": {
+        "pullRequest": {
+          "reviewThreads": {
+            "nodes": []
+          }
+        }
+      }
+    }
+  },
+  "fresh_sonar": {
+    "verified_at_utc": "2026-09-15T13:40:52.923Z",
+    "issues": {
+      "http_status": 200,
+      "body": {
+        "total": 0,
+        "p": 1,
+        "ps": 50,
+        "paging": {
+          "pageIndex": 1,
+          "pageSize": 50,
+          "total": 0
+        },
+        "effortTotal": 0,
+        "debtTotal": 0,
+        "issues": [],
+        "components": [],
+        "organizations": [],
+        "facets": []
+      }
+    },
+    "gate": {
+      "http_status": 200,
+      "body": {
+        "projectStatus": {
+          "status": "OK",
+          "conditions": [
+            {
+              "status": "OK",
+              "metricKey": "new_reliability_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_security_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_maintainability_rating",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "1",
+              "actualValue": "1"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_coverage",
+              "comparator": "LT",
+              "periodIndex": 1,
+              "errorThreshold": "80",
+              "actualValue": "100.0"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_duplicated_lines_density",
+              "comparator": "GT",
+              "periodIndex": 1,
+              "errorThreshold": "3",
+              "actualValue": "0.0"
+            },
+            {
+              "status": "OK",
+              "metricKey": "new_security_hotspots_reviewed",
+              "comparator": "LT",
+              "periodIndex": 1,
+              "errorThreshold": "100",
+              "actualValue": "100.0"
+            }
+          ],
+          "periods": [],
+          "ignoredConditions": false
+        }
+      }
+    },
+    "measures": {
+      "http_status": 200,
+      "body": {
+        "component": {
+          "id": "AaClStScXTcTD4-dMaZ_",
+          "key": "ebelo_qfit",
+          "name": "qfit",
+          "qualifier": "TRK",
+          "measures": [
+            {
+              "metric": "new_coverage",
+              "periods": [
+                {
+                  "index": 1,
+                  "value": "100.0",
+                  "bestValue": true
+                }
+              ]
+            },
+            {
+              "metric": "new_duplicated_lines_density",
+              "periods": [
+                {
+                  "index": 1,
+                  "value": "0.0",
+                  "bestValue": true
+                }
+              ]
+            }
+          ],
+          "pullRequest": "1480"
+        }
+      }
+    }
+  },
+  "inline_images": {
+    "verified_at_utc": "2026-09-15T13:41:40.872Z",
+    "images": [
+      {
+        "src": "https://raw.githubusercontent.com/ebelo/qfit/e87a77e78e1646bd3345a4d6fa9219e555df1faf/docs/visual-evidence/issue-1462/poi-content/cairo-museum-z14-qgis4-crop.png",
+        "complete": true,
+        "width": 1140,
+        "height": 335
+      },
+      {
+        "src": "https://raw.githubusercontent.com/ebelo/qfit/e87a77e78e1646bd3345a4d6fa9219e555df1faf/docs/visual-evidence/issue-1462/poi-content/geneva-streets-z18-light-qgis3-crop.png",
+        "complete": true,
+        "width": 1140,
+        "height": 335
+      },
+      {
+        "src": "https://raw.githubusercontent.com/ebelo/qfit/e87a77e78e1646bd3345a4d6fa9219e555df1faf/docs/visual-evidence/issue-1462/poi-content/geneva-urban-z14-light-qgis4-crop.png",
+        "complete": true,
+        "width": 1140,
+        "height": 335
+      }
+    ]
+  },
+  "scope": "Scoped POI content merged; all broader ledger gaps and disclosed collision/fidelity/output findings remain OPEN. No release/deployment or accepted limitation."
+}

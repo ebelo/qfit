@@ -159,3 +159,13 @@ Whole C01–C30 ledger remains8OPEN/16PARTIAL/5NOTASSESSED/1source-backedN/A.
 Source/native zoom/handoff, road/boundary paint, rural/topology/seams, long/RTL
 shaping, real activities/accessibility, packaged desktop, full atlas and map context
 remain required. No absent fixture or limitation accepted; #1462 stays OPEN.
+
+## Merged integration
+
+[PR #1480](https://github.com/ebelo/qfit/pull/1480) **MERGED** at2026-09-15 13:43:28UTC.
+[Final gates and reviews](merged-gates.json): all11checksSUCCESS, Codex completed
+clean on4b617d6, Greptile5/5 on the same full head, no inline findings or review
+threads. Fresh public SonarHTTP200/total0/gateOK/newcoverage100%/duplication0%.
+All3PRimages actually load inline1140×335. Main63784d0 is clean and its entire
+tree equals final4b617d6; all233runtime/package Python hashes match capture9ff2eb6.
+This scoped merge does not complete #1462 or accept its remaining limitations.
