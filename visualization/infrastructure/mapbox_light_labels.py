@@ -2,7 +2,9 @@
 
 import math
 
-from ...mapbox_config import _is_mapbox_light_style
+from ...mapbox_config import (
+    _is_mapbox_light_style, _waterway_label_symbol_spacing_layer_variants,
+)
 
 _ROAD_LABEL_ID = "road-label-simple"
 _ROAD_LABEL_RULES = {_ROAD_LABEL_ID, _ROAD_LABEL_ID + "-z12-to-z15"}
@@ -103,8 +105,33 @@ def _light_road_name_fallback_rules(source_style):
     return _ROAD_LABEL_RULES
 
 
+def _light_waterway_name_fallback_rules(source_style):
+    """Resolve only generated spacing bands belonging to the unique source owner."""
+    if not _is_mapbox_light_style(source_style):
+        return set()
+    layers = source_style.get("layers", [])
+    owners = [layer for layer in layers
+              if isinstance(layer, dict) and layer.get("id") == "waterway-label"]
+    if len(owners) != 1:
+        return set()
+    owner = owners[0]
+    layout = owner.get("layout", {})
+    if (owner.get("type") != "symbol" or owner.get("source-layer") != "natural_label"
+            or layout.get("symbol-placement") != "line"
+            or layout.get("text-field") != _NAME_EN_FALLBACK
+            or layout.get("text-transform", "none") != "none"):
+        return set()
+    # Share the actual preprocessing generator, including its spacing contract
+    # and clipped zoom bands. Unknown layouts keep their existing conversion.
+    variants = _waterway_label_symbol_spacing_layer_variants(owner)
+    rules = {variant["id"] for variant in variants or []}
+    if any(isinstance(layer, dict) and layer.get("id") in rules for layer in layers):
+        return set()
+    return rules
+
+
 def apply_light_name_fallback(labeling, source_style: dict) -> int:
-    """Restore audited Light place/road content before font-band splitting.
+    """Restore audited Light place/road/waterway content before font-band splitting.
 
     These source layouts miss the preprocessing helper's layout guards.
     Road rules include only the original and the known derived size band;
@@ -116,6 +143,7 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
     """
     owners = dict.fromkeys(_light_name_fallback_owners(source_style), "place_label")
     owners.update(dict.fromkeys(_light_road_name_fallback_rules(source_style), "road"))
+    owners.update(dict.fromkeys(_light_waterway_name_fallback_rules(source_style), "natural_label"))
     if not owners:
         return 0
     styles = list(labeling.styles())

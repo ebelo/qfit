@@ -111,7 +111,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C05 | PARTIAL | Four road owners have source-class width tests below; other visual-variable encodings and classes remain unassessed. | — |
 | C06 | PARTIAL | Broad palette can be compared; class-interior lightness/contrast measurements and adjacent-class tests remain. | — |
 | C07 | PARTIAL | Urban/park/land areas appear in existing views. Agriculture, polygon holes and individual land-use class ownership are not validated. | — |
-| C08 | PARTIAL | Large water footprints are visually comparable. Minor streams, islands, confluences and water-label association need fixtures. | — |
+| C08 | PARTIAL | Large water footprints are visually comparable; Rhone/Rhine source strings and named river bends/confluence have scoped PNG evidence below. Minor streams/canals, islands, topology and broader water-label association still need fixtures. | — |
 | C09 | N/A (source-scoped) | Recorded Light inventory contains no contour, hillshade or raster-dem layer. Missing Outdoors-like relief is not a Light defect; reassess if source intent changes. | — |
 | C10 | PARTIAL | Buildings appear in the street views; courtyards, transition visibility and road/footprint overlap are not systematically checked. | — |
 | C11 | OPEN (remaining scope) | Four source-owner class/zoom widths restored and urban networks improved below. Remaining class eligibility, road/path coverage, junctions and output scales need fixtures. | Major baseline finding scoped below |
@@ -122,8 +122,8 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules and airport code/name branches pass scoped content cases. Eight other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
-| C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
+| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules, airport code/name branches and three waterway bands pass scoped content cases. Seven other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
+| C20 | PARTIAL | Named-road crops and Rhone/Rhine bend/confluence PNGs have scoped inspection below; systematic association, rotation, long/RTL curved text and PDF legibility remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
 | C23 | OPEN | Two-city z13/z14 triplets expose native rounding and requested/native zoom mismatch; no rank repair retained. Other intervals, outer bounds, size/width changes and interactive sequences remain unassessed. | Observed city-label mismatch; broader severity unestablished |
@@ -134,6 +134,49 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C08/C19/C20: source-owned waterway content — 2026-09-15
+
+[Fresh matched maps, complete native audits, actual PDFs and replay workers][waterway-content]
+compare baseline `78b183beb8d069f53d31bdec808a113c801a99d0` with captured runtime
+`09c87150404384f4d7134fffb599f1391a3fa7bf`. Fresh whole-source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32` and the complete
+waterway owner equals the pinned source fixture. Live tile bytes are unarchived.
+
+The source requests English/local-name coalesce, but all three native waterway
+spacing bands requested only `name`. The Light-only native adapter now explicitly
+requests `name_en` and `name`. Missing/NULL English falls back; empty English stays
+empty. Only a unique symbol/`natural_label`/line/no-transform owner is eligible.
+The actual preprocessing generator supplies the audited spacing contract and
+clipped band IDs; any source-owned generated-ID collision declines repair.
+Unrecognized layouts, custom/Outdoors styles, other label roles and native text
+overrides remain unchanged. No new language, spacing or style-zoom policy is added.
+
+| Coverage cell | Verdict | Evidence / remaining work |
+| --- | --- | --- |
+| C19/C02: three native spacing bands; QGIS 3.34.4, 3.44.11 and 4.2.0 | PASS (scoped contract) | 24 text cases and 432 class/worldview/geometry cases per build. Explicit requested fields, NULL/missing/empty/English-only and mixed-script/long string evaluation; not glyph/RTL/long-name rendering proof. |
+| C19/C02: fresh browser-observed river properties, both Docker builds | PASS (scoped replay) | 16 camera/property sets through all three bands; 24 Before mismatches become zero After, predicate disagreements zero. All observed classes are river; not unique rivers, canal/stream geographic coverage or native decoder/fetch equality. |
+| C02/C17–C22: complete 14-owner/39-rule inventory | PASS (scoped settings preservation) | Exactly three text fields change; waterway 15 synthetic mismatches→0, other 70 unchanged. Preprocessing, native geometry/class/worldview, zoom bands 13–14/15–16/17+, font/size/priority/placement/spacing settings remain identical. |
+| C08/C19/C20: Geneva/Basel river bends, Geneva confluence and Basel high-band PNG, both runtimes | PASS (scoped source strings); association PARTIAL | Rhone/Rhine follow the source; L’Arve/Birs/Birsig/Limmat retain local fallback. Named bends and confluence remain visually unambiguous. Not a universal curved-label, river topology, minor-stream, long-name or RTL pass. |
+| C01/C29: 13-view matrix, seven presets plus Basel z14/z17 and Geneva confluence z15/z12.9/z13/z13.1 | PASS (scoped repeats/registration); C01 OPEN | 104 native PNGs: all 52 repeated image/settings/context pairs and normalized placement inventories match. 52 browser PNGs: all 26 pairs match. 130 actual Mercator/native anchors align within 1e-6 px. Original globe reference stays separate; native DPI100/96, source zoom and live tile revision remain unequal/unfrozen. |
+| C18/C21/C22: reference fidelity and collision populations | OPEN / PARTIAL | Six Swiss preset views are byte-identical Before/After in each build. Most changed cells improve MAE; QGIS3 Basel z17 +0.003466%, Geneva z13.1 +0.035914%, and QGIS4 Basel z14 +0.000303% are repeatable increases, not noise. All non-waterway distinct names remain; QGIS3 confluence loses one Rue de Saint-Jean duplicate (34→17 curved placement records), retaining the street name. Records are not unique labels/features. |
+| C23: requested minimum-zoom13 triplet, both runtimes | OPEN activation; content scoped | At requested12.9, native waterway labels precede source minimum13. QGIS3 continuous12.818517 rounds to integer13. Existing bounds are unchanged; restoring names does not certify source/native zoom equivalence, interactive transitions or seams. |
+| C19/C28: actual one-map PDFs, Geneva confluence z15 and Basel z14, both builds | PASS (scoped visible source strings); broader C28 OPEN | 16 actual PDFs, production150DPI forced-vector settings, fixed338.667×238.125mm page, viewed96DPI. Eight companion PNGs equal primary frames. QGIS4 PDF detail/POI density and crowded confluence labels differ from PNG; no output-density, PDF-association/legibility, desktop or full-atlas pass. |
+| C29: settled PDF150 repeats | QGIS3 PASS (scoped raster repeats); QGIS4 OPEN | All four QGIS3 pairs match. QGIS4 Geneva Before/After differ129/62pixels; Basel449/222. Named operands/context are archived; variation remains unclassified. No PDF-file identity or harmless-noise claim. |
+| Remaining C19/C08/C20 and C23–C30 cells | OPEN / NOT ASSESSED as recorded | Seven other coalesce owners, canals/streams, long/RTL shaping, topology/seams, real activities/accessibility, desktop/full atlas and context remain required. No absent cell or limitation accepted. |
+
+Requested and resolved waterway face is **Barlow Italic** in both Docker builds;
+fonts are neither bundled nor registered by the plugin ZIP. Two portable-worker
+replays match native images/settings/context exactly. All 233 non-test Python
+hashes are pinned; eight PDF companion PNGs also match. Every live capture
+completed with same-run protected Gateway and individual container HTTP200/TLS
+preflight. No failed/blank capture or credential/TLS fallback was counted.
+
+Full local suite: **2684 passed /193 skipped /344 subtests**. Both complete Docker
+scripts: **218 passed /82 skipped each**, without argument overrides. Both ZIP
+builds and nine package tests pass. C08/C20 remain PARTIAL; C19 remains OPEN with
+seven unresolved owner families. Whole ledger remains **8 OPEN /16 PARTIAL /
+5 NOT ASSESSED /1 source-backed N/A**. No release, deployment or holistic completion.
 
 ### C14/C19: source-owned airport code/name content — 2026-09-15
 
@@ -1023,3 +1066,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [road-names]: https://github.com/ebelo/qfit/blob/7303f1bf106de1c7f0ff2f7f33e39d31df4cfd06/docs/visual-evidence/issue-1462/road-names/README.md
 
 [airport-content]: https://github.com/ebelo/qfit/blob/3a773fe351caf585cbfd6c68bac5e63fe18983be/docs/visual-evidence/issue-1462/airport-content/README.md
+
+[waterway-content]: https://github.com/ebelo/qfit/blob/ed3c0e139dcd3a7cb47d6c08da257c7821aa278a/docs/visual-evidence/issue-1462/waterway-content/README.md

@@ -321,3 +321,71 @@ class LightAirportContentTests(unittest.TestCase):
         labeling.styles.return_value = []
         self.assertEqual(labels.apply_light_airport_content(labeling, style), 0)
         labeling.setStyles.assert_not_called()
+
+
+class LightWaterwayNameFallbackTests(unittest.TestCase):
+    def test_only_owned_spacing_bands_change_and_reapplication_is_noop(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        original = copy.deepcopy(source)
+        rule = LightNameFallbackTests.rule
+        names = ("waterway-label-z13-to-z15", "waterway-label-z15-to-z17", "waterway-label-z17-plus")
+        owned = [rule(name, "natural_label") for name in names]
+        literal = rule(names[0], "natural_label")
+        literal.labelSettings().isExpression = False
+        others = [literal, rule("waterway-label", "natural_label"),
+                  rule("waterway-label-custom", "natural_label"),
+                  rule(names[0], "waterway"), rule(names[1], "natural_label", 'upper("name")'),
+                  rule(names[2], "natural_label", '"custom_name"'),
+                  rule("water-line-label-water-name", "natural_label")]
+        labeling = MagicMock()
+        labeling.styles.return_value = owned + others
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 3)
+        for item in owned:
+            self.assertEqual(item.labelSettings().fieldName, 'coalesce("name_en", "name")')
+            item.setLabelSettings.assert_called_once_with(item.labelSettings())
+        for item in others:
+            item.setLabelSettings.assert_not_called()
+        self.assertEqual(source, original)
+        labeling.setStyles.assert_called_once_with(owned + others)
+        labeling.reset_mock()
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 0)
+        labeling.setStyles.assert_not_called()
+
+    def test_changed_source_contract_and_ambiguous_ownership_are_noops(self):
+        import copy
+        original = LightRoadNameFallbackTests.source_style()
+        owner = next(x for x in original["layers"] if x["id"] == "waterway-label")
+        variants = [{}, {**original, "owner": "custom"}, {**original, "id": "outdoors-v12"},
+                    {**original, "id": "light-v10"}, {**original, "layers": [None]},
+                    {**original, "layers": [owner, copy.deepcopy(owner)]}]
+        for key, value in (("type", "line"), ("source-layer", "waterway"), ("layout", {})):
+            changed = copy.deepcopy(owner)
+            changed[key] = value
+            variants.append({**original, "layers": [changed]})
+        for key, value in (("text-field", ["get", "name"]), ("text-transform", "uppercase"),
+                           ("symbol-placement", "point"), ("symbol-spacing", 250)):
+            changed = copy.deepcopy(owner)
+            changed["layout"][key] = value
+            variants.append({**original, "layers": [changed]})
+        for name in ("waterway-label-z13-to-z15", "waterway-label-z15-to-z17", "waterway-label-z17-plus"):
+            collision = copy.deepcopy(owner)
+            collision["id"] = name
+            collision["layout"]["text-field"] = ["get", "name"]
+            variants.append({**original, "layers": [owner, collision]})
+        for source in variants:
+            with self.subTest(source=source):
+                self.assertEqual(labels._light_waterway_name_fallback_rules(source), set())
+
+    def test_generated_rules_follow_clipped_source_bands_without_claiming_source_ids(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        owner = copy.deepcopy(next(x for x in source["layers"] if x["id"] == "waterway-label"))
+        owner["minzoom"] = 16
+        owner["maxzoom"] = 17
+        source["layers"] = [owner]
+        self.assertEqual(labels._light_waterway_name_fallback_rules(source), {"waterway-label-z15-to-z17"})
+        collision = copy.deepcopy(owner)
+        collision["id"] = "waterway-label-z15-to-z17"
+        source["layers"].append(collision)
+        self.assertEqual(labels._light_waterway_name_fallback_rules(source), set())
