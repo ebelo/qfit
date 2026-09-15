@@ -1265,6 +1265,86 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
                         self.assertEqual(None if actual == NULL else actual, expected)
 
+    def test_light_waterway_names_preserve_source_geometry_worldview_and_settings(self):
+        import copy
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.validation.mapbox_outdoors_comparison import qgis_label_styles_snapshot
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch("qfit.visualization.infrastructure.mapbox_light_labels._light_waterway_name_fallback_rules", return_value=set()):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        for layer in (before_layer, after_layer):
+            layer.labeling.return_value = layer.setLabeling.call_args.args[0]
+        before, after = qgis_label_styles_snapshot(before_layer), qgis_label_styles_snapshot(after_layer)
+        names = ["waterway-label-z13-to-z15", "waterway-label-z15-to-z17", "waterway-label-z17-plus"]
+        normalized = copy.deepcopy(after)
+        changed = []
+        for row in normalized:
+            if row["style_name"] in names:
+                self.assertEqual(row["label_settings"]["field_name"], 'coalesce("name_en", "name")')
+                row["label_settings"]["field_name"] = '"name"'
+                changed.append(row["style_name"])
+        self.assertEqual(changed, names)
+        self.assertEqual(normalized, before, "Only the three waterway text fields may change")
+        rules = [r for r in after_layer.labeling().styles() if r.styleName() in names]
+        self.assertEqual([(r.minZoomLevel(), r.maxZoomLevel()) for r in rules], [(13, 14), (15, 16), (17, -1)])
+        allowed = ["canal", "river", "stream", "disputed_canal", "disputed_river", "disputed_stream"]
+        owner = next(x for x in source["layers"] if x["id"] == "waterway-label")
+        self.assertEqual(owner["filter"], ["all", ["match", ["get", "class"], allowed,
+                         ["match", ["get", "worldview"], ["all", "US"], True, False], False],
+                         ["==", ["geometry-type"], "LineString"]])
+        cases = [({"name_en": "Rhine", "name": "Le Rhin / Rhein"}, "Rhine"),
+                 ({"name_en": None, "name": "L’Arve"}, "L’Arve"),
+                 ({"name": "القاهرة"}, "القاهرة"),
+                 ({"name_en": "", "name": "ירושלים"}, ""),
+                 ({"name_en": "Zürich / ירושלים 12", "name": "local"}, "Zürich / ירושלים 12"),
+                 ({"name_en": "English only"}, "English only"), ({}, None),
+                 ({"name_en": "A deliberately long river name — Rhône, Rhine and tributaries", "name": "local"},
+                  "A deliberately long river name — Rhône, Rhine and tributaries")]
+        for rule in rules:
+            settings = rule.labelSettings()
+            predicate, expression = QgsExpression(rule.filterExpression()), QgsExpression(settings.fieldName)
+            requested = settings.referencedFields(QgsRenderContext())
+            self.assertTrue({"name_en", "name"}.issubset(requested))
+            fields = QgsFields()
+            for name in sorted(requested | predicate.referencedColumns()):
+                fields.append(QgsField(name))
+            feature = QgsFeature(fields)
+            feature.setGeometry(QgsGeometry.fromWkt("LINESTRING (0 0, 1 1, 2 0)"))
+            context = QgsExpressionContext()
+            context.setFields(fields)
+            for properties, expected in cases:
+                feature.setAttributes([properties.get(field.name()) for field in fields])
+                context.setFeature(feature)
+                with self.subTest(rule=rule.styleName(), properties=properties):
+                    self.assertTrue(expression.prepare(context))
+                    actual = expression.evaluate(context)
+                    self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                    self.assertEqual(None if actual == NULL else actual, expected)
+            for water_class in allowed + ["lake", None]:
+                for worldview in ("all", "US", "CN", "all,US", "", None):
+                    for geometry_type in ("LineString", "Point", "Polygon"):
+                        feature.setAttribute("class", water_class)
+                        feature.setAttribute("worldview", worldview)
+                        feature.setAttribute("_geom_type", geometry_type)
+                        context.setFeature(feature)
+                        with self.subTest(rule=rule.styleName(), water_class=water_class,
+                                          worldview=worldview, geometry_type=geometry_type):
+                            self.assertTrue(predicate.prepare(context))
+                            selected = predicate.evaluate(context)
+                            self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+                            self.assertEqual(selected == 1, water_class in allowed
+                                             and worldview in ("all", "US") and geometry_type == "LineString")
+
     def test_light_airport_content_preserves_rank_reference_and_native_settings(self):
         import copy
         import json
