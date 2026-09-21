@@ -199,6 +199,8 @@ class BuildStartLayerTests(unittest.TestCase):
                 "source": "strava",
                 "source_activity_id": "1",
                 "name": "Run",
+                "activity_type": "Rock Climb",
+                "sport_type": "RockClimbing",
                 "start_lat": 46.5,
                 "start_lon": 6.6,
             }
@@ -208,6 +210,8 @@ class BuildStartLayerTests(unittest.TestCase):
         feature = next(layer.getFeatures())
         self.assertEqual(feature["activity_fk"], 1)
         self.assertEqual(feature["source"], "strava")
+        self.assertEqual(feature["activity_type"], "Rock Climb")
+        self.assertEqual(feature["sport_type"], "RockClimbing")
 
     def test_activity_fk_is_1_based(self):
         records = [

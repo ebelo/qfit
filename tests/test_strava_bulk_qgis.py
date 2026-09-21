@@ -14,9 +14,14 @@ from tests import _path  # noqa: F401
 from tests.qgis_app import get_shared_qgis_app
 
 try:
-    from qgis.core import QgsApplication, QgsVectorLayer
+    from qgis.core import (
+        QgsApplication,
+        QgsCategorizedSymbolRenderer,
+        QgsVectorLayer,
+    )
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - no-QGIS test jobs
     QgsApplication = None
+    QgsCategorizedSymbolRenderer = None
     QgsVectorLayer = None
 
 if QgsApplication is not None:
@@ -29,6 +34,13 @@ if QgsApplication is not None:
     )
     from qfit.sync_repository import SyncRepository
     from qfit.providers.infrastructure.fit_runtime import load_fitdecode
+    from qfit.visualization.infrastructure.layer_style_service import (
+        LayerStyleService,
+    )
+    from qfit.visualization.infrastructure.layer_filter_service import (
+        LayerFilterService,
+    )
+    from qfit.visualization.map_style import resolve_activity_color
 
 
 def _archive(path):
@@ -67,6 +79,40 @@ def _archive(path):
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("activities.csv", csv_buffer.getvalue())
         archive.writestr("activities/device-file.gpx", gpx)
+
+
+def _style_mismatch_archive(path):
+    fields = [
+        "Activity ID",
+        "Activity Date",
+        "Activity Name",
+        "Activity Type",
+        "Filename",
+    ]
+    csv_buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(csv_buffer, fieldnames=fields)
+    writer.writeheader()
+    writer.writerow(
+        {
+            "Activity ID": "style-123",
+            "Activity Date": "Sep 21, 2026, 7:30:00 AM",
+            "Activity Name": "Synthetic ski activity",
+            "Activity Type": "Backcountry Ski",
+            "Filename": "activities/device-file.tcx",
+        }
+    )
+    tcx = b"""<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2">
+  <Activities><Activity Sport="Biking"><Lap><Track>
+    <Trackpoint><Position><LatitudeDegrees>46.0</LatitudeDegrees>
+      <LongitudeDegrees>7.0</LongitudeDegrees></Position></Trackpoint>
+    <Trackpoint><Position><LatitudeDegrees>46.001</LatitudeDegrees>
+      <LongitudeDegrees>7.002</LongitudeDegrees></Position></Trackpoint>
+  </Track></Lap></Activity></Activities>
+</TrainingCenterDatabase>"""
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("activities.csv", csv_buffer.getvalue())
+        archive.writestr("activities/device-file.tcx", tcx)
 
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
@@ -122,6 +168,65 @@ class StravaBulkQgisIntegrationTests(unittest.TestCase):
 
         self.assertTrue(hasattr(fitdecode, "FitReader"))
         self.assertTrue(hasattr(fitdecode, "FitDataMessage"))
+
+    def test_manifest_activity_type_drives_imported_route_style(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            archive_path = str(Path(temp_dir) / "export.zip")
+            gpkg_path = str(Path(temp_dir) / "activities.gpkg")
+            _style_mismatch_archive(archive_path)
+
+            StravaBulkImportWorkflow().run(
+                StravaBulkImportRequest(archive_path=archive_path, output_path=gpkg_path)
+            )
+
+            stored = SyncRepository(gpkg_path).load_all_activities()[0]
+            self.assertEqual(stored.activity_type, "Backcountry Ski")
+            self.assertEqual(stored.sport_type, "BackcountrySki")
+            self.assertEqual(
+                stored.details_json["bulk_import"]["member_sport_type"],
+                "Biking",
+            )
+
+            tracks = QgsVectorLayer(
+                gpkg_path + "|layername=activity_tracks",
+                "tracks",
+                "ogr",
+            )
+            starts = QgsVectorLayer(
+                gpkg_path + "|layername=activity_starts",
+                "starts",
+                "ogr",
+            )
+            points = QgsVectorLayer(
+                gpkg_path + "|layername=activity_points",
+                "points",
+                "ogr",
+            )
+            self.assertTrue(tracks.isValid())
+            self.assertTrue(starts.isValid())
+            self.assertTrue(points.isValid())
+            LayerStyleService().apply_style(
+                tracks,
+                None,
+                None,
+                None,
+                "By activity type",
+            )
+            renderer = tracks.renderer()
+            self.assertIsInstance(renderer, QgsCategorizedSymbolRenderer)
+            categories = {category.value(): category for category in renderer.categories()}
+            self.assertEqual(set(categories), {"BackcountrySki"})
+            self.assertEqual(
+                categories["BackcountrySki"].symbol().color().name().upper(),
+                resolve_activity_color("BackcountrySki").upper(),
+            )
+            for layer, expected_count in ((tracks, 1), (starts, 1), (points, 2)):
+                self.assertGreaterEqual(layer.fields().indexOf("sport_type"), 0)
+                LayerFilterService().apply_filters(
+                    layer,
+                    activity_type="BackcountrySki",
+                )
+                self.assertEqual(len(list(layer.getFeatures())), expected_count)
 
     def test_task_exposes_phase_progress_and_completion(self):
         with tempfile.TemporaryDirectory() as temp_dir:

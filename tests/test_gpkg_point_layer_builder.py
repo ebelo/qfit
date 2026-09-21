@@ -254,6 +254,7 @@ class BuildPointLayerTests(unittest.TestCase):
                 "source_activity_id": "1",
                 "name": "Ride",
                 "activity_type": "Ride",
+                "sport_type": "GravelRide",
                 "start_date": "2026-03-25T08:00:00Z",
                 "start_date_local": "2026-03-25T09:00:00+01:00",
                 "distance_m": 10000.0,
@@ -272,6 +273,7 @@ class BuildPointLayerTests(unittest.TestCase):
         self.assertEqual(layer.featureCount(), 3)
         features = list(layer.getFeatures())
         self.assertEqual(features[0]["activity_fk"], 1)
+        self.assertEqual(features[0]["sport_type"], "GravelRide")
         self.assertEqual(features[0]["point_index"], 0)
         self.assertEqual(features[0]["altitude_m"], 400.0)
         self.assertEqual(features[0]["stream_status"], "stream_metrics")

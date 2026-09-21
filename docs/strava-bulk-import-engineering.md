@@ -242,7 +242,7 @@ The manifest supplies canonical Strava-processed summaries:
 |---|---|---|
 | Activity ID | `source_activity_id` | string, with `source = strava` |
 | Activity Name | `name` | blank -> null |
-| Activity Type | `activity_type`, fallback `sport_type` | blank -> null |
+| Activity Type | display `activity_type`, API-vocabulary `sport_type` | blank -> member sport metadata or null |
 | Activity Date | `start_date_local` | recognized local formats -> ISO local text |
 | Distance | `distance_m` | finite float, metres |
 | Moving Time | `moving_time_s` | integer seconds |
@@ -251,9 +251,18 @@ The manifest supplies canonical Strava-processed summaries:
 | Average/Max Speed | `average_speed_mps` / `max_speed_mps` | finite float, m/s |
 | Heart rate, watts, calories, relative effort | existing registry summary fields | finite number or null |
 
-Unknown useful manifest columns are retained under versioned
-`details_json.bulk_summary.values`. Empty and non-finite numeric values become
-null.
+The manifest activity type is authoritative. Its display label is retained in
+`activity_type` and mapped to Strava's compact API `sport_type` vocabulary so
+bulk import and API synchronization produce one qfit route-style category (for
+example, `Backcountry Ski` becomes `BackcountrySki`). FIT/TCX sport metadata is
+retained as `details_json.bulk_import.member_sport_type` for provenance and only
+fills `sport_type` when the manifest value is blank. Unknown useful manifest
+columns are retained under versioned `details_json.bulk_summary.values`. Empty
+and non-finite numeric values become null.
+
+The canonical `sport_type` is copied to track, start, sampled-point, and atlas
+layers. The shared activity selector can therefore apply the same category to
+every visible derived layer without dropping related start or point features.
 
 ### Unit validation lesson
 
@@ -299,7 +308,8 @@ the profile, not to silently replace that summary.
 - enhanced altitude and enhanced speed preferred over legacy fields;
 - timestamp, distance, altitude, heart rate, cadence, power, speed,
   temperature, and grade retained when present; and
-- session sport/sub-sport used to refine `sport_type`.
+- session sport/sub-sport retained as original-member provenance and used for
+  `sport_type` only when the manifest activity type is blank.
 
 ### TCX
 
@@ -346,6 +356,7 @@ Bulk provenance lives in `details_json` and includes:
 - archive fingerprint;
 - normalized member identity and SHA-256;
 - source format and parse status;
+- original-member sport metadata when present;
 - import timestamp; and
 - versioned extra manifest values.
 
