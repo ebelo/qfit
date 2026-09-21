@@ -312,34 +312,41 @@ class StravaBulkArchiveReader:
         total_nested_bytes = 0
         try:
             for member_name in sorted(referenced):
-                _raise_if_cancelled(cancelled)
-                info = info_by_name[member_name]
-                with archive.open(info) as handle:
-                    expanded_bytes = 0
-                    while True:
-                        _raise_if_cancelled(cancelled)
-                        chunk = handle.read(1024 * 1024)
-                        if not chunk:
-                            break
-                        expanded_bytes += len(chunk)
-                if expanded_bytes != info.file_size:
-                    raise zipfile.BadZipFile("referenced member size mismatch")
-                if member_name.lower().endswith(".gz"):
-                    total_nested_bytes += self._validate_nested_gzip_size(
-                        archive,
-                        info,
-                        cancelled=cancelled,
+                total_nested_bytes += self._validate_referenced_member(
+                    archive,
+                    info_by_name[member_name],
+                    cancelled=cancelled,
+                )
+                if total_nested_bytes > self.limits.max_total_bytes:
+                    raise StravaBulkArchiveError(
+                        "Nested activity files exceed the safe total expanded-size limit"
                     )
-                    if total_nested_bytes > self.limits.max_total_bytes:
-                        raise StravaBulkArchiveError(
-                            "Nested activity files exceed the safe total expanded-size limit"
-                        )
         except StravaBulkArchiveCancelled:
             raise
         except (OSError, EOFError, zipfile.BadZipFile) as exc:
             raise StravaBulkArchiveError(
                 "The Strava archive contains a corrupt referenced activity member"
             ) from exc
+
+    def _validate_referenced_member(self, archive, info, *, cancelled=None):
+        _raise_if_cancelled(cancelled)
+        with archive.open(info) as handle:
+            expanded_bytes = 0
+            while True:
+                _raise_if_cancelled(cancelled)
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                expanded_bytes += len(chunk)
+        if expanded_bytes != info.file_size:
+            raise zipfile.BadZipFile("referenced member size mismatch")
+        if not info.filename.lower().endswith(".gz"):
+            return 0
+        return self._validate_nested_gzip_size(
+            archive,
+            info,
+            cancelled=cancelled,
+        )
 
     def _validate_nested_gzip_size(self, archive, info, *, cancelled=None):
         expanded_bytes = 0

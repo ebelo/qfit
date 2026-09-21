@@ -137,15 +137,12 @@ class SyncRepositoryTests(unittest.TestCase):
 
             with self.assertRaises(ActivityDetailPayloadError):
                 repo.load_all_activities()
+            lower_fidelity = self._activity(
+                geometry_source="summary_polyline",
+                geometry_points=[(46.5, 6.6)],
+            )
             with self.assertRaises(ActivityDetailPayloadError):
-                repo.upsert_activities(
-                    [
-                        self._activity(
-                            geometry_source="summary_polyline",
-                            geometry_points=[(46.5, 6.6)],
-                        )
-                    ]
-                )
+                repo.upsert_activities([lower_fidelity])
 
             repaired = repo.upsert_activities(
                 [activity],

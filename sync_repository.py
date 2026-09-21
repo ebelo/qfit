@@ -302,21 +302,12 @@ class SyncRepository:
         ).fetchone()
         recover_detail_payload = False
         if existing_row is not None and reconcile_existing:
-            key = (record.get("source"), str(record.get("source_activity_id")))
-            try:
-                payloads = self._load_detail_payloads(cursor.connection, keys=[key])
-            except ActivityDetailPayloadError:
-                incoming_details = record.get("details_json") or {}
-                incoming_has_detail = bool(
-                    record.get("geometry_points")
-                    or incoming_details.get("stream_metrics")
-                )
-                if not compress_detail_payloads or not incoming_has_detail:
-                    raise
-                payloads = {}
-                recover_detail_payload = True
-            existing_record = self._row_to_record(existing_row, payloads=payloads)
-            record = reconcile_activity_records(record, existing_record)
+            record, recover_detail_payload = self._reconcile_existing_activity(
+                cursor,
+                record,
+                existing_row,
+                compress_detail_payloads=compress_detail_payloads,
+            )
         summary_hash = self._compute_summary_hash(record)
         if (
             existing_row is not None
@@ -350,6 +341,34 @@ class SyncRepository:
             self._delete_detail_payload(cursor, record)
         self._upsert_registry_row(cursor, registry_record)
         return "inserted" if existing_row is None else "updated"
+
+    def _reconcile_existing_activity(
+        self,
+        cursor,
+        record,
+        existing_row,
+        *,
+        compress_detail_payloads,
+    ):
+        key = (record.get("source"), str(record.get("source_activity_id")))
+        recover_detail_payload = False
+        try:
+            payloads = self._load_detail_payloads(cursor.connection, keys=[key])
+        except ActivityDetailPayloadError:
+            incoming_details = record.get("details_json") or {}
+            incoming_has_detail = bool(
+                record.get("geometry_points")
+                or incoming_details.get("stream_metrics")
+            )
+            if not compress_detail_payloads or not incoming_has_detail:
+                raise
+            payloads = {}
+            recover_detail_payload = True
+        existing_record = self._row_to_record(existing_row, payloads=payloads)
+        return (
+            reconcile_activity_records(record, existing_record),
+            recover_detail_payload,
+        )
 
     def _prune_missing_activities(self, cursor, activities, sync_metadata):
         if not sync_metadata.get("is_full_sync"):
