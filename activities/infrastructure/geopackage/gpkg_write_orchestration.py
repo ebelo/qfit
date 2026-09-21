@@ -158,7 +158,7 @@ def ensure_spatial_indexes(output_path):
     """Create derived-layer spatial indexes inside *output_path* if missing."""
     _ensure_spatial_indexes(
         output_path,
-        {name: None for name in ACTIVITY_SPATIAL_LAYER_NAMES},
+        dict.fromkeys(ACTIVITY_SPATIAL_LAYER_NAMES),
     )
 
 

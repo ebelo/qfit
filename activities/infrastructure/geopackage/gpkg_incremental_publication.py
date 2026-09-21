@@ -201,32 +201,13 @@ def _plan_changed_pages(records, changed_keys, existing_pages, atlas_page_settin
     ]
     max_page_number = max((plan.page_number for plan in existing_pages.values()), default=0)
     max_sort_key = max((plan.page_sort_key for plan in existing_pages.values()), default=None)
-    final_changed = []
-    new_plans = []
-
-    for key in changed_keys:
-        previous = existing_pages.get(key)
-        current = raw_plan_by_key.get(key)
-        if previous is not None:
-            if current is None:
-                raise IncrementalPublicationNotEligible("an existing atlas page would disappear")
-            if current.page_sort_key != previous.page_sort_key:
-                raise IncrementalPublicationNotEligible("an atlas sort key changed")
-            final_changed.append(replace(current, page_number=previous.page_number))
-            continue
-        if current is None:
-            continue
-        if max_sort_key is not None and current.page_sort_key <= max_sort_key:
-            raise IncrementalPublicationNotEligible("a new atlas page is not append-only")
-        new_plans.append(current)
-
-    for offset, current in enumerate(
-        sorted(new_plans, key=lambda plan: plan.page_sort_key),
-        start=1,
-    ):
-        final_changed.append(
-            replace(current, page_number=max_page_number + offset)
-        )
+    final_changed, new_plans = _partition_changed_pages(
+        changed_keys,
+        existing_pages,
+        raw_plan_by_key,
+        max_sort_key,
+    )
+    final_changed.extend(_number_appended_pages(new_plans, max_page_number))
 
     final_changed.sort(key=lambda plan: plan.page_sort_key)
     all_summary_plans = sorted(
@@ -259,6 +240,44 @@ def _plan_changed_pages(records, changed_keys, existing_pages, atlas_page_settin
         page_document_summary,
         table_summary,
     )
+
+
+def _partition_changed_pages(
+    changed_keys,
+    existing_pages,
+    raw_plan_by_key,
+    max_sort_key,
+):
+    retained = []
+    appended = []
+    for key in changed_keys:
+        previous = existing_pages.get(key)
+        current = raw_plan_by_key.get(key)
+        if previous is not None:
+            if current is None:
+                raise IncrementalPublicationNotEligible(
+                    "an existing atlas page would disappear"
+                )
+            if current.page_sort_key != previous.page_sort_key:
+                raise IncrementalPublicationNotEligible("an atlas sort key changed")
+            retained.append(replace(current, page_number=previous.page_number))
+        elif current is not None:
+            if max_sort_key is not None and current.page_sort_key <= max_sort_key:
+                raise IncrementalPublicationNotEligible(
+                    "a new atlas page is not append-only"
+                )
+            appended.append(current)
+    return retained, appended
+
+
+def _number_appended_pages(plans, max_page_number):
+    return [
+        replace(plan, page_number=max_page_number + offset)
+        for offset, plan in enumerate(
+            sorted(plans, key=lambda candidate: candidate.page_sort_key),
+            start=1,
+        )
+    ]
 
 
 def _with_document_summary(plan, summary):

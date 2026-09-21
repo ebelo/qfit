@@ -337,19 +337,25 @@ class IncrementalPublicationPureTests(unittest.TestCase):
             os.remove(path)
 
     def test_mutation_size_and_removed_activity_guards(self):
+        empty_stats = self._stats(total_count=2)
         with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "empty"):
-            self.module._validate_mutation_size(self._stats(total_count=2), ())
+            self.module._validate_mutation_size(empty_stats, ())
+        ceiling_stats = self._stats(total_count=1000)
+        ceiling_keys = tuple(("strava", str(index)) for index in range(101))
         with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "ceiling"):
             self.module._validate_mutation_size(
-                self._stats(total_count=1000),
-                tuple(("strava", str(index)) for index in range(101)),
+                ceiling_stats,
+                ceiling_keys,
             )
+        initial_stats = self._stats(total_count=1)
         with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "initial"):
-            self.module._validate_mutation_size(self._stats(total_count=1), (("strava", "1"),))
+            self.module._validate_mutation_size(initial_stats, (("strava", "1"),))
+        large_stats = self._stats(total_count=20)
+        large_keys = tuple(("strava", str(index)) for index in range(6))
         with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "too large"):
             self.module._validate_mutation_size(
-                self._stats(total_count=20),
-                tuple(("strava", str(index)) for index in range(6)),
+                large_stats,
+                large_keys,
             )
 
     def test_plan_changed_pages_reuses_pages_and_appends_in_sort_order(self):
@@ -532,14 +538,17 @@ class IncrementalPublicationPureTests(unittest.TestCase):
         self.assertEqual(feature.values["document_cover_summary"], "cover")
         self.assertTrue(layer.synced)
 
+        ogr = SimpleNamespace()
+        target = _DataSource()
+        staged = _DataSource()
         with self.assertRaisesRegex(
             self.module.IncrementalPublicationNotEligible,
             "unavailable",
         ):
             self.module._replace_filtered_features(
-                SimpleNamespace(),
-                _DataSource(),
-                _DataSource(),
+                ogr,
+                target,
+                staged,
                 "missing",
                 None,
             )
