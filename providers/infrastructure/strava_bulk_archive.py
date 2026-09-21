@@ -22,14 +22,21 @@ from .fit_runtime import load_fitdecode
 
 MANIFEST_NAME = "activities.csv"
 INGEST_SOURCE = "strava_bulk_export"
+ACTIVITY_ID_FIELD = "Activity ID"
+ACTIVITY_NAME_FIELD = "Activity Name"
+ACTIVITY_TYPE_FIELD = "Activity Type"
+ACTIVITY_DATE_FIELD = "Activity Date"
+FILENAME_FIELD = "Filename"
+MEMBER_SIZE_ERROR = "An archive member exceeds the safe expanded-size limit"
+UNSAFE_MEMBER_PATH_ERROR = "The archive contains an unsafe member path"
 SUPPORTED_ACTIVITY_SUFFIXES = (".fit.gz", ".tcx.gz", ".gpx.gz", ".fit", ".tcx", ".gpx")
 ALLOWED_ZIP_COMPRESSION = {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED}
 MAIN_MANIFEST_FIELDS = {
-    "Activity ID",
-    "Activity Name",
-    "Activity Type",
-    "Activity Date",
-    "Filename",
+    ACTIVITY_ID_FIELD,
+    ACTIVITY_NAME_FIELD,
+    ACTIVITY_TYPE_FIELD,
+    ACTIVITY_DATE_FIELD,
+    FILENAME_FIELD,
     "Distance",
     "Moving Time",
     "Elapsed Time",
@@ -199,26 +206,29 @@ class StravaBulkArchiveReader:
         total_bytes = 0
         normalized_names = set()
         for info in infos:
-            normalized = _normalize_member_name(info.filename)
-            if normalized in normalized_names:
-                raise StravaBulkArchiveError("The archive contains duplicate normalized member paths")
-            normalized_names.add(normalized)
-            if info.flag_bits & 0x1:
-                raise StravaBulkArchiveError("Encrypted ZIP members are not supported")
-            if not info.is_dir() and info.compress_type not in ALLOWED_ZIP_COMPRESSION:
-                raise StravaBulkArchiveError("The archive uses an unsupported ZIP compression method")
-            if info.file_size > self.limits.max_member_bytes:
-                raise StravaBulkArchiveError("An archive member exceeds the safe expanded-size limit")
+            self._validate_central_member(info, normalized_names)
             total_bytes += info.file_size
             if total_bytes > self.limits.max_total_bytes:
                 raise StravaBulkArchiveError("The archive exceeds the safe total expanded-size limit")
-            if (
-                info.file_size > 1024 * 1024
-                and info.compress_size > 0
-                and info.file_size / info.compress_size > self.limits.max_compression_ratio
-            ):
-                raise StravaBulkArchiveError("The archive contains an unsafe compression ratio")
         return infos
+
+    def _validate_central_member(self, info, normalized_names):
+        normalized = _normalize_member_name(info.filename)
+        if normalized in normalized_names:
+            raise StravaBulkArchiveError("The archive contains duplicate normalized member paths")
+        normalized_names.add(normalized)
+        if info.flag_bits & 0x1:
+            raise StravaBulkArchiveError("Encrypted ZIP members are not supported")
+        if not info.is_dir() and info.compress_type not in ALLOWED_ZIP_COMPRESSION:
+            raise StravaBulkArchiveError("The archive uses an unsupported ZIP compression method")
+        if info.file_size > self.limits.max_member_bytes:
+            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
+        if (
+            info.file_size > 1024 * 1024
+            and info.compress_size > 0
+            and info.file_size / info.compress_size > self.limits.max_compression_ratio
+        ):
+            raise StravaBulkArchiveError("The archive contains an unsafe compression ratio")
 
     def _read_manifest(
         self,
@@ -231,21 +241,27 @@ class StravaBulkArchiveReader:
             raise StravaBulkArchiveError("activities.csv is not valid UTF-8") from exc
         reader = csv.DictReader(io.StringIO(text, newline=""))
         headers = set(reader.fieldnames or [])
-        required = {"Activity ID", "Activity Date", "Activity Name", "Activity Type", "Filename"}
+        required = {
+            ACTIVITY_ID_FIELD,
+            ACTIVITY_DATE_FIELD,
+            ACTIVITY_NAME_FIELD,
+            ACTIVITY_TYPE_FIELD,
+            FILENAME_FIELD,
+        }
         if not required.issubset(headers):
             raise StravaBulkArchiveError("activities.csv is missing required columns")
 
         rows = list(reader)
-        id_counts = Counter((row.get("Activity ID") or "").strip() for row in rows)
+        id_counts = Counter((row.get(ACTIVITY_ID_FIELD) or "").strip() for row in rows)
         filename_counts = Counter(
-            _manifest_member_name(row.get("Filename"))
+            _manifest_member_name(row.get(FILENAME_FIELD))
             for row in rows
-            if (row.get("Filename") or "").strip()
+            if (row.get(FILENAME_FIELD) or "").strip()
         )
         entries = []
         for row_number, row in enumerate(rows, start=2):
-            activity_id = (row.get("Activity ID") or "").strip()
-            member_name = _manifest_member_name(row.get("Filename"))
+            activity_id = (row.get(ACTIVITY_ID_FIELD) or "").strip()
+            member_name = _manifest_member_name(row.get(FILENAME_FIELD))
             conflict = None
             if not activity_id:
                 conflict = "missing_activity_id"
@@ -278,8 +294,12 @@ class StravaBulkArchiveReader:
             for member_name in sorted(referenced):
                 info = info_by_name[member_name]
                 with archive.open(info) as handle:
-                    while handle.read(1024 * 1024):
-                        pass
+                    expanded_bytes = sum(
+                        len(chunk)
+                        for chunk in iter(lambda: handle.read(1024 * 1024), b"")
+                    )
+                if expanded_bytes != info.file_size:
+                    raise zipfile.BadZipFile("referenced member size mismatch")
                 if member_name.lower().endswith(".gz"):
                     self._validate_nested_gzip_size(archive, info)
         except (OSError, EOFError, zipfile.BadZipFile) as exc:
@@ -358,11 +378,11 @@ class StravaBulkArchiveReader:
 
     def _read_zip_member(self, archive, info):
         if info.file_size > self.limits.max_member_bytes:
-            raise StravaBulkArchiveError("An archive member exceeds the safe expanded-size limit")
+            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
         with archive.open(info) as handle:
             payload = handle.read(self.limits.max_member_bytes + 1)
         if len(payload) > self.limits.max_member_bytes:
-            raise StravaBulkArchiveError("An archive member exceeds the safe expanded-size limit")
+            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
         return payload
 
     def _read_activity_member(self, archive, info, *, compressed):
@@ -382,13 +402,13 @@ class StravaBulkArchiveReader:
 def _normalize_member_name(raw_name: str) -> str:
     candidate = str(raw_name or "").replace("\\", "/")
     if not candidate or candidate.startswith("/") or re.match(r"^[A-Za-z]:", candidate):
-        raise StravaBulkArchiveError("The archive contains an unsafe member path")
+        raise StravaBulkArchiveError(UNSAFE_MEMBER_PATH_ERROR)
     if ".." in PurePosixPath(candidate).parts:
-        raise StravaBulkArchiveError("The archive contains an unsafe member path")
+        raise StravaBulkArchiveError(UNSAFE_MEMBER_PATH_ERROR)
     normalized = posixpath.normpath(candidate)
     parts = PurePosixPath(normalized).parts
     if normalized in ("", ".") or ".." in parts:
-        raise StravaBulkArchiveError("The archive contains an unsafe member path")
+        raise StravaBulkArchiveError(UNSAFE_MEMBER_PATH_ERROR)
     return normalized
 
 
@@ -571,31 +591,40 @@ def _parse_gpx(payload: bytes) -> ParsedActivityTrack:
             }
         )
 
-    containers = [
-        element
-        for element in root.iter()
-        if _local_name(element.tag) in ("trkseg", "rte")
-    ]
-    for container in containers:
-        point_name = "trkpt" if _local_name(container.tag) == "trkseg" else "rtept"
-        candidates = [
-            child for child in container if _local_name(child.tag) == point_name
-        ]
-        if candidates:
-            segment_starts.add(len(points))
+    for candidates in _gpx_point_groups(root):
+        segment_starts.add(len(points))
         for candidate in candidates:
             append_point(candidate)
-    if not containers:
-        segment_starts.add(0)
-        for element in root.iter():
-            if _local_name(element.tag) in ("trkpt", "rtept"):
-                append_point(element)
     return _finalize_track(
         points,
         metric_rows,
         start_date=_iso_utc(first_timestamp),
         segment_starts=segment_starts,
     )
+
+
+def _gpx_point_groups(root):
+    containers = [
+        element
+        for element in root.iter()
+        if _local_name(element.tag) in ("trkseg", "rte")
+    ]
+    if not containers:
+        candidates = [
+            element
+            for element in root.iter()
+            if _local_name(element.tag) in ("trkpt", "rtept")
+        ]
+        return [candidates] if candidates else []
+    groups = []
+    for container in containers:
+        point_name = "trkpt" if _local_name(container.tag) == "trkseg" else "rtept"
+        candidates = [
+            child for child in container if _local_name(child.tag) == point_name
+        ]
+        if candidates:
+            groups.append(candidates)
+    return groups
 
 
 def _safe_xml_root(payload: bytes):
@@ -718,11 +747,11 @@ def _activity_from_manifest(
     return Activity(
         source="strava",
         source_activity_id=entry.activity_id,
-        name=_none_if_blank(row.get("Activity Name")),
-        activity_type=_none_if_blank(row.get("Activity Type")),
-        sport_type=track.sport_type or _none_if_blank(row.get("Activity Type")),
+        name=_none_if_blank(row.get(ACTIVITY_NAME_FIELD)),
+        activity_type=_none_if_blank(row.get(ACTIVITY_TYPE_FIELD)),
+        sport_type=track.sport_type or _none_if_blank(row.get(ACTIVITY_TYPE_FIELD)),
         start_date=track.start_date,
-        start_date_local=_manifest_date(row.get("Activity Date")),
+        start_date_local=_manifest_date(row.get(ACTIVITY_DATE_FIELD)),
         distance_m=_float_or_none(row.get("Distance")),
         moving_time_s=_int_or_none(row.get("Moving Time")),
         elapsed_time_s=_int_or_none(row.get("Elapsed Time")),

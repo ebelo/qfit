@@ -59,6 +59,7 @@ SYNC_STATE_COLUMNS = [
 REGISTRY_TABLE = "activity_registry"
 SYNC_STATE_TABLE = "sync_state"
 DETAIL_PAYLOAD_TABLE = "activity_detail_payloads"
+DETAIL_PAYLOAD_ENCODING = "json+zlib-v1"
 REGISTRY_COLUMNS = [
     "source",
     "source_activity_id",
@@ -239,59 +240,19 @@ class SyncRepository:
     ):
         sync_metadata = sync_metadata or {}
         now = datetime.now(UTC).isoformat()
-        inserted = 0
-        updated = 0
-        unchanged = 0
+        counts = {"inserted": 0, "updated": 0, "unchanged": 0}
 
         with self._connect() as connection:
             cursor = connection.cursor()
             for activity in activities:
-                record = self._normalize_record(activity)
-                existing_row = cursor.execute(
-                    "SELECT {columns} FROM activity_registry "
-                    "WHERE source = ? AND source_activity_id = ?".format(
-                        columns=", ".join(REGISTRY_COLUMNS)
-                    ),
-                    (record.get("source"), record.get("source_activity_id")),
-                ).fetchone()
-                if existing_row is not None and reconcile_existing:
-                    key = (record.get("source"), str(record.get("source_activity_id")))
-                    payloads = self._load_detail_payloads(connection, keys=[key])
-                    existing_record = self._row_to_record(
-                        existing_row,
-                        payloads=payloads,
-                    )
-                    record = reconcile_activity_records(record, existing_record)
-                summary_hash = self._compute_summary_hash(record)
-
-                if existing_row is not None and existing_row["summary_hash"] == summary_hash:
-                    unchanged += 1
-                    continue
-
-                first_seen_at = (
-                    now
-                    if existing_row is None
-                    else (existing_row["first_seen_at"] or now)
+                outcome = self._upsert_activity(
+                    cursor,
+                    activity,
+                    now,
+                    compress_detail_payloads=compress_detail_payloads,
+                    reconcile_existing=reconcile_existing,
                 )
-                registry_record = self._prepare_registry_record(record, summary_hash, first_seen_at, now)
-                existing_payload_storage = bool(
-                    (record.get("details_json") or {}).get("detail_payload")
-                )
-                if compress_detail_payloads or existing_payload_storage:
-                    registry_record, payload_record = self._extract_detail_payload(
-                        registry_record,
-                        record,
-                        now,
-                    )
-                    self._upsert_detail_payload(cursor, payload_record)
-                else:
-                    self._delete_detail_payload(cursor, record)
-                self._upsert_registry_row(cursor, registry_record)
-
-                if existing_row is None:
-                    inserted += 1
-                else:
-                    updated += 1
+                counts[outcome] += 1
 
             self._prune_missing_activities(cursor, activities, sync_metadata)
             self._prune_orphaned_detail_payloads(cursor)
@@ -302,19 +263,71 @@ class SyncRepository:
                     activities,
                     sync_metadata,
                     now,
-                    inserted,
-                    updated,
-                    unchanged,
+                    counts["inserted"],
+                    counts["updated"],
+                    counts["unchanged"],
                     total_count,
                 )
             connection.commit()
 
         return SyncStats(
-            inserted=inserted,
-            updated=updated,
-            unchanged=unchanged,
+            inserted=counts["inserted"],
+            updated=counts["updated"],
+            unchanged=counts["unchanged"],
             total_count=total_count,
         )
+
+    def _upsert_activity(
+        self,
+        cursor,
+        activity,
+        now,
+        *,
+        compress_detail_payloads,
+        reconcile_existing,
+    ):
+        record = self._normalize_record(activity)
+        existing_row = cursor.execute(
+            "SELECT {columns} FROM activity_registry "
+            "WHERE source = ? AND source_activity_id = ?".format(
+                columns=", ".join(REGISTRY_COLUMNS)
+            ),
+            (record.get("source"), record.get("source_activity_id")),
+        ).fetchone()
+        if existing_row is not None and reconcile_existing:
+            key = (record.get("source"), str(record.get("source_activity_id")))
+            payloads = self._load_detail_payloads(cursor.connection, keys=[key])
+            existing_record = self._row_to_record(existing_row, payloads=payloads)
+            record = reconcile_activity_records(record, existing_record)
+        summary_hash = self._compute_summary_hash(record)
+        if existing_row is not None and existing_row["summary_hash"] == summary_hash:
+            return "unchanged"
+
+        first_seen_at = (
+            now
+            if existing_row is None
+            else (existing_row["first_seen_at"] or now)
+        )
+        registry_record = self._prepare_registry_record(
+            record,
+            summary_hash,
+            first_seen_at,
+            now,
+        )
+        existing_payload_storage = bool(
+            (record.get("details_json") or {}).get("detail_payload")
+        )
+        if compress_detail_payloads or existing_payload_storage:
+            registry_record, payload_record = self._extract_detail_payload(
+                registry_record,
+                record,
+                now,
+            )
+            self._upsert_detail_payload(cursor, payload_record)
+        else:
+            self._delete_detail_payload(cursor, record)
+        self._upsert_registry_row(cursor, registry_record)
+        return "inserted" if existing_row is None else "updated"
 
     def _prune_missing_activities(self, cursor, activities, sync_metadata):
         if not sync_metadata.get("is_full_sync"):
@@ -681,7 +694,7 @@ class SyncRepository:
         ).encode("utf-8")
         payload_sha256 = hashlib.sha256(encoded).hexdigest()
         details["detail_payload"] = {
-            "encoding": "json+zlib-v1",
+            "encoding": DETAIL_PAYLOAD_ENCODING,
             "sha256": payload_sha256,
             "point_count": len(geometry_points),
         }
@@ -691,7 +704,7 @@ class SyncRepository:
         return registry_record, {
             "source": source_record.get("source"),
             "source_activity_id": str(source_record.get("source_activity_id")),
-            "encoding": "json+zlib-v1",
+            "encoding": DETAIL_PAYLOAD_ENCODING,
             "payload_sha256": payload_sha256,
             "payload_zlib": zlib.compress(encoded, level=6),
             "point_count": len(geometry_points),
@@ -763,7 +776,7 @@ class SyncRepository:
             raise
         payloads = {}
         for row in rows:
-            if row["encoding"] != "json+zlib-v1":
+            if row["encoding"] != DETAIL_PAYLOAD_ENCODING:
                 continue
             try:
                 encoded = zlib.decompress(row["payload_zlib"])

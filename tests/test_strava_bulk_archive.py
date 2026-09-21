@@ -304,16 +304,18 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             archive.writestr("activities.csv", _manifest([_row()]))
             archive.writestr("../outside.gpx", _gpx())
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "unsafe member path"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_normalizing_traversal_path_is_still_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w") as archive:
             archive.writestr("activities.csv", _manifest([_row()]))
             archive.writestr("activities/../outside.gpx", _gpx())
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "unsafe member path"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_member_count_and_size_limits_are_enforced(self):
         reader = self._write_archive(
@@ -338,23 +340,26 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             archive.writestr("activities//same.gpx", _gpx())
             archive.writestr("activities/same.gpx", _gpx())
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "duplicate normalized"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_unsupported_zip_compression_is_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w", compression=zipfile.ZIP_BZIP2) as archive:
             archive.writestr("activities.csv", _manifest([_row(filename="")]))
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "compression method"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_dangerous_zip_compression_ratio_is_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             archive.writestr("activities.csv", _manifest([_row(filename="")]))
             archive.writestr("unrelated.bin", b"0" * (2 * 1024 * 1024))
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "compression ratio"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_encrypted_flag_is_rejected_before_member_read(self):
         with zipfile.ZipFile(self.archive_path, "w", compression=zipfile.ZIP_STORED) as archive:
@@ -367,8 +372,9 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         payload[central_offset + 8:central_offset + 10] = central_flags.to_bytes(2, "little")
         self.archive_path.write_bytes(payload)
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "Encrypted"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_corrupt_referenced_member_crc_is_rejected(self):
         marker = b"UNIQUE-SYNTHETIC-PAYLOAD"
@@ -380,8 +386,9 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         payload[offset] ^= 0x01
         self.archive_path.write_bytes(payload)
 
+        reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "corrupt referenced"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_xml_document_type_is_rejected_per_activity(self):
         payload = b'<!DOCTYPE gpx [<!ENTITY x "unsafe">]><gpx></gpx>'

@@ -26,6 +26,16 @@ def reconcile_activity_records(incoming: dict, existing: dict | None) -> dict:
         _geometry_quality(existing, existing_details)
         > _geometry_quality(incoming, incoming_details)
     )
+    _merge_geometry(merged, incoming, existing, keep_existing_geometry)
+    merged["details_json"] = _merge_details(
+        incoming_details,
+        existing_details,
+        keep_existing_geometry,
+    )
+    return merged
+
+
+def _merge_geometry(merged, incoming, existing, keep_existing_geometry):
     if keep_existing_geometry:
         for name in (
             "geometry_source",
@@ -39,6 +49,8 @@ def reconcile_activity_records(incoming: dict, existing: dict | None) -> dict:
     else:
         merged["geometry_points"] = list(incoming.get("geometry_points") or [])
 
+
+def _merge_details(incoming_details, existing_details, keep_existing_geometry):
     details = dict(existing_details)
     details.update(incoming_details)
     if keep_existing_geometry and existing_details.get("stream_metrics"):
@@ -51,8 +63,7 @@ def reconcile_activity_records(incoming: dict, existing: dict | None) -> dict:
         details["ingest_sources"] = ingest_sources
     else:
         details.pop("ingest_sources", None)
-    merged["details_json"] = details
-    return merged
+    return details
 
 
 def _geometry_quality(record, details):
