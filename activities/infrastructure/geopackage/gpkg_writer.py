@@ -63,24 +63,9 @@ class GeoPackageWriter:
         }
 
     def write_activities(self, activities, sync_metadata=None):
-        if not self.output_path:
-            raise ValueError("output_path is required")
-        os.makedirs(os.path.dirname(self.output_path) or ".", exist_ok=True)
-
-        activity_store = self.activity_store_factory(self.output_path)
-        new_file = not os.path.exists(self.output_path) or os.path.getsize(self.output_path) == 0
-        if new_file:
-            gpkg_write_orchestration.bootstrap_empty_gpkg(self.output_path, self.atlas_page_settings)
-
-        activity_store.ensure_schema()
+        activity_store = self.prepare_activity_storage()
         sync_result = activity_store.upsert_activities(activities, sync_metadata=sync_metadata)
-        records = activity_store.load_all_activity_records()
-
-        layers = gpkg_write_orchestration.build_and_write_all_layers(
-            records, self.output_path, self.atlas_page_settings,
-            write_activity_points=self.write_activity_points,
-            point_stride=self.point_stride,
-        )
+        layers = self.rebuild_activity_layers(activity_store=activity_store)
 
         return {
             "schema": self.schema(),
@@ -97,3 +82,61 @@ class GeoPackageWriter:
             "toc_count": layers["atlas_toc_entries"].featureCount(),
             "sync": sync_result,
         }
+
+    def prepare_activity_storage(self):
+        """Create the GeoPackage and registry schema without rebuilding layers."""
+
+        if not self.output_path:
+            raise ValueError("output_path is required")
+        os.makedirs(os.path.dirname(self.output_path) or ".", exist_ok=True)
+        activity_store = self.activity_store_factory(self.output_path)
+        new_file = not os.path.exists(self.output_path) or os.path.getsize(self.output_path) == 0
+        if new_file:
+            gpkg_write_orchestration.bootstrap_empty_gpkg(
+                self.output_path,
+                self.atlas_page_settings,
+            )
+        activity_store.ensure_schema()
+        return activity_store
+
+    def upsert_activity_batch(self, activity_store, activities, *, compress_detail_payloads=False):
+        """Commit one coherent registry batch without touching visible layers."""
+
+        return activity_store.upsert_activities(
+            activities,
+            sync_metadata={"provider": "strava", "suppress_sync_state": True},
+            compress_detail_payloads=compress_detail_payloads,
+            reconcile_existing=False,
+        )
+
+    def rebuild_activity_layers(self, *, activity_store=None):
+        """Atomically replace derived activity layers from canonical registry rows."""
+
+        store = activity_store or self.prepare_activity_storage()
+        records = store.load_all_activity_records()
+        return gpkg_write_orchestration.build_and_write_all_layers(
+            records,
+            self.output_path,
+            self.atlas_page_settings,
+            write_activity_points=self.write_activity_points,
+            point_stride=self.point_stride,
+        )
+
+    def rebuild_activity_layers_bounded(
+        self,
+        *,
+        activity_store=None,
+        batch_size=25,
+        progress=None,
+    ):
+        """Rebuild detail-heavy layers from repeatable bounded record batches."""
+
+        store = activity_store or self.prepare_activity_storage()
+        return gpkg_write_orchestration.build_and_write_all_layers_bounded(
+            lambda: store.iter_activity_record_batches(batch_size=batch_size),
+            self.output_path,
+            self.atlas_page_settings,
+            write_activity_points=self.write_activity_points,
+            point_stride=self.point_stride,
+            progress=progress,
+        )

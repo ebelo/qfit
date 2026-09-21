@@ -209,8 +209,8 @@ def main() -> int:
     print(f"Installed {PLUGIN_NAME} to {destination} using mode={installed_mode}")
     if installed_mode == "symlink":
         print(
-            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
-            "Use --mode copy or the packaged plugin zip when you need atlas PDF export."
+            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf or fitdecode. "
+            "Use --mode copy or the packaged plugin zip when you need atlas PDF or FIT import."
         )
     return 0
 

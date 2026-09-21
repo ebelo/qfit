@@ -51,6 +51,9 @@ class SyncPageState:
     local_action_label: str = "Load stored map layers"
     local_action_enabled: bool = False
     local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading stored map layers."
+    bulk_action_label: str = "Import Strava export…"
+    bulk_action_enabled: bool = True
+    bulk_action_blocked_tooltip: str = "Wait for the current bulk import to finish."
     routes_action_label: str = "Sync saved routes"
     routes_action_enabled: bool = True
     routes_action_blocked_tooltip: str = (
@@ -62,6 +65,7 @@ class SyncPageContent(QWidget):
     """Reusable second-page content for the wizard synchronization step."""
 
     syncRequested = pyqtSignal()
+    importBulkRequested = pyqtSignal()
     storeRequested = pyqtSignal()
     loadActivitiesRequested = pyqtSignal()
     syncRoutesRequested = pyqtSignal()
@@ -101,9 +105,17 @@ class SyncPageContent(QWidget):
             action_name="sync_saved_routes",
         )
         self.routes_button.clicked.connect(self.syncRoutesRequested.emit)
+        self.bulk_button = QToolButton(self)
+        self.bulk_button.setObjectName("qfitWizardSyncBulkImportButton")
+        style_secondary_action_button(
+            self.bulk_button,
+            action_name="import_strava_bulk_export",
+        )
+        self.bulk_button.clicked.connect(self.importBulkRequested.emit)
         self.action_row = build_workflow_action_row(
             self.load_button,
             self.routes_button,
+            self.bulk_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
@@ -139,6 +151,12 @@ class SyncPageContent(QWidget):
             self.routes_button,
             enabled=state.routes_action_enabled,
             tooltip=state.routes_action_blocked_tooltip,
+        )
+        self.bulk_button.setText(state.bulk_action_label)
+        set_workflow_action_availability(
+            self.bulk_button,
+            enabled=state.bulk_action_enabled,
+            tooltip=state.bulk_action_blocked_tooltip,
         )
 
     def outer_layout(self):

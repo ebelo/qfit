@@ -50,7 +50,7 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
             stream_time_s = _metric_value(stream_metrics, "time", point_index, as_int=True)
             feature = QgsFeature(layer.fields())
             feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(lon), float(lat))))
-            feature["activity_fk"] = index
+            feature["activity_fk"] = record.get("_activity_fk", index)
             feature["source"] = record.get("source")
             feature["source_activity_id"] = record.get("source_activity_id")
             feature["point_index"] = point_index

@@ -321,6 +321,11 @@ class _FakeDateEdit:
 
 
 class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
+    def test_bulk_import_eta_is_human_readable(self):
+        self.assertEqual(self.module._format_bulk_import_eta(42), "42s")
+        self.assertEqual(self.module._format_bulk_import_eta(125), "2m 5s")
+        self.assertEqual(self.module._format_bulk_import_eta(7380), "2h 3m")
+
     @classmethod
     def setUpClass(cls):
         cls.module = cls._import_module_with_stubs()
@@ -955,6 +960,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         callbacks = connect_args[1]
         expected_callbacks = {
             "sync_activities": "on_refresh_clicked",
+            "import_bulk_archive": "on_import_strava_bulk_export_clicked",
             "store_activities": "on_load_clicked",
             "sync_saved_routes": "on_sync_routes_clicked",
             "load_activity_layers": "on_load_layers_clicked",

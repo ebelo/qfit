@@ -666,6 +666,9 @@ def activity_bounds(
     record: dict,
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
 ) -> tuple[tuple[float, float, float, float] | None, str]:
+    precomputed = record.get("_qfit_precomputed_bounds")
+    if precomputed:
+        return tuple(precomputed), record.get("geometry_source") or "stream"
     points = record.get("geometry_points") or []
     if len(points) >= 2:
         return (
@@ -978,6 +981,9 @@ def extract_profile_points(record: dict) -> list[tuple[float, float]]:
 
 
 def build_profile_summary(record: dict) -> AtlasProfileSummary:
+    precomputed = record.get("_qfit_precomputed_profile_summary")
+    if isinstance(precomputed, dict):
+        return AtlasProfileSummary(**precomputed)
     profile_points = extract_profile_points(record)
     if len(profile_points) < 2:
         return AtlasProfileSummary()

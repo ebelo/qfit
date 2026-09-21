@@ -93,6 +93,16 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertTrue(content.routes_button.isEnabled())
         self.assertEqual(content.routes_button.toolTip(), "")
+        self.assertEqual(
+            content.bulk_button.objectName(),
+            "qfitWizardSyncBulkImportButton",
+        )
+        self.assertEqual(content.bulk_button.text(), "Import Strava export…")
+        self.assertEqual(
+            content.bulk_button.property("secondaryAction"),
+            "import_strava_bulk_export",
+        )
+        self.assertTrue(content.bulk_button.isEnabled())
         self.assertFalse(hasattr(content, "clear_button"))
         self.assertFalse(hasattr(content, "clear_action_row"))
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
@@ -101,6 +111,7 @@ class SyncPageContentTest(unittest.TestCase):
             [
                 content.load_button,
                 content.routes_button,
+                content.bulk_button,
                 content.sync_button,
             ],
         )
@@ -234,6 +245,15 @@ class SyncPageContentTest(unittest.TestCase):
         content.routes_button.clicked.emit()
 
         self.assertEqual(calls, ["routes"])
+
+    def test_bulk_import_button_emits_reusable_page_signal(self):
+        content = self.sync_page.SyncPageContent()
+        calls = []
+        content.importBulkRequested.connect(lambda: calls.append("bulk"))
+
+        content.bulk_button.clicked.emit()
+
+        self.assertEqual(calls, ["bulk"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(

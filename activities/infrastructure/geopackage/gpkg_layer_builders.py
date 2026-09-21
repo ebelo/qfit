@@ -107,7 +107,7 @@ def build_start_layer(records):
 
         feature = QgsFeature(layer.fields())
         feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(lon, lat)))
-        feature["activity_fk"] = index
+        feature["activity_fk"] = record.get("_activity_fk", index)
         feature["source"] = record.get("source")
         feature["source_activity_id"] = record.get("source_activity_id")
         feature["name"] = record.get("name")

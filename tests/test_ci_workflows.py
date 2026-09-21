@@ -148,8 +148,8 @@ class PackageScriptTests(unittest.TestCase):
         mod = self._load_module()
         self.assertTrue(callable(mod.build_zip))
 
-    def test_build_zip_vendors_pypdf_into_plugin_archive(self):
-        """The packaged plugin ZIP should be self-contained for atlas PDF export."""
+    def test_build_zip_vendors_runtime_dependencies_into_plugin_archive(self):
+        """The plugin ZIP should include PDF and FIT runtime dependencies."""
         mod = self._load_module()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -165,6 +165,8 @@ class PackageScriptTests(unittest.TestCase):
 
         self.assertIn("qfit/vendor/pypdf/__init__.py", names)
         self.assertIn("qfit/vendor/licenses/pypdf_LICENSE.txt", names)
+        self.assertIn("qfit/vendor/fitdecode/__init__.py", names)
+        self.assertIn("qfit/vendor/licenses/fitdecode_LICENSE.txt", names)
 
     def test_build_zip_excludes_dev_only_artifacts(self):
         mod = self._load_module()

@@ -1217,7 +1217,7 @@ class QgisSmokeTests(unittest.TestCase):
             remaining_ids = sorted({feature["source_activity_id"] for feature in points_layer.getFeatures()})
             self.assertEqual(remaining_ids, ["1001"])
 
-    def test_rewrite_refreshes_activity_points_when_geometry_falls_back(self):
+    def test_rewrite_preserves_richer_activity_points_when_geometry_falls_back(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = str(Path(temp_dir) / "qfit-fallback-points.gpkg")
             writer = GeoPackageWriter(
@@ -1245,13 +1245,16 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertGreaterEqual(len(initial_points), 3)
             self.assertEqual({feature["geometry_source"] for feature in initial_points}, {"summary_polyline"})
-            self.assertEqual(points_layer.featureCount(), 2)
+            self.assertEqual(points_layer.featureCount(), len(initial_points))
             self.assertEqual({feature["source_activity_id"] for feature in refreshed_points}, {"fallback-1001"})
-            self.assertEqual({feature["geometry_source"] for feature in refreshed_points}, {"start_end"})
+            self.assertEqual({feature["geometry_source"] for feature in refreshed_points}, {"summary_polyline"})
 
+            initial_coords = [feature.geometry().asPoint() for feature in initial_points]
             refreshed_coords = [feature.geometry().asPoint() for feature in refreshed_points]
-            self.assertEqual((round(refreshed_coords[0].x(), 4), round(refreshed_coords[0].y(), 4)), (6.6000, 46.5100))
-            self.assertEqual((round(refreshed_coords[-1].x(), 4), round(refreshed_coords[-1].y(), 4)), (6.6300, 46.5250))
+            self.assertEqual(
+                [(round(point.x(), 4), round(point.y(), 4)) for point in refreshed_coords],
+                [(round(point.x(), 4), round(point.y(), 4)) for point in initial_coords],
+            )
 
     def test_build_frequent_start_points_layer_rejects_invalid_layer(self):
         layer, clusters = build_frequent_start_points_layer(None)

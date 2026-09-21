@@ -55,6 +55,7 @@ class QfitPlugin:
             self.about_action = None
 
         if self.dockwidget is not None:
+            self.dockwidget.cancel_background_tasks()
             self.iface.removeDockWidget(self.dockwidget)
             self.dockwidget.deleteLater()
             self.dockwidget = None

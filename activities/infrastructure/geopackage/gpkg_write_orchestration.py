@@ -16,6 +16,7 @@ but contains no schema definitions or repository logic.
 """
 
 import sqlite3
+from dataclasses import asdict
 
 from .gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
@@ -356,3 +357,116 @@ def build_and_write_all_layers(
     ensure_spatial_indexes(output_path)
 
     return layers
+
+
+def build_and_write_all_layers_bounded(
+    record_batches_factory,
+    output_path,
+    atlas_page_settings,
+    *,
+    write_activity_points=True,
+    point_stride=5,
+    progress=None,
+):
+    """Rebuild detail-heavy layers without retaining every decoded payload."""
+
+    compact_records = []
+    total_records = 0
+    for batch in record_batches_factory():
+        for record in batch:
+            compact_records.append(
+                _compact_atlas_record(record, atlas_page_settings)
+            )
+            total_records += 1
+    plans = build_atlas_page_plans(compact_records, settings=atlas_page_settings)
+
+    lightweight_layers = {
+        "activity_starts": build_start_layer(compact_records),
+        "activity_atlas_pages": build_atlas_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+        "atlas_document_summary": build_document_summary_layer(plans=plans),
+        "atlas_cover_highlights": build_cover_highlight_layer(plans=plans),
+        "atlas_page_detail_items": build_page_detail_item_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+        "atlas_toc_entries": build_toc_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+    }
+    for layer_name, layer in lightweight_layers.items():
+        write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
+
+    heavy_builders = {
+        "activity_tracks": lambda records: build_track_layer(records),
+        "activity_points": lambda records: build_point_layer(
+            records,
+            write_activity_points,
+            point_stride,
+        ),
+        "atlas_profile_samples": lambda records: build_profile_sample_layer(
+            records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+    }
+    for layer_index, (layer_name, builder) in enumerate(heavy_builders.items()):
+        write_layer_to_gpkg(
+            builder([]),
+            output_path,
+            layer_name,
+            overwrite_file=False,
+        )
+        completed = 0
+        for batch in record_batches_factory():
+            batch_layer = builder(batch)
+            if batch_layer.featureCount() > 0:
+                write_layer_to_gpkg(
+                    batch_layer,
+                    output_path,
+                    layer_name,
+                    overwrite_file=False,
+                    append=True,
+                )
+            completed += len(batch)
+            if progress is not None:
+                progress(layer_name, completed, total_records, layer_index, len(heavy_builders))
+
+    ensure_attribute_indexes(output_path)
+    ensure_spatial_indexes(output_path)
+    qgs_vector_layer = _import_qgis_spatial_index_api()[2]
+    layer_names = tuple(heavy_builders) + tuple(lightweight_layers)
+    return {
+        layer_name: qgs_vector_layer(
+            f"{output_path}|layername={layer_name}",
+            layer_name,
+            "ogr",
+        )
+        for layer_name in layer_names
+    }
+
+
+def _compact_atlas_record(record, atlas_page_settings):
+    from ....atlas.publish_atlas import activity_bounds, build_profile_summary
+
+    compact = dict(record)
+    bounds, geometry_source = activity_bounds(
+        record,
+        min_extent_degrees=atlas_page_settings.min_extent_degrees,
+    )
+    compact["geometry_source"] = geometry_source
+    compact["_qfit_precomputed_bounds"] = bounds
+    compact["_qfit_precomputed_profile_summary"] = asdict(
+        build_profile_summary(record)
+    )
+    compact["geometry_points"] = []
+    details = dict(compact.get("details_json") or {})
+    details.pop("stream_metrics", None)
+    compact["details_json"] = details
+    return compact

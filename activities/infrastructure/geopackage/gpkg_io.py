@@ -14,7 +14,7 @@ from qgis.core import (
 )
 
 
-def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file):
+def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file, *, append=False):
     """Write *layer* as a named layer inside *output_path* (a GeoPackage file).
 
     Parameters
@@ -29,6 +29,9 @@ def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file):
         When ``True`` the entire GeoPackage file is recreated
         (``CreateOrOverwriteFile``); when ``False`` only the named layer is
         replaced (``CreateOrOverwriteLayer``).
+    append:
+        Append features to an existing layer without changing its schema.
+        Used by bounded bulk-import rebuilds after an empty layer is created.
 
     Raises
     ------
@@ -39,11 +42,14 @@ def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file):
     options.driverName = "GPKG"
     options.layerName = layer_name
     options.fileEncoding = "UTF-8"
-    options.actionOnExistingFile = (
-        QgsVectorFileWriter.CreateOrOverwriteFile
-        if overwrite_file
-        else QgsVectorFileWriter.CreateOrOverwriteLayer
-    )
+    if append:
+        options.actionOnExistingFile = _writer_action("AppendToLayerNoNewFields")
+    else:
+        options.actionOnExistingFile = (
+            _writer_action("CreateOrOverwriteFile")
+            if overwrite_file
+            else _writer_action("CreateOrOverwriteLayer")
+        )
 
     result = QgsVectorFileWriter.writeAsVectorFormatV3(
         layer,
@@ -59,3 +65,11 @@ def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file):
                 result=result,
             )
         )
+
+
+def _writer_action(name):
+    direct = getattr(QgsVectorFileWriter, name, None)
+    if direct is not None:
+        return direct
+    enum_class = getattr(QgsVectorFileWriter, "ActionOnExistingFile")
+    return getattr(enum_class, name)
