@@ -15,7 +15,6 @@ from qfit.providers.infrastructure.strava_bulk_archive import (
     ArchiveLimits,
     StravaBulkArchiveCancelled,
     StravaBulkArchiveError,
-    StravaBulkArchiveCancelled,
     StravaBulkArchiveReader,
 )
 
@@ -370,6 +369,26 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "changed after validation"):
             list(reader.iter_activity_results())
 
+    def test_activity_member_replacement_after_preflight_is_rejected(self):
+        original = _gpx()
+        replacement = original.replace(b'lat="46.0"', b'lat="47.0"')
+        self.assertEqual(len(original), len(replacement))
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": original},
+        )
+        reader.preflight()
+        with zipfile.ZipFile(
+            self.archive_path,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
+        ) as archive:
+            archive.writestr("activities.csv", _manifest([_row()]))
+            archive.writestr("activities/arbitrary-name.gpx", replacement)
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "changed after validation"):
+            list(reader.iter_activity_results())
+
     def test_activity_member_read_honors_cancellation_between_chunks(self):
         large_comment = b"<!--" + b"x" * (3 * 1024 * 1024) + b"-->"
         reader = self._write_archive(
@@ -462,6 +481,21 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             b"<!--" + b"x" * 5000 + b"-->"
             b'<!DOCTYPE gpx [<!ENTITY x "unsafe">]><gpx>&x;</gpx>'
         )
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": payload},
+        )
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.diagnostic, "invalid_activity_file")
+
+    def test_utf16_xml_document_type_is_rejected_per_activity(self):
+        payload = (
+            '<?xml version="1.0" encoding="UTF-16"?>'
+            '<!DOCTYPE gpx [<!ENTITY x "unsafe">]><gpx>&x;</gpx>'
+        ).encode("utf-16")
         reader = self._write_archive(
             [_row()],
             {"activities/arbitrary-name.gpx": payload},

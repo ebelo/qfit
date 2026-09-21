@@ -152,14 +152,14 @@ class StravaBulkArchiveReader:
             entries = self._read_manifest(manifest_bytes, info_by_name)
             if progress is not None:
                 progress("archive_integrity")
-            self._validate_referenced_crcs(
+            member_hashes = self._validate_referenced_members(
                 archive,
                 entries,
                 info_by_name,
                 cancelled=cancelled,
             )
 
-        fingerprint = _archive_fingerprint(manifest_bytes, entries, info_by_name)
+        fingerprint = _archive_fingerprint(manifest_bytes, entries, member_hashes)
         formats = Counter(
             _activity_format(entry.member_name)
             for entry in entries
@@ -214,10 +214,16 @@ class StravaBulkArchiveReader:
                 manifest_info,
                 cancelled=cancelled,
             )
+            member_hashes = self._hash_referenced_members(
+                archive,
+                entries,
+                info_by_name,
+                cancelled=cancelled,
+            )
             reopened_fingerprint = _archive_fingerprint(
                 manifest_bytes,
                 entries,
-                info_by_name,
+                member_hashes,
             )
             if reopened_fingerprint != preflight.archive_fingerprint:
                 raise StravaBulkArchiveError(
@@ -332,7 +338,7 @@ class StravaBulkArchiveReader:
             )
         return entries, id_counts, filename_counts
 
-    def _validate_referenced_crcs(
+    def _validate_referenced_members(
         self,
         archive,
         entries,
@@ -340,7 +346,7 @@ class StravaBulkArchiveReader:
         *,
         cancelled=None,
     ):
-        """Read only allowlisted activity members so ZIP CRC checks run pre-write."""
+        """Verify and hash allowlisted activity members before any write."""
 
         referenced = {
             entry.member_name
@@ -348,13 +354,16 @@ class StravaBulkArchiveReader:
             if entry.member_name and entry.member_name in info_by_name
         }
         total_nested_bytes = 0
+        member_hashes = {}
         try:
             for member_name in sorted(referenced):
-                total_nested_bytes += self._validate_referenced_member(
+                nested_bytes, member_hash = self._validate_referenced_member(
                     archive,
                     info_by_name[member_name],
                     cancelled=cancelled,
                 )
+                total_nested_bytes += nested_bytes
+                member_hashes[member_name] = member_hash
                 if total_nested_bytes > self.limits.max_total_bytes:
                     raise StravaBulkArchiveError(
                         "Nested activity files exceed the safe total expanded-size limit"
@@ -365,9 +374,62 @@ class StravaBulkArchiveReader:
             raise StravaBulkArchiveError(
                 "The Strava archive contains a corrupt referenced activity member"
             ) from exc
+        return member_hashes
 
     def _validate_referenced_member(self, archive, info, *, cancelled=None):
+        expanded_bytes, member_hash = self._hash_zip_member(
+            archive,
+            info,
+            cancelled=cancelled,
+        )
+        if expanded_bytes != info.file_size:
+            raise zipfile.BadZipFile("referenced member size mismatch")
+        if not info.filename.lower().endswith(".gz"):
+            return 0, member_hash
+        nested_bytes = self._validate_nested_gzip_size(
+            archive,
+            info,
+            cancelled=cancelled,
+        )
+        return nested_bytes, member_hash
+
+    def _hash_referenced_members(
+        self,
+        archive,
+        entries,
+        info_by_name,
+        *,
+        cancelled=None,
+    ):
+        referenced = {
+            entry.member_name
+            for entry in entries
+            if entry.member_name and entry.member_name in info_by_name
+        }
+        member_hashes = {}
+        try:
+            for member_name in sorted(referenced):
+                info = info_by_name[member_name]
+                expanded_bytes, member_hash = self._hash_zip_member(
+                    archive,
+                    info,
+                    cancelled=cancelled,
+                )
+                if expanded_bytes != info.file_size:
+                    raise zipfile.BadZipFile("referenced member size mismatch")
+                member_hashes[member_name] = member_hash
+        except StravaBulkArchiveCancelled:
+            raise
+        except (OSError, EOFError, zipfile.BadZipFile) as exc:
+            raise StravaBulkArchiveError(
+                "The Strava archive contains a corrupt referenced activity member"
+            ) from exc
+        return member_hashes
+
+    @staticmethod
+    def _hash_zip_member(archive, info, *, cancelled=None):
         _raise_if_cancelled(cancelled)
+        digest = hashlib.sha256()
         with archive.open(info) as handle:
             expanded_bytes = 0
             while True:
@@ -376,15 +438,8 @@ class StravaBulkArchiveReader:
                 if not chunk:
                     break
                 expanded_bytes += len(chunk)
-        if expanded_bytes != info.file_size:
-            raise zipfile.BadZipFile("referenced member size mismatch")
-        if not info.filename.lower().endswith(".gz"):
-            return 0
-        return self._validate_nested_gzip_size(
-            archive,
-            info,
-            cancelled=cancelled,
-        )
+                digest.update(chunk)
+        return expanded_bytes, digest.hexdigest()
 
     def _validate_nested_gzip_size(self, archive, info, *, cancelled=None):
         expanded_bytes = 0
@@ -562,16 +617,14 @@ def _activity_format(member_name: str | None) -> str | None:
     return None
 
 
-def _archive_fingerprint(manifest_bytes, entries, info_by_name):
+def _archive_fingerprint(manifest_bytes, entries, member_hashes):
     digest = hashlib.sha256(manifest_bytes)
     for entry in entries:
         if not entry.member_name:
             continue
-        info = info_by_name.get(entry.member_name)
         digest.update(entry.member_name.encode("utf-8"))
-        if info is not None:
-            digest.update(str(info.CRC).encode("ascii"))
-            digest.update(str(info.file_size).encode("ascii"))
+        member_hash = member_hashes.get(entry.member_name)
+        digest.update((member_hash or "missing").encode("ascii"))
     return digest.hexdigest()
 
 
@@ -785,22 +838,19 @@ def _xml_elements_named(elements, names, *, cancelled=None):
 
 def _safe_xml_root(payload: bytes, *, cancelled=None):
     stripped = payload.lstrip()
-    parser = ElementTree.XMLParser()
-    overlap = b""
+    parser = ElementTree.XMLParser(target=_RejectDtdTreeBuilder())
     for offset in range(0, len(stripped), 1024 * 1024):
         _raise_if_cancelled(cancelled)
         chunk = stripped[offset : offset + 1024 * 1024]
-        searchable = overlap + chunk
-        if re.search(
-            br"<!\s*(?:DOCTYPE|ENTITY)\b",
-            searchable,
-            flags=re.IGNORECASE,
-        ):
-            raise ValueError("XML document type declarations are not supported")
         parser.feed(chunk)
-        overlap = searchable[-32:]
     _raise_if_cancelled(cancelled)
     return parser.close()
+
+
+class _RejectDtdTreeBuilder(ElementTree.TreeBuilder):
+    def doctype(self, name, pubid, system):
+        del name, pubid, system
+        raise ValueError("XML document type declarations are not supported")
 
 
 def _finalize_track(
