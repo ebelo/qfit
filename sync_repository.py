@@ -247,6 +247,7 @@ class SyncRepository:
         reconcile_existing=True,
     ):
         sync_metadata = sync_metadata or {}
+        suppress_sync_state = bool(sync_metadata.get("suppress_sync_state"))
         now = datetime.now(UTC).isoformat()
         counts = {"inserted": 0, "updated": 0, "unchanged": 0}
 
@@ -263,9 +264,13 @@ class SyncRepository:
                 counts[outcome] += 1
 
             self._prune_missing_activities(cursor, activities, sync_metadata)
-            self._prune_orphaned_detail_payloads(cursor)
+            # Partial bulk batches never prune registry rows, so they cannot
+            # create orphaned detail payloads. Avoid a full-table scan for
+            # every batch in a large export.
+            if not suppress_sync_state:
+                self._prune_orphaned_detail_payloads(cursor)
             total_count = cursor.execute(ACTIVITY_COUNT_QUERY).fetchone()[0]
-            if not sync_metadata.get("suppress_sync_state"):
+            if not suppress_sync_state:
                 self._update_sync_state(
                     cursor,
                     activities,
@@ -577,7 +582,14 @@ class SyncRepository:
                     return None
                 activity_row = connection.execute(
                     """
-                    SELECT COUNT(*) AS stored_activity_count, MAX(start_date) AS latest_activity_start_date
+                    SELECT
+                        COUNT(*) AS stored_activity_count,
+                        MAX(
+                            COALESCE(
+                                NULLIF(start_date, ''),
+                                NULLIF(start_date_local, '')
+                            )
+                        ) AS latest_activity_start_date
                     FROM activity_registry
                     WHERE source = ?
                     """,

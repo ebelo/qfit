@@ -6,6 +6,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
+from qfit.activities.application.sync_strategy import (
+    ActivitySyncMode,
+    plan_activity_sync,
+)
 from qfit.activities.domain.models import Activity
 from qfit.sync_repository import (
     ActivityDetailPayloadError,
@@ -368,6 +372,27 @@ class SyncRepositoryTests(unittest.TestCase):
             rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
             self.assertEqual(rows, [])
 
+    def test_partial_bulk_batches_skip_repeated_orphan_payload_scan(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            with patch.object(
+                repo,
+                "_prune_orphaned_detail_payloads",
+                wraps=repo._prune_orphaned_detail_payloads,
+            ) as prune:
+                repo.upsert_activities(
+                    [self._activity()],
+                    sync_metadata={
+                        "provider": "strava",
+                        "suppress_sync_state": True,
+                    },
+                    compress_detail_payloads=True,
+                )
+
+            prune.assert_not_called()
+
     def test_bulk_checkpoint_initializes_sync_state_without_overwriting_existing(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
@@ -406,6 +431,40 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(state.latest_activity_start_date, "2026-03-20T06:00:00Z")
             self.assertEqual(json.loads(initial_stats)["checkpoint"], "strava_bulk_import")
             self.assertEqual(final_stats, initial_stats)
+
+    def test_bulk_checkpoint_uses_local_manifest_date_when_utc_start_is_absent(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        start_date=None,
+                        start_date_local="2026-03-20T07:00:00",
+                        geometry_source=None,
+                        geometry_points=[],
+                    )
+                ],
+                sync_metadata={"provider": "strava", "suppress_sync_state": True},
+            )
+
+            repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=1,
+                inserted=1,
+                is_full_sync=True,
+                checkpoint="strava_bulk_import",
+            )
+            state = repo.load_activity_sync_state("strava")
+
+            self.assertTrue(state.has_completed_sync)
+            self.assertEqual(
+                state.latest_activity_start_date,
+                "2026-03-20T07:00:00",
+            )
+            plan = plan_activity_sync(state)
+            self.assertEqual(plan.mode, ActivitySyncMode.INCREMENTAL_UPDATE)
+            self.assertIsNotNone(plan.after_epoch)
 
     def test_load_activity_sync_state_returns_completed_metadata(self):
         with tempfile.TemporaryDirectory() as tmpdir:
