@@ -112,6 +112,7 @@ def build_start_layer(records):
         feature["source_activity_id"] = record.get("source_activity_id")
         feature["name"] = record.get("name")
         feature["activity_type"] = record.get("activity_type")
+        feature["sport_type"] = record.get("sport_type")
         feature["start_date"] = record.get("start_date")
         feature["distance_m"] = record.get("distance_m")
         feature["last_synced_at"] = record.get("last_synced_at")

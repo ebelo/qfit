@@ -116,8 +116,14 @@ _SPORT_TYPE_BY_NORMALIZED_LABEL = {
 }
 _SPORT_TYPE_BY_NORMALIZED_LABEL.update(
     {
+        "canoe": "Canoeing",
         "footballsoccer": "Soccer",
+        "kayak": "Kayaking",
+        "kitesurf": "KitesurfSession",
+        "mountainbike": "MountainBikeRide",
         "rockclimb": "RockClimbing",
+        "sailing": "Sail",
+        "windsurf": "WindsurfSession",
     }
 )
 

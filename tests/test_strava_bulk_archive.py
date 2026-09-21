@@ -224,6 +224,12 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             "Stair-Stepper": "StairStepper",
             "Crossfit": "Crossfit",
             "Football (Soccer)": "Soccer",
+            "Canoe": "Canoeing",
+            "Kayak": "Kayaking",
+            "Kitesurf": "KitesurfSession",
+            "Mountain Bike": "MountainBikeRide",
+            "Sailing": "Sail",
+            "Windsurf": "WindsurfSession",
         }
         rows = [
             _row(

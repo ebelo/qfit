@@ -69,6 +69,7 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
             feature["moving"] = _metric_value(stream_metrics, "moving", point_index, as_int=True)
             feature["name"] = record.get("name")
             feature["activity_type"] = record.get("activity_type")
+            feature["sport_type"] = record.get("sport_type")
             feature["start_date"] = record.get("start_date")
             feature["distance_m"] = record.get("distance_m")
             feature["geometry_source"] = geometry_source

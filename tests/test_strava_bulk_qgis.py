@@ -37,6 +37,9 @@ if QgsApplication is not None:
     from qfit.visualization.infrastructure.layer_style_service import (
         LayerStyleService,
     )
+    from qfit.visualization.infrastructure.layer_filter_service import (
+        LayerFilterService,
+    )
     from qfit.visualization.map_style import resolve_activity_color
 
 
@@ -189,7 +192,19 @@ class StravaBulkQgisIntegrationTests(unittest.TestCase):
                 "tracks",
                 "ogr",
             )
+            starts = QgsVectorLayer(
+                gpkg_path + "|layername=activity_starts",
+                "starts",
+                "ogr",
+            )
+            points = QgsVectorLayer(
+                gpkg_path + "|layername=activity_points",
+                "points",
+                "ogr",
+            )
             self.assertTrue(tracks.isValid())
+            self.assertTrue(starts.isValid())
+            self.assertTrue(points.isValid())
             LayerStyleService().apply_style(
                 tracks,
                 None,
@@ -205,6 +220,13 @@ class StravaBulkQgisIntegrationTests(unittest.TestCase):
                 categories["BackcountrySki"].symbol().color().name().upper(),
                 resolve_activity_color("BackcountrySki").upper(),
             )
+            for layer, expected_count in ((tracks, 1), (starts, 1), (points, 2)):
+                self.assertGreaterEqual(layer.fields().indexOf("sport_type"), 0)
+                LayerFilterService().apply_filters(
+                    layer,
+                    activity_type="BackcountrySki",
+                )
+                self.assertEqual(len(list(layer.getFeatures())), expected_count)
 
     def test_task_exposes_phase_progress_and_completion(self):
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -260,6 +260,10 @@ fills `sport_type` when the manifest value is blank. Unknown useful manifest
 columns are retained under versioned `details_json.bulk_summary.values`. Empty
 and non-finite numeric values become null.
 
+The canonical `sport_type` is copied to track, start, sampled-point, and atlas
+layers. The shared activity selector can therefore apply the same category to
+every visible derived layer without dropping related start or point features.
+
 ### Unit validation lesson
 
 The official export schema has generated contradictory third-party claims about
