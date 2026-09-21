@@ -49,6 +49,11 @@ The codebase now already reflects most of that shape:
 - `ui/` — dock-widget dependency assembly and workflow-section coordination
 - `validation/` — validation harnesses and scenario helpers for export-sensitive checks
 
+The Strava Bulk Data Export importer is a worked example of these boundaries.
+Its complete architecture, threat model, persistence decision, and validation
+record are in
+[`docs/strava-bulk-import-engineering.md`](strava-bulk-import-engineering.md).
+
 Some root-level modules still exist as **compatibility shims** so imports remain stable while the migration settles. Those files are transitional; new feature logic should not be added there.
 
 Current deprecated compatibility shims are:
