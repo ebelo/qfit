@@ -213,6 +213,25 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         self.assertEqual(result.status, "unsupported")
         self.assertIsNotNone(result.activity)
 
+    def test_large_unsupported_original_does_not_consume_import_limits(self):
+        filename = "activities/original.json"
+        reader = self._write_archive(
+            [_row(filename=filename)],
+            {filename: b"x" * 8192},
+        )
+        reader.limits = ArchiveLimits(
+            max_member_bytes=2048,
+            max_total_bytes=4096,
+        )
+
+        preflight = reader.preflight()
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(preflight.unsupported_file_count, 1)
+        self.assertEqual(preflight.referenced_expanded_bytes, 0)
+        self.assertEqual(result.status, "unsupported")
+        self.assertIsNotNone(result.activity)
+
     def test_gpx_segments_do_not_add_distance_across_segment_gap(self):
         reader = self._write_archive(
             [_row()],

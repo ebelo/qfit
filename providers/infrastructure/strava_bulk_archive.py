@@ -198,6 +198,7 @@ class StravaBulkArchiveReader:
                 info_by_name[entry.member_name].file_size
                 for entry in entries
                 if entry.member_name in info_by_name
+                and _activity_format(entry.member_name) is not None
             ),
             format_counts=dict(sorted(formats.items())),
         )
@@ -379,11 +380,7 @@ class StravaBulkArchiveReader:
     ):
         """Verify and hash allowlisted activity members before any write."""
 
-        referenced = {
-            entry.member_name
-            for entry in entries
-            if entry.member_name and entry.member_name in info_by_name
-        }
+        referenced = _imported_member_names(entries, info_by_name)
         total_nested_bytes = 0
         total_expanded_bytes = initial_expanded_bytes
         if total_expanded_bytes > self.limits.max_total_bytes:
@@ -441,11 +438,7 @@ class StravaBulkArchiveReader:
         progress=None,
         initial_expanded_bytes=0,
     ):
-        referenced = {
-            entry.member_name
-            for entry in entries
-            if entry.member_name and entry.member_name in info_by_name
-        }
+        referenced = _imported_member_names(entries, info_by_name)
         member_hashes = {}
         total_bytes = sum(info_by_name[name].file_size for name in referenced)
         if initial_expanded_bytes + total_bytes > self.limits.max_total_bytes:
@@ -701,6 +694,18 @@ def _activity_format(member_name: str | None) -> str | None:
         if lowered.endswith(suffix):
             return suffix.removeprefix(".").removesuffix(".gz")
     return None
+
+
+def _imported_member_names(entries, info_by_name):
+    """Return supported activity originals that qfit will actually read."""
+
+    return {
+        entry.member_name
+        for entry in entries
+        if entry.member_name
+        and entry.member_name in info_by_name
+        and _activity_format(entry.member_name) is not None
+    }
 
 
 def _archive_fingerprint(manifest_bytes, entries, member_hashes):
