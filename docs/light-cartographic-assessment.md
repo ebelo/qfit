@@ -4,6 +4,26 @@ Assessment date: **2026-09-11**. Tracking issue:
 [#1462](https://github.com/ebelo/qfit/issues/1462).
 Protocol: [cartographic comparison framework](cartographic-comparison-framework.md).
 
+## Product acceptance and investigation closure — 2026-09-21
+
+The maintainer accepted the current Mapbox style quality as sufficient and
+requested closure of the improvement investigations (#1462 Light and #1453
+Outdoors), followed by a release for local QGIS 3/4 testing. This decision
+supersedes the earlier instruction to iterate until every coverage cell passes.
+The improvement loops are stopped; no further parity work is scheduled.
+
+**Closure is product acceptance, not full cartographic certification.** All
+historical OPEN, PARTIAL and NOT ASSESSED verdicts below remain unchanged as
+evidence records. Remaining label eligibility/content gaps, collision and
+typography differences, QGIS 4 density-dependent detail/PDF variability, and
+untested desktop/accessibility/overlay cases are accepted limitations of this
+release baseline, not fixed or newly validated behavior. The unfinished
+minor-settlement eligibility investigation did not ship a production change.
+
+Future regressions or specific desktop-test findings should get a new focused
+issue referencing this ledger; they do not automatically restart the old loops.
+See [0.53.4 release notes and desktop test plan](releases/0.53.4.md).
+
 This document retains the historical baseline and adds evidence-scoped updates.
 It is **not a declaration that Light passes all criteria**.
 The latest road-label improvement is real, but does not settle road hierarchy,
