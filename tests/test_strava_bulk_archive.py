@@ -300,6 +300,25 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         }
         self.assertNotIn("profile.csv", opened_names)
 
+    def test_unreferenced_large_media_does_not_consume_import_limits(self):
+        reader = self._write_archive(
+            [_row()],
+            {
+                "activities/arbitrary-name.gpx": _gpx(),
+                "media/large-video.mp4": b"x" * 8192,
+            },
+        )
+        reader.limits = ArchiveLimits(
+            max_member_bytes=2048,
+            max_total_bytes=4096,
+        )
+
+        preflight = reader.preflight()
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(preflight.activity_count, 1)
+        self.assertEqual(result.status, "detailed_profile")
+
     def test_unsafe_archive_path_is_rejected_before_import(self):
         with zipfile.ZipFile(self.archive_path, "w") as archive:
             archive.writestr("activities.csv", _manifest([_row()]))
@@ -448,8 +467,9 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
 
     def test_dangerous_zip_compression_ratio_is_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-            archive.writestr("activities.csv", _manifest([_row(filename="")]))
-            archive.writestr("unrelated.bin", b"0" * (2 * 1024 * 1024))
+            filename = "activities/large.gpx"
+            archive.writestr("activities.csv", _manifest([_row(filename=filename)]))
+            archive.writestr(filename, b"0" * (2 * 1024 * 1024))
 
         reader = StravaBulkArchiveReader(str(self.archive_path))
         with self.assertRaisesRegex(StravaBulkArchiveError, "compression ratio"):
@@ -526,6 +546,59 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
 
         self.assertEqual(result.status, "failed")
         self.assertEqual(result.diagnostic, "invalid_activity_file")
+
+    def test_xml_parser_size_limit_isolated_to_oversized_activity(self):
+        payload = _gpx()
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": payload},
+        )
+        reader.limits = ArchiveLimits(max_xml_bytes=len(payload) - 1)
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.diagnostic, "invalid_activity_file")
+
+    def test_compressed_xml_parser_size_limit_isolated_to_oversized_activity(self):
+        payload = _gpx()
+        filename = "activities/arbitrary-name.gpx.gz"
+        reader = self._write_archive(
+            [_row(filename=filename)],
+            {filename: gzip.compress(payload)},
+        )
+        reader.limits = ArchiveLimits(max_xml_bytes=len(payload) - 1)
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.diagnostic, "invalid_activity_file")
+
+    def test_tcx_track_boundaries_do_not_add_inter_track_distance(self):
+        payload = b"""<?xml version='1.0' encoding='UTF-8'?>
+<TrainingCenterDatabase>
+  <Activities><Activity Sport='Biking'><Lap>
+    <Track>
+      <Trackpoint><Position><LatitudeDegrees>46.0</LatitudeDegrees><LongitudeDegrees>7.0</LongitudeDegrees></Position></Trackpoint>
+      <Trackpoint><Position><LatitudeDegrees>46.001</LatitudeDegrees><LongitudeDegrees>7.001</LongitudeDegrees></Position></Trackpoint>
+    </Track>
+    <Track>
+      <Trackpoint><Position><LatitudeDegrees>48.0</LatitudeDegrees><LongitudeDegrees>9.0</LongitudeDegrees></Position></Trackpoint>
+      <Trackpoint><Position><LatitudeDegrees>48.001</LatitudeDegrees><LongitudeDegrees>9.001</LongitudeDegrees></Position></Trackpoint>
+    </Track>
+  </Lap></Activity></Activities>
+</TrainingCenterDatabase>"""
+        filename = "activities/segmented.tcx"
+        reader = self._write_archive(
+            [_row(filename=filename)],
+            {filename: payload},
+        )
+
+        result = list(reader.iter_activity_results())[0]
+
+        distances = result.activity.details_json["stream_metrics"]["distance"]
+        self.assertLess(distances[-1], 1000.0)
+        self.assertEqual(len(distances), 4)
 
     def test_nested_gzip_limit_is_enforced_per_activity(self):
         filename = "activities/large.gpx.gz"

@@ -66,6 +66,7 @@ class ArchiveLimits:
     max_member_bytes: int = 512 * 1024 * 1024
     max_total_bytes: int = 8 * 1024 * 1024 * 1024
     max_nested_bytes: int = 512 * 1024 * 1024
+    max_xml_bytes: int = 16 * 1024 * 1024
     max_compression_ratio: float = 250.0
 
 
@@ -142,6 +143,7 @@ class StravaBulkArchiveReader:
             manifest_info = info_by_name.get(MANIFEST_NAME)
             if manifest_info is None:
                 raise StravaBulkArchiveError("The Strava archive does not contain activities.csv")
+            self._validate_imported_member(manifest_info)
             if progress is not None:
                 progress("manifest_parsing")
             manifest_bytes = self._read_zip_member(
@@ -157,6 +159,7 @@ class StravaBulkArchiveReader:
                 entries,
                 info_by_name,
                 cancelled=cancelled,
+                initial_expanded_bytes=manifest_info.file_size,
             )
 
         fingerprint = _archive_fingerprint(manifest_bytes, entries, member_hashes)
@@ -210,6 +213,7 @@ class StravaBulkArchiveReader:
                 raise StravaBulkArchiveError(
                     "The Strava archive changed after validation"
                 )
+            self._validate_imported_member(manifest_info)
             manifest_bytes = self._read_zip_member(
                 archive,
                 manifest_info,
@@ -221,6 +225,7 @@ class StravaBulkArchiveReader:
                 info_by_name,
                 cancelled=cancelled,
                 progress=integrity_progress,
+                initial_expanded_bytes=manifest_info.file_size,
             )
             reopened_fingerprint = _archive_fingerprint(
                 manifest_bytes,
@@ -254,13 +259,9 @@ class StravaBulkArchiveReader:
         infos = archive.infolist()
         if len(infos) > self.limits.max_members:
             raise StravaBulkArchiveError("The archive contains too many members")
-        total_bytes = 0
         normalized_names = set()
         for info in infos:
             self._validate_central_member(info, normalized_names)
-            total_bytes += info.file_size
-            if total_bytes > self.limits.max_total_bytes:
-                raise StravaBulkArchiveError("The archive exceeds the safe total expanded-size limit")
         return infos
 
     def _validate_central_member(self, info, normalized_names):
@@ -268,6 +269,8 @@ class StravaBulkArchiveReader:
         if normalized in normalized_names:
             raise StravaBulkArchiveError("The archive contains duplicate normalized member paths")
         normalized_names.add(normalized)
+
+    def _validate_imported_member(self, info):
         if info.flag_bits & 0x1:
             raise StravaBulkArchiveError("Encrypted ZIP members are not supported")
         if not info.is_dir() and info.compress_type not in ALLOWED_ZIP_COMPRESSION:
@@ -347,6 +350,7 @@ class StravaBulkArchiveReader:
         info_by_name,
         *,
         cancelled=None,
+        initial_expanded_bytes=0,
     ):
         """Verify and hash allowlisted activity members before any write."""
 
@@ -356,12 +360,24 @@ class StravaBulkArchiveReader:
             if entry.member_name and entry.member_name in info_by_name
         }
         total_nested_bytes = 0
+        total_expanded_bytes = initial_expanded_bytes
+        if total_expanded_bytes > self.limits.max_total_bytes:
+            raise StravaBulkArchiveError(
+                "Referenced files exceed the safe total expanded-size limit"
+            )
         member_hashes = {}
         try:
             for member_name in sorted(referenced):
+                info = info_by_name[member_name]
+                self._validate_imported_member(info)
+                total_expanded_bytes += info.file_size
+                if total_expanded_bytes > self.limits.max_total_bytes:
+                    raise StravaBulkArchiveError(
+                        "Referenced files exceed the safe total expanded-size limit"
+                    )
                 nested_bytes, member_hash = self._validate_referenced_member(
                     archive,
-                    info_by_name[member_name],
+                    info,
                     cancelled=cancelled,
                 )
                 total_nested_bytes += nested_bytes
@@ -403,6 +419,7 @@ class StravaBulkArchiveReader:
         *,
         cancelled=None,
         progress=None,
+        initial_expanded_bytes=0,
     ):
         referenced = {
             entry.member_name
@@ -411,10 +428,15 @@ class StravaBulkArchiveReader:
         }
         member_hashes = {}
         total_bytes = sum(info_by_name[name].file_size for name in referenced)
+        if initial_expanded_bytes + total_bytes > self.limits.max_total_bytes:
+            raise StravaBulkArchiveError(
+                "Referenced files exceed the safe total expanded-size limit"
+            )
         completed_bytes = 0
         try:
             for member_name in sorted(referenced):
                 info = info_by_name[member_name]
+                self._validate_imported_member(info)
                 expanded_bytes, member_hash = self._hash_zip_member(
                     archive,
                     info,
@@ -560,11 +582,21 @@ class StravaBulkArchiveReader:
                     raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
 
     def _read_activity_member(self, archive, info, *, compressed, cancelled=None):
-        payload = self._read_zip_member(archive, info, cancelled=cancelled)
+        source_format = _activity_format(info.filename)
+        is_xml = source_format in {"gpx", "tcx"}
+        expanded_limit = (
+            self.limits.max_xml_bytes
+            if is_xml
+            else self.limits.max_nested_bytes
+        )
+        if not compressed and info.file_size > expanded_limit:
+            raise ValueError("activity file exceeds the safe parser-size limit")
         if not compressed:
-            return payload
+            return self._read_zip_member(archive, info, cancelled=cancelled)
         try:
-            with gzip.GzipFile(fileobj=io.BytesIO(payload)) as handle:
+            with archive.open(info) as zip_handle, gzip.GzipFile(
+                fileobj=zip_handle
+            ) as handle:
                 buffer = io.BytesIO()
                 while True:
                     _raise_if_cancelled(cancelled)
@@ -573,9 +605,9 @@ class StravaBulkArchiveReader:
                         expanded = buffer.getvalue()
                         break
                     buffer.write(chunk)
-                    if buffer.tell() > self.limits.max_nested_bytes:
+                    if buffer.tell() > expanded_limit:
                         raise ValueError(
-                            "nested activity file exceeds the safe expanded-size limit"
+                            "activity file exceeds the safe parser-size limit"
                         )
         except (OSError, EOFError) as exc:
             raise ValueError("invalid nested gzip activity file") from exc
@@ -739,21 +771,24 @@ def _parse_tcx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
     metric_rows = []
     first_timestamp = None
     sport_type = None
+    segment_starts = set()
     for element in root.iter():
         _raise_if_cancelled(cancelled)
         if _local_name(element.tag) == "Activity" and sport_type is None:
             sport_type = element.attrib.get("Sport")
-        if _local_name(element.tag) != "Trackpoint":
-            continue
+
+    def append_point(element):
+        nonlocal first_timestamp
+        _raise_if_cancelled(cancelled)
         values = {_local_name(item.tag): item for item in element.iter()}
         position = values.get("Position")
         if position is None:
-            continue
+            return
         coordinates = {_local_name(item.tag): item for item in position.iter()}
         lat = _element_float(coordinates.get("LatitudeDegrees"))
         lon = _element_float(coordinates.get("LongitudeDegrees"))
         if not _valid_coordinate(lat, lon):
-            continue
+            return
         timestamp = _element_datetime(values.get("Time"))
         first_timestamp = first_timestamp or timestamp
         points.append((lat, lon))
@@ -768,12 +803,39 @@ def _parse_tcx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
                 "velocity_smooth": _first_named_float(element, ("Speed",)),
             }
         )
+
+    for candidates in _tcx_point_groups(root, cancelled=cancelled):
+        segment_start = len(points)
+        for candidate in candidates:
+            append_point(candidate)
+        if len(points) > segment_start:
+            segment_starts.add(segment_start)
     return _finalize_track(
         points,
         metric_rows,
         start_date=_iso_utc(first_timestamp),
         sport_type=sport_type,
+        segment_starts=segment_starts,
     )
+
+
+def _tcx_point_groups(root, *, cancelled=None):
+    tracks = _xml_elements_named(
+        root.iter(),
+        {"Track"},
+        cancelled=cancelled,
+    )
+    if not tracks:
+        candidates = _xml_elements_named(
+            root.iter(),
+            {"Trackpoint"},
+            cancelled=cancelled,
+        )
+        return [candidates] if candidates else []
+    return [
+        _xml_elements_named(track, {"Trackpoint"}, cancelled=cancelled)
+        for track in tracks
+    ]
 
 
 def _parse_gpx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:

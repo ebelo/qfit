@@ -20,7 +20,9 @@ can then keep recent activities current.
 
 The ZIP is read in place and is not extracted. qfit allowlists
 `activities.csv` and only the FIT, TCX, or GPX members referenced by that
-manifest. Saved routes in `routes.csv` are not imported by this workflow.
+manifest. Unreferenced photos, videos, and account files do not consume the
+activity import's expanded-size limits. Saved routes in `routes.csv` are not
+imported by this workflow.
 The derived sampled-point and profile tables can make the destination larger
 than the source ZIP. **Keep every Nth point** controls the interactive activity
 point layer; the atlas profile table independently retains the aligned
@@ -103,6 +105,9 @@ repository and public diagnostics.
   data. qfit does not upload them or apply automatic expiry.
 - A missing original is valid and imports as summary-only. A corrupt original
   is isolated and reported without aborting other activities.
+- To bound QGIS memory use, a single expanded GPX or TCX original is limited to
+  16 MiB. An oversized XML original is isolated like any other member failure;
+  its manifest summary can still be imported.
 - Duplicate IDs, duplicate referenced filenames, or missing referenced members
   are reported as conflicts rather than guessed.
 - Unsupported members remain in the final counts but unrelated account files
