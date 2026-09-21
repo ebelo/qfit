@@ -178,7 +178,7 @@ class StravaBulkQgisIntegrationTests(unittest.TestCase):
 
             stored = SyncRepository(gpkg_path).load_all_activities()[0]
             self.assertEqual(stored.activity_type, "Backcountry Ski")
-            self.assertEqual(stored.sport_type, "Backcountry Ski")
+            self.assertEqual(stored.sport_type, "BackcountrySki")
             self.assertEqual(
                 stored.details_json["bulk_import"]["member_sport_type"],
                 "Biking",
@@ -200,10 +200,10 @@ class StravaBulkQgisIntegrationTests(unittest.TestCase):
             renderer = tracks.renderer()
             self.assertIsInstance(renderer, QgsCategorizedSymbolRenderer)
             categories = {category.value(): category for category in renderer.categories()}
-            self.assertEqual(set(categories), {"Backcountry Ski"})
+            self.assertEqual(set(categories), {"BackcountrySki"})
             self.assertEqual(
-                categories["Backcountry Ski"].symbol().color().name().upper(),
-                resolve_activity_color("Backcountry Ski").upper(),
+                categories["BackcountrySki"].symbol().color().name().upper(),
+                resolve_activity_color("BackcountrySki").upper(),
             )
 
     def test_task_exposes_phase_progress_and_completion(self):

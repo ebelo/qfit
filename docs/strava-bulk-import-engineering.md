@@ -242,7 +242,7 @@ The manifest supplies canonical Strava-processed summaries:
 |---|---|---|
 | Activity ID | `source_activity_id` | string, with `source = strava` |
 | Activity Name | `name` | blank -> null |
-| Activity Type | canonical `activity_type` and `sport_type` | blank -> member sport metadata or null |
+| Activity Type | display `activity_type`, API-vocabulary `sport_type` | blank -> member sport metadata or null |
 | Activity Date | `start_date_local` | recognized local formats -> ISO local text |
 | Distance | `distance_m` | finite float, metres |
 | Moving Time | `moving_time_s` | integer seconds |
@@ -251,13 +251,14 @@ The manifest supplies canonical Strava-processed summaries:
 | Average/Max Speed | `average_speed_mps` / `max_speed_mps` | finite float, m/s |
 | Heart rate, watts, calories, relative effort | existing registry summary fields | finite number or null |
 
-The manifest activity type is authoritative because it uses the same Strava
-vocabulary as API synchronization and therefore produces the same qfit route
-style categories. FIT/TCX sport metadata is retained as
-`details_json.bulk_import.member_sport_type` for provenance and only fills
-`sport_type` when the manifest value is blank. Unknown useful manifest columns
-are retained under versioned `details_json.bulk_summary.values`. Empty and
-non-finite numeric values become null.
+The manifest activity type is authoritative. Its display label is retained in
+`activity_type` and mapped to Strava's compact API `sport_type` vocabulary so
+bulk import and API synchronization produce one qfit route-style category (for
+example, `Backcountry Ski` becomes `BackcountrySki`). FIT/TCX sport metadata is
+retained as `details_json.bulk_import.member_sport_type` for provenance and only
+fills `sport_type` when the manifest value is blank. Unknown useful manifest
+columns are retained under versioned `details_json.bulk_summary.values`. Empty
+and non-finite numeric values become null.
 
 ### Unit validation lesson
 

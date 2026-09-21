@@ -41,10 +41,12 @@ original supplies exact coordinates and aligned time, distance, altitude,
 heart-rate, cadence, power, speed, temperature, and grade arrays where those
 fields exist.
 
-The manifest's **Activity Type** is also the canonical route category. This
-keeps bulk-imported routes in the same qfit color/style categories as activities
-created by daily Strava synchronization. FIT or TCX sport metadata is retained
-as provenance and is used only when the manifest activity type is blank.
+The manifest's **Activity Type** is authoritative. qfit retains its display
+label and maps it to the compact Strava API `sport_type` used for the canonical
+route category. This keeps bulk-imported routes in the same color/style and
+legend categories as activities created by daily synchronization. FIT or TCX
+sport metadata is retained as provenance and is used only when the manifest
+activity type is blank.
 
 Point altitude is used for atlas profiles. The manifest's processed elevation
 gain remains the canonical summary; qfit does not replace it with a gain

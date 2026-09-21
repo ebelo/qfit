@@ -17,6 +17,7 @@ from pathlib import PurePosixPath
 from typing import Callable, Iterator
 from xml.etree import ElementTree
 
+from ...activities.domain.activity_classification import normalize_activity_type
 from ...activities.domain.models import Activity
 from .fit_runtime import load_fitdecode
 
@@ -53,6 +54,72 @@ MAIN_MANIFEST_FIELDS = {
     "Calories",
     "Relative Effort",
 }
+
+# The export uses display labels while Strava's API uses compact SportType
+# values. Store the API vocabulary in ``sport_type`` so archive and API records
+# share one renderer/filter category. Keep the display label in
+# ``activity_type``.
+_STRAVA_API_SPORT_TYPES = (
+    "AlpineSki",
+    "BackcountrySki",
+    "Badminton",
+    "Canoeing",
+    "Crossfit",
+    "EBikeRide",
+    "Elliptical",
+    "EMountainBikeRide",
+    "Golf",
+    "GravelRide",
+    "Handcycle",
+    "HighIntensityIntervalTraining",
+    "Hike",
+    "IceSkate",
+    "InlineSkate",
+    "Kayaking",
+    "KitesurfSession",
+    "MountainBikeRide",
+    "NordicSki",
+    "Pickleball",
+    "Pilates",
+    "Racquetball",
+    "Ride",
+    "RockClimbing",
+    "RollerSki",
+    "Rowing",
+    "Run",
+    "Sail",
+    "Skateboard",
+    "Snowboard",
+    "Snowshoe",
+    "Soccer",
+    "Squash",
+    "StairStepper",
+    "StandUpPaddling",
+    "Surfing",
+    "Swim",
+    "TableTennis",
+    "Tennis",
+    "TrailRun",
+    "Velomobile",
+    "VirtualRide",
+    "VirtualRow",
+    "VirtualRun",
+    "Walk",
+    "WeightTraining",
+    "Wheelchair",
+    "WindsurfSession",
+    "Workout",
+    "Yoga",
+)
+_SPORT_TYPE_BY_NORMALIZED_LABEL = {
+    normalize_activity_type(value): value for value in _STRAVA_API_SPORT_TYPES
+}
+_SPORT_TYPE_BY_NORMALIZED_LABEL.update(
+    {
+        "footballsoccer": "Soccer",
+        "rockclimb": "RockClimbing",
+    }
+)
 
 
 class StravaBulkArchiveError(RuntimeError):
@@ -1067,6 +1134,7 @@ def _activity_from_manifest(
     row = entry.row
     points = track.geometry_points
     manifest_activity_type = _none_if_blank(row.get(ACTIVITY_TYPE_FIELD))
+    manifest_sport_type = _canonical_manifest_sport_type(manifest_activity_type)
     bulk_import_details = {
         "schema_version": 1,
         "archive_fingerprint": archive_fingerprint,
@@ -1098,7 +1166,7 @@ def _activity_from_manifest(
         source_activity_id=entry.activity_id,
         name=_none_if_blank(row.get(ACTIVITY_NAME_FIELD)),
         activity_type=manifest_activity_type,
-        sport_type=manifest_activity_type or track.sport_type,
+        sport_type=manifest_sport_type or track.sport_type,
         start_date=track.start_date,
         start_date_local=_manifest_date(row.get(ACTIVITY_DATE_FIELD)),
         distance_m=_float_or_none(row.get("Distance")),
@@ -1120,6 +1188,13 @@ def _activity_from_manifest(
         geometry_points=points,
         details_json=details,
     )
+
+
+def _canonical_manifest_sport_type(activity_type):
+    if not activity_type:
+        return None
+    normalized = normalize_activity_type(activity_type)
+    return _SPORT_TYPE_BY_NORMALIZED_LABEL.get(normalized, activity_type)
 
 
 def _track_status(track):

@@ -196,11 +196,51 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         result = list(reader.iter_activity_results())[0]
 
         self.assertEqual(result.activity.activity_type, "Backcountry Ski")
-        self.assertEqual(result.activity.sport_type, "Backcountry Ski")
+        self.assertEqual(result.activity.sport_type, "BackcountrySki")
         self.assertEqual(
             result.activity.details_json["bulk_import"]["member_sport_type"],
             "Biking",
         )
+
+    def test_manifest_labels_use_strava_api_sport_type_vocabulary(self):
+        expected = {
+            "Walk": "Walk",
+            "Run": "Run",
+            "Weight Training": "WeightTraining",
+            "Ride": "Ride",
+            "Rowing": "Rowing",
+            "Workout": "Workout",
+            "Yoga": "Yoga",
+            "Nordic Ski": "NordicSki",
+            "Hike": "Hike",
+            "Swim": "Swim",
+            "Backcountry Ski": "BackcountrySki",
+            "Alpine Ski": "AlpineSki",
+            "Snowshoe": "Snowshoe",
+            "Virtual Ride": "VirtualRide",
+            "Golf": "Golf",
+            "Rock Climb": "RockClimbing",
+            "E-Bike Ride": "EBikeRide",
+            "Stair-Stepper": "StairStepper",
+            "Crossfit": "Crossfit",
+            "Football (Soccer)": "Soccer",
+        }
+        rows = [
+            _row(
+                activity_id=f"activity-{index}",
+                filename="",
+                **{"Activity Type": activity_type},
+            )
+            for index, activity_type in enumerate(expected)
+        ]
+        reader = self._write_archive(rows)
+
+        imported = {
+            result.activity.activity_type: result.activity.sport_type
+            for result in reader.iter_activity_results()
+        }
+
+        self.assertEqual(imported, expected)
 
     def test_summary_only_row_imports_without_geometry(self):
         reader = self._write_archive([_row(filename="", **{"Activity Type": "Rowing"})])
