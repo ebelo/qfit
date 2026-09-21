@@ -389,30 +389,29 @@ class StravaBulkArchiveReader:
         if total_expanded_bytes > self.limits.max_total_bytes:
             raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
         member_hashes = {}
-        try:
-            for member_name in sorted(referenced):
-                info = info_by_name[member_name]
-                self._validate_imported_member(info)
-                total_expanded_bytes += info.file_size
-                if total_expanded_bytes > self.limits.max_total_bytes:
-                    raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
+        for member_name in sorted(referenced):
+            info = info_by_name[member_name]
+            self._validate_imported_member(info)
+            total_expanded_bytes += info.file_size
+            if total_expanded_bytes > self.limits.max_total_bytes:
+                raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
+            try:
                 nested_bytes, member_hash = self._validate_referenced_member(
                     archive,
                     info,
                     cancelled=cancelled,
                 )
-                total_nested_bytes += nested_bytes
-                member_hashes[member_name] = member_hash
-                if total_nested_bytes > self.limits.max_total_bytes:
-                    raise StravaBulkArchiveError(
-                        "Nested activity files exceed the safe total expanded-size limit"
-                    )
-        except StravaBulkArchiveCancelled:
-            raise
-        except (OSError, EOFError, zipfile.BadZipFile) as exc:
-            raise StravaBulkArchiveError(
-                "The Strava archive contains a corrupt referenced activity member"
-            ) from exc
+            except StravaBulkArchiveCancelled:
+                raise
+            except (OSError, EOFError, zipfile.BadZipFile):
+                nested_bytes = 0
+                member_hash = _corrupt_member_fingerprint(info)
+            total_nested_bytes += nested_bytes
+            member_hashes[member_name] = member_hash
+            if total_nested_bytes > self.limits.max_total_bytes:
+                raise StravaBulkArchiveError(
+                    "Nested activity files exceed the safe total expanded-size limit"
+                )
         return member_hashes
 
     def _validate_referenced_member(self, archive, info, *, cancelled=None):
@@ -452,10 +451,10 @@ class StravaBulkArchiveReader:
         if initial_expanded_bytes + total_bytes > self.limits.max_total_bytes:
             raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
         completed_bytes = 0
-        try:
-            for member_name in sorted(referenced):
-                info = info_by_name[member_name]
-                self._validate_imported_member(info)
+        for member_name in sorted(referenced):
+            info = info_by_name[member_name]
+            self._validate_imported_member(info)
+            try:
                 expanded_bytes, member_hash = self._hash_zip_member(
                     archive,
                     info,
@@ -466,14 +465,15 @@ class StravaBulkArchiveReader:
                 )
                 if expanded_bytes != info.file_size:
                     raise zipfile.BadZipFile("referenced member size mismatch")
-                member_hashes[member_name] = member_hash
-                completed_bytes += expanded_bytes
-        except StravaBulkArchiveCancelled:
-            raise
-        except (OSError, EOFError, zipfile.BadZipFile) as exc:
-            raise StravaBulkArchiveError(
-                "The Strava archive contains a corrupt referenced activity member"
-            ) from exc
+            except StravaBulkArchiveCancelled:
+                raise
+            except (OSError, EOFError, zipfile.BadZipFile):
+                expanded_bytes = info.file_size
+                member_hash = _corrupt_member_fingerprint(info)
+                if progress is not None:
+                    progress(completed_bytes + expanded_bytes, total_bytes)
+            member_hashes[member_name] = member_hash
+            completed_bytes += expanded_bytes
         return member_hashes
 
     @staticmethod
@@ -566,7 +566,14 @@ class StravaBulkArchiveReader:
                         cancelled=cancelled,
                     )
                     parse_status = _track_status(track)
-                except (OSError, ValueError, ElementTree.ParseError, EOFError, ImportError) as exc:
+                except (
+                    OSError,
+                    ValueError,
+                    ElementTree.ParseError,
+                    EOFError,
+                    ImportError,
+                    zipfile.BadZipFile,
+                ) as exc:
                     parse_status = "failed"
                     diagnostic = _safe_parser_diagnostic(exc)
 
@@ -705,6 +712,12 @@ def _archive_fingerprint(manifest_bytes, entries, member_hashes):
         member_hash = member_hashes.get(entry.member_name)
         digest.update((member_hash or "missing").encode("ascii"))
     return digest.hexdigest()
+
+
+def _corrupt_member_fingerprint(info):
+    """Return a stable marker for a member whose payload cannot pass ZIP integrity."""
+
+    return f"corrupt:{info.CRC:08x}:{info.file_size}:{info.compress_size}"
 
 
 def _parse_activity_payload(

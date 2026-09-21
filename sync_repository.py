@@ -60,6 +60,7 @@ REGISTRY_TABLE = "activity_registry"
 SYNC_STATE_TABLE = "sync_state"
 DETAIL_PAYLOAD_TABLE = "activity_detail_payloads"
 DETAIL_PAYLOAD_ENCODING = "json+zlib-v1"
+ACTIVITY_COUNT_QUERY = f"SELECT COUNT(*) FROM {REGISTRY_TABLE}"
 REGISTRY_COLUMNS = [
     "source",
     "source_activity_id",
@@ -263,7 +264,7 @@ class SyncRepository:
 
             self._prune_missing_activities(cursor, activities, sync_metadata)
             self._prune_orphaned_detail_payloads(cursor)
-            total_count = cursor.execute("SELECT COUNT(*) FROM activity_registry").fetchone()[0]
+            total_count = cursor.execute(ACTIVITY_COUNT_QUERY).fetchone()[0]
             if not sync_metadata.get("suppress_sync_state"):
                 self._update_sync_state(
                     cursor,
@@ -548,7 +549,7 @@ class SyncRepository:
 
         with self._connect() as connection:
             if provider is None:
-                query = "SELECT COUNT(*) FROM activity_registry"
+                query = ACTIVITY_COUNT_QUERY
                 return int(connection.execute(query).fetchone()[0])
             return int(
                 connection.execute(
@@ -615,9 +616,7 @@ class SyncRepository:
             ).fetchone()
             if existing is not None:
                 return False
-            total_count = cursor.execute(
-                "SELECT COUNT(*) FROM activity_registry"
-            ).fetchone()[0]
+            total_count = cursor.execute(ACTIVITY_COUNT_QUERY).fetchone()[0]
             self._update_sync_state(
                 cursor,
                 [],

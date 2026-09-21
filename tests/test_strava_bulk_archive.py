@@ -498,19 +498,35 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "Encrypted"):
             reader.preflight()
 
-    def test_corrupt_referenced_member_crc_is_rejected(self):
+    def test_corrupt_referenced_member_is_isolated_and_summary_is_imported(self):
         marker = b"UNIQUE-SYNTHETIC-PAYLOAD"
         with zipfile.ZipFile(self.archive_path, "w", compression=zipfile.ZIP_STORED) as archive:
-            archive.writestr("activities.csv", _manifest([_row()]))
-            archive.writestr("activities/arbitrary-name.gpx", marker)
+            archive.writestr(
+                "activities.csv",
+                _manifest(
+                    [
+                        _row("corrupt", "activities/corrupt.gpx"),
+                        _row("valid", "activities/valid.gpx"),
+                    ]
+                ),
+            )
+            archive.writestr("activities/corrupt.gpx", marker)
+            archive.writestr("activities/valid.gpx", _gpx())
         payload = bytearray(self.archive_path.read_bytes())
         offset = payload.index(marker)
         payload[offset] ^= 0x01
         self.archive_path.write_bytes(payload)
 
         reader = StravaBulkArchiveReader(str(self.archive_path))
-        with self.assertRaisesRegex(StravaBulkArchiveError, "corrupt referenced"):
-            reader.preflight()
+        preflight = reader.preflight()
+        results = list(reader.iter_activity_results())
+
+        self.assertEqual(preflight.activity_count, 2)
+        self.assertEqual([result.activity_id for result in results], ["corrupt", "valid"])
+        self.assertEqual([result.status for result in results], ["failed", "detailed_profile"])
+        self.assertEqual(results[0].diagnostic, "invalid_activity_file")
+        self.assertIsNotNone(results[0].activity)
+        self.assertEqual(results[0].activity.name, "Morning activity")
 
     def test_xml_document_type_is_rejected_per_activity(self):
         payload = b'<!DOCTYPE gpx [<!ENTITY x "unsafe">]><gpx></gpx>'
