@@ -136,6 +136,11 @@ def connect_local_first_action_callbacks(
     connect_optional_signal(composition.sync_content, "syncRequested", callbacks.sync_activities)
     connect_optional_signal(
         composition.sync_content,
+        "importBulkRequested",
+        callbacks.import_bulk_archive,
+    )
+    connect_optional_signal(
+        composition.sync_content,
         "storeRequested",
         callbacks.store_activities,
     )

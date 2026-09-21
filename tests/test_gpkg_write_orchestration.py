@@ -2,6 +2,7 @@ import os
 import sqlite3
 import tempfile
 import unittest
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -16,7 +17,9 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 
 if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_write_orchestration import (
+        _profile_plans_for_records,
         bootstrap_empty_gpkg,
+        build_and_write_all_layers_bounded,
         build_and_write_route_layers,
         build_and_write_all_layers,
         ensure_spatial_indexes,
@@ -24,8 +27,10 @@ if QgsApplication is not None:
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
 else:  # pragma: no cover
     bootstrap_empty_gpkg = None
+    _profile_plans_for_records = None
     build_and_write_route_layers = None
     build_and_write_all_layers = None
+    build_and_write_all_layers_bounded = None
     ensure_spatial_indexes = None
     normalize_atlas_page_settings = None
 
@@ -135,6 +140,65 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
                 self.records, path, self.settings,
             )
             self.assertEqual(sorted(layers.keys()), sorted(_ACTIVITY_WRITE_LAYERS))
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
+
+    def test_profile_plans_are_restricted_to_the_current_batch(self):
+        first = dict(self.records[0])
+        second = dict(
+            first,
+            source_activity_id="200",
+            name="Evening Ride",
+            start_date_local="2026-03-19T18:10:00+01:00",
+        )
+        from qfit.atlas.publish_atlas import build_atlas_page_plans
+
+        plans = build_atlas_page_plans([first, second], settings=self.settings)
+        plan_by_sort_key = {plan.page_sort_key: plan for plan in plans}
+
+        selected = _profile_plans_for_records([second], plan_by_sort_key)
+
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0].source_activity_id, "200")
+
+    def test_bounded_rebuild_failure_preserves_complete_visible_layers(self):
+        path = self._temp_gpkg()
+        try:
+            bootstrap_empty_gpkg(path, self.settings)
+            build_and_write_all_layers(self.records, path, self.settings)
+            original_tracks = QgsVectorLayer(
+                f"{path}|layername=activity_tracks",
+                "tracks",
+                "ogr",
+            ).featureCount()
+            module = __import__(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration",
+                fromlist=["write_layer_to_gpkg"],
+            )
+            real_write = module.write_layer_to_gpkg
+
+            def fail_during_staging(layer, output_path, layer_name, **kwargs):
+                if layer_name == "activity_points" and kwargs.get("append"):
+                    raise OSError("synthetic staging failure")
+                return real_write(layer, output_path, layer_name, **kwargs)
+
+            with patch.object(module, "write_layer_to_gpkg", side_effect=fail_during_staging):
+                with self.assertRaisesRegex(OSError, "synthetic staging failure"):
+                    build_and_write_all_layers_bounded(
+                        lambda: iter([self.records]),
+                        path,
+                        self.settings,
+                        point_stride=1,
+                    )
+
+            visible_tracks = QgsVectorLayer(
+                f"{path}|layername=activity_tracks",
+                "tracks",
+                "ogr",
+            )
+            self.assertTrue(visible_tracks.isValid())
+            self.assertEqual(visible_tracks.featureCount(), original_tracks)
         finally:
             if os.path.exists(path):
                 os.unlink(path)

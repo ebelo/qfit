@@ -24,6 +24,8 @@ qfit currently supports:
 - connecting to Strava with `client_id`, `client_secret`, and `refresh_token`
 - opening the Strava authorize page from the plugin and exchanging an auth code for a refresh token
 - fetching activities from Strava in the background
+- securely importing recorded activities from an official Strava Bulk Data
+  Export, including FIT/TCX/GPX geometry and elevation
 - previewing fetched activities in the dock before writing anything to disk
 - storing a canonical local GeoPackage sync store
 - loading QGIS layers for tracks, start points, and optional sampled stream points
@@ -49,6 +51,7 @@ qfit uses a GeoPackage as both local sync store and QGIS data source.
 
 **Internal tables**
 - `activity_registry`
+- `activity_detail_payloads`
 - `sync_state`
 
 **Visible layers**
@@ -66,8 +69,8 @@ qfit uses a GeoPackage as both local sync store and QGIS data source.
 
 ### Typical workflow
 
-1. Configure Strava credentials.
-2. Fetch activities and preview the result in the dock.
+1. Configure Strava credentials, or select a GeoPackage for a bulk export import.
+2. Fetch recent activities, or import an official Strava export to seed history.
 3. Choose an output `.gpkg` and store the data.
 4. Load the qfit layers into QGIS.
 5. Apply visualization or analysis workflows.
@@ -82,6 +85,10 @@ You need:
 - `refresh_token`
 
 qfit includes a built-in OAuth helper in `qfit` → `Configuration` for the refresh-token step.
+
+Bulk export import does not require API credentials. See
+[`docs/strava-bulk-import.md`](docs/strava-bulk-import.md) for supported
+formats, privacy guidance, re-import behavior, and recovery after cancellation.
 
 See:
 - `docs/strava-setup.md`

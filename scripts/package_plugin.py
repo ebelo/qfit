@@ -132,15 +132,22 @@ def _resolve_distribution_license(package_name: str) -> pathlib.Path | None:
 def _vendor_runtime_dependencies(plugin_dir: pathlib.Path) -> None:
     vendor_dir = plugin_dir / "vendor"
     vendor_dir.mkdir(parents=True, exist_ok=True)
+    for package_name in ("pypdf", "fitdecode"):
+        package_source = _resolve_package_dir(package_name)
+        shutil.copytree(
+            package_source,
+            vendor_dir / package_name,
+            dirs_exist_ok=True,
+        )
 
-    pypdf_source = _resolve_package_dir("pypdf")
-    shutil.copytree(pypdf_source, vendor_dir / "pypdf", dirs_exist_ok=True)
-
-    license_path = _resolve_distribution_license("pypdf")
-    if license_path and license_path.is_file():
-        licenses_dir = vendor_dir / "licenses"
-        licenses_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(license_path, licenses_dir / "pypdf_LICENSE.txt")
+        license_path = _resolve_distribution_license(package_name)
+        if license_path and license_path.is_file():
+            licenses_dir = vendor_dir / "licenses"
+            licenses_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(
+                license_path,
+                licenses_dir / f"{package_name}_LICENSE.txt",
+            )
 
 
 def _copy_packaged_flake8_config(plugin_dir: pathlib.Path) -> None:

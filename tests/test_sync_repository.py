@@ -1,12 +1,22 @@
 import tempfile
 import unittest
 import sqlite3
+import json
 from pathlib import Path
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
+from qfit.activities.application.sync_strategy import (
+    ActivitySyncMode,
+    plan_activity_sync,
+)
 from qfit.activities.domain.models import Activity
-from qfit.sync_repository import ActivitySyncState, DetailedRouteCoverage, SyncRepository
+from qfit.sync_repository import (
+    ActivityDetailPayloadError,
+    ActivitySyncState,
+    DetailedRouteCoverage,
+    SyncRepository,
+)
 
 
 class SyncRepositoryTests(unittest.TestCase):
@@ -42,6 +52,264 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(activities[0].source_activity_id, "42")
             self.assertEqual(activities[0].geometry_points, [[46.5, 6.6], [46.6, 6.7]])
             self.assertEqual(activities[0].details_json["device_name"], "Edge")
+
+    def test_compressed_detail_payload_round_trips_without_registry_duplication(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activity = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "device_name": "Edge",
+                    "stream_metrics": {
+                        "distance": [0.0, 100.0],
+                        "altitude": [450.0, 455.0],
+                    },
+                },
+            )
+
+            repo.upsert_activities([activity], compress_detail_payloads=True)
+
+            with repo._connect() as connection:
+                registry = connection.execute(
+                    "SELECT geometry_points_json, details_json FROM activity_registry"
+                ).fetchone()
+                payload = connection.execute(
+                    "SELECT encoding, point_count, length(payload_zlib) FROM activity_detail_payloads"
+                ).fetchone()
+            self.assertEqual(registry["geometry_points_json"], "[]")
+            self.assertNotIn("stream_metrics", json.loads(registry["details_json"]))
+            self.assertEqual(payload["encoding"], "json+zlib-v1")
+            self.assertEqual(payload["point_count"], 2)
+            self.assertGreater(payload["length(payload_zlib)"], 0)
+
+            stored = repo.load_all_activities()[0]
+            self.assertEqual(stored.geometry_points, [[46.5, 6.6], [46.6, 6.7]])
+            self.assertEqual(
+                stored.details_json["stream_metrics"]["altitude"],
+                [450.0, 455.0],
+            )
+
+    def test_compressed_detail_reimport_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activity = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "bulk_imported_at": "first",
+                    "stream_metrics": {"distance": [0.0, 100.0]},
+                },
+            )
+            repo.upsert_activities([activity], compress_detail_payloads=True)
+            changed_timestamp = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "bulk_imported_at": "second",
+                    "stream_metrics": {"distance": [0.0, 100.0]},
+                },
+            )
+
+            result = repo.upsert_activities(
+                [changed_timestamp],
+                compress_detail_payloads=True,
+            )
+
+            self.assertEqual(result.unchanged, 1)
+            self.assertEqual(result.updated, 0)
+
+    def test_corrupt_detail_payload_is_reported_and_bulk_reimport_repairs_it(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activity = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "stream_metrics": {
+                        "distance": [0.0, 100.0],
+                        "altitude": [450.0, 455.0],
+                    },
+                },
+            )
+            repo.upsert_activities([activity], compress_detail_payloads=True)
+            with repo._connect() as connection:
+                connection.execute(
+                    "UPDATE activity_detail_payloads SET payload_zlib = ?",
+                    (b"not-zlib",),
+                )
+                connection.commit()
+
+            with self.assertRaises(ActivityDetailPayloadError):
+                repo.load_all_activities()
+            lower_fidelity = self._activity(
+                geometry_source="summary_polyline",
+                geometry_points=[(46.5, 6.6)],
+            )
+            with self.assertRaises(ActivityDetailPayloadError):
+                repo.upsert_activities([lower_fidelity])
+
+            repaired = repo.upsert_activities(
+                [activity],
+                compress_detail_payloads=True,
+            )
+
+            self.assertEqual(repaired.updated, 1)
+            stored = repo.load_all_activities()[0]
+            self.assertEqual(stored.geometry_points, [[46.5, 6.6], [46.6, 6.7]])
+            self.assertEqual(
+                stored.details_json["stream_metrics"]["altitude"],
+                [450.0, 455.0],
+            )
+
+    def test_iter_activity_record_batches_hydrates_with_stable_global_keys(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activities = [
+                self._activity(
+                    source_activity_id=str(index),
+                    start_date=f"2026-03-{index + 10:02d}T06:00:00Z",
+                    geometry_source="stream",
+                    geometry_points=[(46.0 + index, 7.0)],
+                    details_json={"stream_metrics": {"altitude": [500 + index]}},
+                )
+                for index in range(3)
+            ]
+            repo.upsert_activities(activities, compress_detail_payloads=True)
+
+            batches = list(repo.iter_activity_record_batches(batch_size=2))
+
+            self.assertEqual([len(batch) for batch in batches], [2, 1])
+            records = [record for batch in batches for record in batch]
+            self.assertEqual([record["_activity_fk"] for record in records], [1, 2, 3])
+            self.assertTrue(all(record["geometry_points"] for record in records))
+
+    def test_iter_activity_record_batches_keysets_nullable_and_tied_dates(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activities = [
+                self._activity(
+                    source=source,
+                    source_activity_id=activity_id,
+                    start_date=start_date,
+                )
+                for source, activity_id, start_date in (
+                    ("strava", "same", "2026-03-20T06:00:00Z"),
+                    ("other", "same", "2026-03-20T06:00:00Z"),
+                    ("strava", "older", "2026-03-19T06:00:00Z"),
+                    ("strava", "undated", None),
+                )
+            ]
+            repo.upsert_activities(activities)
+
+            batches = list(repo.iter_activity_record_batches(batch_size=1))
+
+            records = [record for batch in batches for record in batch]
+            self.assertEqual(len(records), 4)
+            self.assertEqual(
+                {(record["source"], record["source_activity_id"]) for record in records},
+                {
+                    ("strava", "same"),
+                    ("other", "same"),
+                    ("strava", "older"),
+                    ("strava", "undated"),
+                },
+            )
+            self.assertEqual(
+                [record["_activity_fk"] for record in records],
+                [1, 2, 3, 4],
+            )
+
+    def test_uncompressed_update_replaces_old_detail_payload(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [self._activity(geometry_source="stream")],
+                compress_detail_payloads=True,
+            )
+
+            repo.upsert_activities(
+                [self._activity(geometry_source="summary_polyline", geometry_points=[(1.0, 2.0)])],
+                reconcile_existing=False,
+            )
+
+            with repo._connect() as connection:
+                count = connection.execute(
+                    "SELECT COUNT(*) FROM activity_detail_payloads"
+                ).fetchone()[0]
+            self.assertEqual(count, 0)
+            self.assertEqual(repo.load_all_activities()[0].geometry_points, [[1.0, 2.0]])
+
+    def test_full_sync_prunes_orphaned_detail_payloads(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(source_activity_id="keep", geometry_source="stream"),
+                    self._activity(source_activity_id="remove", geometry_source="stream"),
+                ],
+                compress_detail_payloads=True,
+            )
+
+            repo.upsert_activities(
+                [self._activity(source_activity_id="keep", geometry_source="stream")],
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+
+            with repo._connect() as connection:
+                payload_ids = connection.execute(
+                    "SELECT source_activity_id FROM activity_detail_payloads"
+                ).fetchall()
+            self.assertEqual([row[0] for row in payload_ids], ["keep"])
+
+    def test_api_summary_update_preserves_bulk_detail_and_compressed_storage(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            bulk = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "ingest_source": "strava_bulk_export",
+                    "ingest_sources": ["strava_bulk_export"],
+                    "geometry_ingest_source": "strava_bulk_export",
+                    "stream_metrics": {
+                        "distance": [0.0, 100.0],
+                        "altitude": [450.0, 455.0],
+                    },
+                    "user_note": "keep me",
+                },
+            )
+            repo.upsert_activities([bulk], compress_detail_payloads=True)
+            api_summary = self._activity(
+                distance_m=13000.0,
+                geometry_source="summary_polyline",
+                geometry_points=[(46.5, 6.6)],
+                details_json={"ingest_source": "strava_api"},
+            )
+
+            result = repo.upsert_activities([api_summary])
+
+            self.assertEqual(result.updated, 1)
+            stored = repo.load_all_activities()[0]
+            self.assertEqual(stored.distance_m, 13000.0)
+            self.assertEqual(stored.geometry_source, "stream")
+            self.assertEqual(stored.details_json["user_note"], "keep me")
+            self.assertEqual(
+                stored.details_json["ingest_sources"],
+                ["strava_bulk_export", "strava_api"],
+            )
+            with repo._connect() as connection:
+                payload_count = connection.execute(
+                    "SELECT COUNT(*) FROM activity_detail_payloads"
+                ).fetchone()[0]
+                geometry_json = connection.execute(
+                    "SELECT geometry_points_json FROM activity_registry"
+                ).fetchone()[0]
+            self.assertEqual(payload_count, 1)
+            self.assertEqual(geometry_json, "[]")
 
     def test_volatile_detail_keys_do_not_force_updates(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -90,6 +358,114 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0][0], "strava")
 
+    def test_partial_bulk_batches_do_not_claim_completed_sync(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities(
+                [self._activity()],
+                sync_metadata={"provider": "strava", "suppress_sync_state": True},
+                compress_detail_payloads=True,
+            )
+
+            rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
+            self.assertEqual(rows, [])
+
+    def test_partial_bulk_batches_skip_repeated_orphan_payload_scan(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            with patch.object(
+                repo,
+                "_prune_orphaned_detail_payloads",
+                wraps=repo._prune_orphaned_detail_payloads,
+            ) as prune:
+                repo.upsert_activities(
+                    [self._activity()],
+                    sync_metadata={
+                        "provider": "strava",
+                        "suppress_sync_state": True,
+                    },
+                    compress_detail_payloads=True,
+                )
+
+            prune.assert_not_called()
+
+    def test_bulk_checkpoint_initializes_sync_state_without_overwriting_existing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [self._activity()],
+                sync_metadata={"provider": "strava", "suppress_sync_state": True},
+            )
+
+            created = repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=1,
+                inserted=1,
+                is_full_sync=True,
+                checkpoint="strava_bulk_import",
+            )
+            state = repo.load_activity_sync_state("strava")
+            with repo._connect() as connection:
+                initial_stats = connection.execute(
+                    "SELECT last_sync_stats_json FROM sync_state WHERE provider = 'strava'"
+                ).fetchone()[0]
+
+            preserved = repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=999,
+                checkpoint="replacement",
+            )
+            with repo._connect() as connection:
+                final_stats = connection.execute(
+                    "SELECT last_sync_stats_json FROM sync_state WHERE provider = 'strava'"
+                ).fetchone()[0]
+
+            self.assertTrue(created)
+            self.assertFalse(preserved)
+            self.assertTrue(state.has_completed_sync)
+            self.assertEqual(state.latest_activity_start_date, "2026-03-20T06:00:00Z")
+            self.assertEqual(json.loads(initial_stats)["checkpoint"], "strava_bulk_import")
+            self.assertEqual(final_stats, initial_stats)
+
+    def test_bulk_checkpoint_uses_local_manifest_date_when_utc_start_is_absent(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        start_date=None,
+                        start_date_local="2026-03-20T07:00:00",
+                        geometry_source=None,
+                        geometry_points=[],
+                    )
+                ],
+                sync_metadata={"provider": "strava", "suppress_sync_state": True},
+            )
+
+            repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=1,
+                inserted=1,
+                is_full_sync=True,
+                checkpoint="strava_bulk_import",
+            )
+            state = repo.load_activity_sync_state("strava")
+
+            self.assertTrue(state.has_completed_sync)
+            self.assertEqual(
+                state.latest_activity_start_date,
+                "2026-03-20T07:00:00",
+            )
+            plan = plan_activity_sync(state)
+            self.assertEqual(plan.mode, ActivitySyncMode.INCREMENTAL_UPDATE)
+            self.assertIsNotNone(plan.after_epoch)
+
     def test_load_activity_sync_state_returns_completed_metadata(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
@@ -118,6 +494,20 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(state.last_after_epoch, 100)
             self.assertEqual(state.stored_activity_count, 2)
             self.assertEqual(state.latest_activity_start_date, "2026-03-20T06:00:00Z")
+
+    def test_load_activity_count_can_filter_provider_without_hydrating_payloads(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(source_activity_id="one"),
+                    self._activity(source_activity_id="two", source="other"),
+                ]
+            )
+
+            self.assertEqual(repo.load_activity_count(), 2)
+            self.assertEqual(repo.load_activity_count("strava"), 1)
 
     def test_load_activity_sync_state_returns_none_before_completed_sync(self):
         with tempfile.TemporaryDirectory() as tmpdir:

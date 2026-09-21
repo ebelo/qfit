@@ -27,6 +27,7 @@ class DockWorkflowActionCallbacks:
 
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
+    import_bulk_archive: Callable[[], None] | None = None
     store_activities: Callable[[], None] | None = None
     sync_saved_routes: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None

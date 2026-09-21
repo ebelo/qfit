@@ -35,6 +35,7 @@ if [[ "$#" -eq 0 ]]; then
     tests/test_layer_style_service.py \
     tests/test_map_canvas_service.py \
     tests/test_project_layer_loader.py \
+    tests/test_strava_bulk_qgis.py \
     -q --tb=short
 fi
 
@@ -85,7 +86,7 @@ sudo docker exec "$CONTAINER_NAME" bash -c "qgis_setup.sh qfit"
 
 # Install test dependencies inside the container
 echo "--- Installing test dependencies ---"
-sudo docker exec --user root "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+sudo docker exec --user root "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf fitdecode==0.11.0 2>/dev/null || true"
 
 # Run pytest (capture exit code without triggering set -e)
 EXIT_CODE=0

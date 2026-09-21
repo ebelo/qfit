@@ -30,6 +30,10 @@ All PRs must pass the following before merging:
 
 ### Docker QGIS tests (mandatory)
 
+The Strava bulk-import formats, privacy rules, recovery model, and storage
+benchmark are documented in
+[`docs/strava-bulk-import.md`](docs/strava-bulk-import.md).
+
 qfit supports QGIS 3 and QGIS 4 from one source tree. Unit tests without QGIS
 **cannot** catch Qt 5 / Qt 6 import-surface differences. The Docker QGIS
 runtime suite must pass in both host versions before merge.

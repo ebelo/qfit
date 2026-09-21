@@ -2,10 +2,12 @@ import hashlib
 import json
 import os
 import sqlite3
+import zlib
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from .activities.domain.models import Activity
+from .activities.domain.activity_reconciliation import reconcile_activity_records
 
 
 @dataclass(frozen=True)
@@ -56,6 +58,9 @@ SYNC_STATE_COLUMNS = [
 
 REGISTRY_TABLE = "activity_registry"
 SYNC_STATE_TABLE = "sync_state"
+DETAIL_PAYLOAD_TABLE = "activity_detail_payloads"
+DETAIL_PAYLOAD_ENCODING = "json+zlib-v1"
+ACTIVITY_COUNT_QUERY = f"SELECT COUNT(*) FROM {REGISTRY_TABLE}"
 REGISTRY_COLUMNS = [
     "source",
     "source_activity_id",
@@ -90,6 +95,13 @@ REGISTRY_COLUMNS = [
     "first_seen_at",
     "last_synced_at",
 ]
+START_DATE_COLUMN_INDEX = REGISTRY_COLUMNS.index("start_date")
+
+
+class ActivityDetailPayloadError(RuntimeError):
+    """Raised when compressed activity detail cannot be trusted or decoded."""
+
+
 HASH_FIELDS = [
     "source",
     "source_activity_id",
@@ -128,6 +140,8 @@ VOLATILE_DETAILS_KEYS = {
     "stream_error",
     "stream_point_count",
     "stream_skipped_reason",
+    "bulk_imported_at",
+    "detail_payload",
 }
 
 
@@ -192,6 +206,20 @@ class SyncRepository:
                 )
                 """
             )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS activity_detail_payloads (
+                    source TEXT NOT NULL,
+                    source_activity_id TEXT NOT NULL,
+                    encoding TEXT NOT NULL,
+                    payload_sha256 TEXT NOT NULL,
+                    payload_zlib BLOB NOT NULL,
+                    point_count INTEGER NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (source, source_activity_id)
+                )
+                """
+            )
             for statement in (
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date ON activity_registry(start_date)",
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_type ON activity_registry(activity_type)",
@@ -210,49 +238,143 @@ class SyncRepository:
                 cursor.execute(statement)
             connection.commit()
 
-    def upsert_activities(self, activities, sync_metadata=None):
+    def upsert_activities(
+        self,
+        activities,
+        sync_metadata=None,
+        *,
+        compress_detail_payloads=False,
+        reconcile_existing=True,
+    ):
         sync_metadata = sync_metadata or {}
+        suppress_sync_state = bool(sync_metadata.get("suppress_sync_state"))
         now = datetime.now(UTC).isoformat()
-        inserted = 0
-        updated = 0
-        unchanged = 0
+        counts = {"inserted": 0, "updated": 0, "unchanged": 0}
 
         with self._connect() as connection:
             cursor = connection.cursor()
             for activity in activities:
-                record = self._normalize_record(activity)
-                summary_hash = self._compute_summary_hash(record)
-                existing = cursor.execute(
-                    (
-                        "SELECT summary_hash, first_seen_at FROM activity_registry "
-                        "WHERE source = ? AND source_activity_id = ?"
-                    ),
-                    (record.get("source"), record.get("source_activity_id")),
-                ).fetchone()
-
-                if existing is not None and existing[0] == summary_hash:
-                    unchanged += 1
-                    continue
-
-                first_seen_at = now if existing is None else (existing[1] or now)
-                registry_record = self._prepare_registry_record(record, summary_hash, first_seen_at, now)
-                self._upsert_registry_row(cursor, registry_record)
-
-                if existing is None:
-                    inserted += 1
-                else:
-                    updated += 1
+                outcome = self._upsert_activity(
+                    cursor,
+                    activity,
+                    now,
+                    compress_detail_payloads=compress_detail_payloads,
+                    reconcile_existing=reconcile_existing,
+                )
+                counts[outcome] += 1
 
             self._prune_missing_activities(cursor, activities, sync_metadata)
-            total_count = cursor.execute("SELECT COUNT(*) FROM activity_registry").fetchone()[0]
-            self._update_sync_state(cursor, activities, sync_metadata, now, inserted, updated, unchanged, total_count)
+            # Partial bulk batches never prune registry rows, so they cannot
+            # create orphaned detail payloads. Avoid a full-table scan for
+            # every batch in a large export.
+            if not suppress_sync_state:
+                self._prune_orphaned_detail_payloads(cursor)
+            total_count = cursor.execute(ACTIVITY_COUNT_QUERY).fetchone()[0]
+            if not suppress_sync_state:
+                self._update_sync_state(
+                    cursor,
+                    activities,
+                    sync_metadata,
+                    now,
+                    counts["inserted"],
+                    counts["updated"],
+                    counts["unchanged"],
+                    total_count,
+                )
             connection.commit()
 
         return SyncStats(
-            inserted=inserted,
-            updated=updated,
-            unchanged=unchanged,
+            inserted=counts["inserted"],
+            updated=counts["updated"],
+            unchanged=counts["unchanged"],
             total_count=total_count,
+        )
+
+    def _upsert_activity(
+        self,
+        cursor,
+        activity,
+        now,
+        *,
+        compress_detail_payloads,
+        reconcile_existing,
+    ):
+        record = self._normalize_record(activity)
+        existing_row = cursor.execute(
+            "SELECT {columns} FROM activity_registry "
+            "WHERE source = ? AND source_activity_id = ?".format(
+                columns=", ".join(REGISTRY_COLUMNS)
+            ),
+            (record.get("source"), record.get("source_activity_id")),
+        ).fetchone()
+        recover_detail_payload = False
+        if existing_row is not None and reconcile_existing:
+            record, recover_detail_payload = self._reconcile_existing_activity(
+                cursor,
+                record,
+                existing_row,
+                compress_detail_payloads=compress_detail_payloads,
+            )
+        summary_hash = self._compute_summary_hash(record)
+        if (
+            existing_row is not None
+            and existing_row["summary_hash"] == summary_hash
+            and not recover_detail_payload
+        ):
+            return "unchanged"
+
+        first_seen_at = (
+            now
+            if existing_row is None
+            else (existing_row["first_seen_at"] or now)
+        )
+        registry_record = self._prepare_registry_record(
+            record,
+            summary_hash,
+            first_seen_at,
+            now,
+        )
+        existing_payload_storage = bool(
+            (record.get("details_json") or {}).get("detail_payload")
+        )
+        if compress_detail_payloads or existing_payload_storage:
+            registry_record, payload_record = self._extract_detail_payload(
+                registry_record,
+                record,
+                now,
+            )
+            self._upsert_detail_payload(cursor, payload_record)
+        else:
+            self._delete_detail_payload(cursor, record)
+        self._upsert_registry_row(cursor, registry_record)
+        return "inserted" if existing_row is None else "updated"
+
+    def _reconcile_existing_activity(
+        self,
+        cursor,
+        record,
+        existing_row,
+        *,
+        compress_detail_payloads,
+    ):
+        key = (record.get("source"), str(record.get("source_activity_id")))
+        recover_detail_payload = False
+        try:
+            payloads = self._load_detail_payloads(cursor.connection, keys=[key])
+        except ActivityDetailPayloadError:
+            incoming_details = record.get("details_json") or {}
+            incoming_has_detail = bool(
+                record.get("geometry_points")
+                or incoming_details.get("stream_metrics")
+            )
+            if not compress_detail_payloads or not incoming_has_detail:
+                raise
+            payloads = {}
+            recover_detail_payload = True
+        existing_record = self._row_to_record(existing_row, payloads=payloads)
+        return (
+            reconcile_activity_records(record, existing_record),
+            recover_detail_payload,
         )
 
     def _prune_missing_activities(self, cursor, activities, sync_metadata):
@@ -307,7 +429,88 @@ class SyncRepository:
                     columns=", ".join(REGISTRY_COLUMNS)
                 )
             ).fetchall()
-        return [self._row_to_record(row) for row in rows]
+            payloads = self._load_detail_payloads(connection)
+        return [self._row_to_record(row, payloads=payloads) for row in rows]
+
+    def iter_activity_record_batches(self, batch_size=25):
+        """Yield hydrated registry rows in bounded batches."""
+
+        batch_size = max(int(batch_size), 1)
+        cursor_key = None
+        record_index = 0
+        while True:
+            with self._connect() as connection:
+                rows = self._load_activity_batch(
+                    connection,
+                    batch_size,
+                    cursor_key,
+                )
+                if not rows:
+                    return
+                keys = [(row[0], row[1]) for row in rows]
+                payloads = self._load_detail_payloads(connection, keys=keys)
+            records = []
+            for row in rows:
+                record_index += 1
+                record = self._row_to_record(row, payloads=payloads)
+                record["_activity_fk"] = record_index
+                records.append(record)
+            yield records
+            last = rows[-1]
+            cursor_key = (
+                last[START_DATE_COLUMN_INDEX] or "",
+                last[0],
+                last[1],
+            )
+
+    @staticmethod
+    def _load_activity_batch(connection, batch_size, cursor_key):
+        columns = ", ".join(REGISTRY_COLUMNS)
+        order = (
+            "ORDER BY COALESCE(start_date, '') DESC, source DESC, "
+            "source_activity_id DESC LIMIT ?"
+        )
+        if cursor_key is None:
+            return connection.execute(
+                f"SELECT {columns} FROM activity_registry {order}",
+                (batch_size,),
+            ).fetchall()
+        start_date, source, source_activity_id = cursor_key
+        return connection.execute(
+            f"SELECT {columns} FROM activity_registry "
+            "WHERE COALESCE(start_date, '') < ? "
+            "OR (COALESCE(start_date, '') = ? AND source < ?) "
+            "OR (COALESCE(start_date, '') = ? AND source = ? "
+            "AND source_activity_id < ?) "
+            f"{order}",
+            (
+                start_date,
+                start_date,
+                source,
+                start_date,
+                source,
+                source_activity_id,
+                batch_size,
+            ),
+        ).fetchall()
+
+    def load_activity_record(self, source, source_activity_id):
+        """Load one canonical record, hydrating any compressed point payload."""
+
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT {columns} FROM activity_registry WHERE source = ? AND source_activity_id = ?".format(
+                    columns=", ".join(REGISTRY_COLUMNS)
+                ),
+                (source, str(source_activity_id)),
+            ).fetchone()
+            if row is None:
+                return None
+            payloads = self._load_detail_payloads(
+                connection,
+                keys=[(source, str(source_activity_id))],
+            )
+        return self._row_to_record(row, payloads=payloads)
 
     def load_all_activities(self):
         activities = []
@@ -346,6 +549,20 @@ class SyncRepository:
             activities.append(Activity(**activity_kwargs))
         return activities
 
+    def load_activity_count(self, provider=None):
+        """Return the number of canonical activities without hydrating payloads."""
+
+        with self._connect() as connection:
+            if provider is None:
+                query = ACTIVITY_COUNT_QUERY
+                return int(connection.execute(query).fetchone()[0])
+            return int(
+                connection.execute(
+                    "SELECT COUNT(*) FROM activity_registry WHERE source = ?",
+                    (provider,),
+                ).fetchone()[0]
+            )
+
     def load_activity_sync_state(self, provider="strava") -> ActivitySyncState | None:
         """Return the latest completed sync metadata for *provider*, if present."""
 
@@ -365,7 +582,14 @@ class SyncRepository:
                     return None
                 activity_row = connection.execute(
                     """
-                    SELECT COUNT(*) AS stored_activity_count, MAX(start_date) AS latest_activity_start_date
+                    SELECT
+                        COUNT(*) AS stored_activity_count,
+                        MAX(
+                            COALESCE(
+                                NULLIF(start_date, ''),
+                                NULLIF(start_date_local, '')
+                            )
+                        ) AS latest_activity_start_date
                     FROM activity_registry
                     WHERE source = ?
                     """,
@@ -381,6 +605,47 @@ class SyncRepository:
             stored_activity_count=int(activity_row["stored_activity_count"]),
             latest_activity_start_date=activity_row["latest_activity_start_date"],
         )
+
+    def record_activity_sync_checkpoint(
+        self,
+        provider="strava",
+        *,
+        fetched_count=0,
+        inserted=0,
+        updated=0,
+        unchanged=0,
+        is_full_sync=False,
+        checkpoint=None,
+    ):
+        """Record an initial completed sync boundary after publication succeeds."""
+
+        now = datetime.now(UTC).isoformat()
+        with self._connect() as connection:
+            cursor = connection.cursor()
+            existing = cursor.execute(
+                "SELECT 1 FROM sync_state WHERE provider = ?",
+                (provider,),
+            ).fetchone()
+            if existing is not None:
+                return False
+            total_count = cursor.execute(ACTIVITY_COUNT_QUERY).fetchone()[0]
+            self._update_sync_state(
+                cursor,
+                [],
+                {
+                    "provider": provider,
+                    "fetched_count": fetched_count,
+                    "is_full_sync": is_full_sync,
+                    "checkpoint": checkpoint,
+                },
+                now,
+                inserted,
+                updated,
+                unchanged,
+                total_count,
+            )
+            connection.commit()
+        return True
 
     def load_detailed_route_coverage(self, provider="strava") -> DetailedRouteCoverage:
         """Return stored detailed activity-route coverage for *provider*."""
@@ -452,6 +717,7 @@ class SyncRepository:
             "stored_total": total_count,
             "detailed_count": sync_metadata.get("detailed_count"),
             "stream_stats": stream_stats,
+            "checkpoint": sync_metadata.get("checkpoint"),
         }
         cursor.execute(
             """
@@ -531,11 +797,146 @@ class SyncRepository:
             "last_synced_at": last_synced_at,
         }
 
-    def _row_to_record(self, row):
+    def _row_to_record(self, row, *, payloads=None):
         record = dict(zip(REGISTRY_COLUMNS, row))
         record["geometry_points"] = self._decode_json(record.pop("geometry_points_json"), [])
         record["details_json"] = self._decode_json(record.get("details_json"), {})
+        payload = (payloads or {}).get((record["source"], record["source_activity_id"]))
+        if payload is not None:
+            record["geometry_points"] = payload.get("geometry_points") or []
+            stream_metrics = payload.get("stream_metrics") or {}
+            if stream_metrics:
+                record["details_json"]["stream_metrics"] = stream_metrics
         return record
+
+    def _extract_detail_payload(self, registry_record, source_record, now):
+        geometry_points = source_record.get("geometry_points") or []
+        details = dict(source_record.get("details_json") or {})
+        stream_metrics = details.pop("stream_metrics", None) or {}
+        if not geometry_points and not stream_metrics:
+            return registry_record, None
+        payload = {
+            "geometry_points": geometry_points,
+            "stream_metrics": stream_metrics,
+        }
+        encoded = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+        payload_sha256 = hashlib.sha256(encoded).hexdigest()
+        details["detail_payload"] = {
+            "encoding": DETAIL_PAYLOAD_ENCODING,
+            "sha256": payload_sha256,
+            "point_count": len(geometry_points),
+        }
+        registry_record = dict(registry_record)
+        registry_record["geometry_points_json"] = "[]"
+        registry_record["details_json"] = json.dumps(details, sort_keys=True)
+        return registry_record, {
+            "source": source_record.get("source"),
+            "source_activity_id": str(source_record.get("source_activity_id")),
+            "encoding": DETAIL_PAYLOAD_ENCODING,
+            "payload_sha256": payload_sha256,
+            "payload_zlib": zlib.compress(encoded, level=6),
+            "point_count": len(geometry_points),
+            "updated_at": now,
+        }
+
+    def _upsert_detail_payload(self, cursor, record):
+        if record is None:
+            return
+        cursor.execute(
+            """
+            INSERT INTO activity_detail_payloads (
+                source, source_activity_id, encoding, payload_sha256,
+                payload_zlib, point_count, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(source, source_activity_id) DO UPDATE SET
+                encoding = excluded.encoding,
+                payload_sha256 = excluded.payload_sha256,
+                payload_zlib = excluded.payload_zlib,
+                point_count = excluded.point_count,
+                updated_at = excluded.updated_at
+            """,
+            (
+                record["source"],
+                record["source_activity_id"],
+                record["encoding"],
+                record["payload_sha256"],
+                record["payload_zlib"],
+                record["point_count"],
+                record["updated_at"],
+            ),
+        )
+
+    def _delete_detail_payload(self, cursor, record):
+        cursor.execute(
+            "DELETE FROM activity_detail_payloads WHERE source = ? AND source_activity_id = ?",
+            (record.get("source"), str(record.get("source_activity_id"))),
+        )
+
+    def _prune_orphaned_detail_payloads(self, cursor):
+        cursor.execute(
+            """
+            DELETE FROM activity_detail_payloads
+            WHERE NOT EXISTS (
+                SELECT 1 FROM activity_registry
+                WHERE activity_registry.source = activity_detail_payloads.source
+                  AND activity_registry.source_activity_id = activity_detail_payloads.source_activity_id
+            )
+            """
+        )
+
+    def _load_detail_payloads(self, connection, *, keys=None):
+        query = (
+            "SELECT source, source_activity_id, encoding, payload_sha256, payload_zlib "
+            "FROM activity_detail_payloads"
+        )
+        params = []
+        if keys:
+            clauses = []
+            for source, source_activity_id in keys:
+                clauses.append("(source = ? AND source_activity_id = ?)")
+                params.extend((source, source_activity_id))
+            query += " WHERE " + " OR ".join(clauses)
+        try:
+            rows = connection.execute(query, params).fetchall()
+        except sqlite3.OperationalError as exc:
+            if f"no such table: {DETAIL_PAYLOAD_TABLE}" in str(exc).lower():
+                return {}
+            raise
+        payloads = {}
+        for row in rows:
+            key = (row["source"], row["source_activity_id"])
+            payloads[key] = self._decode_detail_payload(row)
+        return payloads
+
+    @staticmethod
+    def _decode_detail_payload(row):
+        if row["encoding"] != DETAIL_PAYLOAD_ENCODING:
+            raise ActivityDetailPayloadError(
+                "The GeoPackage contains an unsupported activity detail payload."
+            )
+        try:
+            encoded = zlib.decompress(row["payload_zlib"])
+            if hashlib.sha256(encoded).hexdigest() != row["payload_sha256"]:
+                raise ActivityDetailPayloadError(
+                    "A stored activity detail payload failed its integrity check."
+                )
+            decoded = json.loads(encoded.decode("utf-8"))
+        except ActivityDetailPayloadError:
+            raise
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, zlib.error) as exc:
+            raise ActivityDetailPayloadError(
+                "A stored activity detail payload is corrupt and cannot be decoded."
+            ) from exc
+        if not isinstance(decoded, dict):
+            raise ActivityDetailPayloadError(
+                "A stored activity detail payload has an invalid structure."
+            )
+        return decoded
 
     def _compute_summary_hash(self, record):
         hash_payload = {}
@@ -586,5 +987,5 @@ def _is_missing_sync_schema_error(exc):
     message = str(exc).lower()
     return any(
         f"no such table: {table}" in message
-        for table in (SYNC_STATE_TABLE, REGISTRY_TABLE)
+        for table in (SYNC_STATE_TABLE, REGISTRY_TABLE, DETAIL_PAYLOAD_TABLE)
     )

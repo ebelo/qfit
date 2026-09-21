@@ -85,8 +85,8 @@ class InstallPluginTests(unittest.TestCase):
         )
         mock_print.assert_any_call(f"Installed {install_plugin.PLUGIN_NAME} to {destination} using mode=symlink")
         mock_print.assert_any_call(
-            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
-            "Use --mode copy or the packaged plugin zip when you need atlas PDF export."
+            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf or fitdecode. "
+            "Use --mode copy or the packaged plugin zip when you need atlas PDF or FIT import."
         )
 
     def test_main_warns_when_symlink_mode_skips_runtime_dependencies(self):
@@ -105,8 +105,8 @@ class InstallPluginTests(unittest.TestCase):
         install_symlink.assert_called_once_with(destination)
         mock_print.assert_any_call(f"Installed {install_plugin.PLUGIN_NAME} to {destination} using mode=symlink")
         mock_print.assert_any_call(
-            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
-            "Use --mode copy or the packaged plugin zip when you need atlas PDF export."
+            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf or fitdecode. "
+            "Use --mode copy or the packaged plugin zip when you need atlas PDF or FIT import."
         )
 
 

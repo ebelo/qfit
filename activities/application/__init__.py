@@ -7,6 +7,7 @@ import lightweight application models without pulling in QGIS task modules.
 from importlib import import_module
 
 _ACTIVITY_PREVIEW_MODULE = ".activity_preview"
+_STRAVA_BULK_IMPORT_MODULE = ".strava_bulk_import"
 
 __all__ = [
     "ActivityStore",
@@ -34,6 +35,10 @@ __all__ = [
     "StoreActivitiesRequest",
     "StoreActivitiesResult",
     "StoreActivitiesWorkflow",
+    "StravaBulkImportProgress",
+    "StravaBulkImportRequest",
+    "StravaBulkImportResult",
+    "StravaBulkImportWorkflow",
     "SyncController",
     "build_activity_preview",
     "build_activity_preview_filtered_activities",
@@ -77,6 +82,10 @@ _EXPORTS = {
     "StoreActivitiesRequest": (".load_workflow", "StoreActivitiesRequest"),
     "StoreActivitiesResult": (".load_workflow", "StoreActivitiesResult"),
     "StoreActivitiesWorkflow": (".load_workflow", "StoreActivitiesWorkflow"),
+    "StravaBulkImportProgress": (_STRAVA_BULK_IMPORT_MODULE, "StravaBulkImportProgress"),
+    "StravaBulkImportRequest": (_STRAVA_BULK_IMPORT_MODULE, "StravaBulkImportRequest"),
+    "StravaBulkImportResult": (_STRAVA_BULK_IMPORT_MODULE, "StravaBulkImportResult"),
+    "StravaBulkImportWorkflow": (_STRAVA_BULK_IMPORT_MODULE, "StravaBulkImportWorkflow"),
     "SyncController": (".sync_controller", "SyncController"),
     "build_activity_preview": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview"),
     "build_activity_preview_filtered_activities": (

@@ -15,7 +15,10 @@ It depends on :mod:`gpkg_io` (disk writes), :mod:`gpkg_layer_builders`
 but contains no schema definitions or repository logic.
 """
 
+import os
 import sqlite3
+import tempfile
+from dataclasses import asdict
 
 from .gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
@@ -356,3 +359,197 @@ def build_and_write_all_layers(
     ensure_spatial_indexes(output_path)
 
     return layers
+
+
+def build_and_write_all_layers_bounded(
+    record_batches_factory,
+    output_path,
+    atlas_page_settings,
+    *,
+    write_activity_points=True,
+    point_stride=5,
+    progress=None,
+):
+    """Rebuild detail-heavy layers without retaining every decoded payload."""
+
+    compact_records = []
+    total_records = 0
+    for batch in record_batches_factory():
+        for record in batch:
+            compact_records.append(
+                _compact_atlas_record(record, atlas_page_settings)
+            )
+            total_records += 1
+    plans = build_atlas_page_plans(compact_records, settings=atlas_page_settings)
+    plan_by_sort_key = {plan.page_sort_key: plan for plan in plans}
+    staging_path = _staged_gpkg_copy(output_path)
+
+    try:
+        layer_names = _write_bounded_layers_to_staging(
+            record_batches_factory,
+            staging_path,
+            atlas_page_settings,
+            compact_records,
+            plans,
+            plan_by_sort_key,
+            total_records,
+            write_activity_points=write_activity_points,
+            point_stride=point_stride,
+            progress=progress,
+        )
+        _replace_gpkg_from_staging(staging_path, output_path)
+    finally:
+        _remove_staging_gpkg(staging_path)
+
+    qgs_vector_layer = _import_qgis_spatial_index_api()[2]
+    return {
+        layer_name: qgs_vector_layer(
+            f"{output_path}|layername={layer_name}",
+            layer_name,
+            "ogr",
+        )
+        for layer_name in layer_names
+    }
+
+
+def _write_bounded_layers_to_staging(
+    record_batches_factory,
+    staging_path,
+    atlas_page_settings,
+    compact_records,
+    plans,
+    plan_by_sort_key,
+    total_records,
+    *,
+    write_activity_points,
+    point_stride,
+    progress,
+):
+    """Build a complete derived-layer set away from the visible GeoPackage."""
+
+    lightweight_layers = {
+        "activity_starts": build_start_layer(compact_records),
+        "activity_atlas_pages": build_atlas_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+        "atlas_document_summary": build_document_summary_layer(plans=plans),
+        "atlas_cover_highlights": build_cover_highlight_layer(plans=plans),
+        "atlas_page_detail_items": build_page_detail_item_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+        "atlas_toc_entries": build_toc_layer(
+            compact_records,
+            atlas_page_settings,
+            plans=plans,
+        ),
+    }
+    for layer_name, layer in lightweight_layers.items():
+        write_layer_to_gpkg(layer, staging_path, layer_name, overwrite_file=False)
+
+    heavy_builders = {
+        "activity_tracks": lambda records: build_track_layer(records),
+        "activity_points": lambda records: build_point_layer(
+            records,
+            write_activity_points,
+            point_stride,
+        ),
+        "atlas_profile_samples": lambda records: build_profile_sample_layer(
+            records,
+            atlas_page_settings,
+            plans=_profile_plans_for_records(records, plan_by_sort_key),
+        ),
+    }
+    for layer_index, (layer_name, builder) in enumerate(heavy_builders.items()):
+        write_layer_to_gpkg(
+            builder([]),
+            staging_path,
+            layer_name,
+            overwrite_file=False,
+        )
+        completed = 0
+        for batch in record_batches_factory():
+            batch_layer = builder(batch)
+            if batch_layer.featureCount() > 0:
+                write_layer_to_gpkg(
+                    batch_layer,
+                    staging_path,
+                    layer_name,
+                    overwrite_file=False,
+                    append=True,
+                )
+            completed += len(batch)
+            if progress is not None:
+                progress(layer_name, completed, total_records, layer_index, len(heavy_builders))
+
+    ensure_attribute_indexes(staging_path)
+    ensure_spatial_indexes(staging_path)
+    return tuple(heavy_builders) + tuple(lightweight_layers)
+
+
+def _staged_gpkg_copy(output_path):
+    directory = os.path.dirname(os.path.abspath(output_path)) or "."
+    descriptor, staging_path = tempfile.mkstemp(
+        prefix=".qfit-bulk-rebuild-",
+        suffix=".gpkg",
+        dir=directory,
+    )
+    os.close(descriptor)
+    try:
+        with sqlite3.connect(output_path) as source, sqlite3.connect(staging_path) as target:
+            source.backup(target)
+    except Exception:
+        _remove_staging_gpkg(staging_path)
+        raise
+    return staging_path
+
+
+def _replace_gpkg_from_staging(staging_path, output_path):
+    """Atomically publish a complete staged database through SQLite backup."""
+
+    with sqlite3.connect(staging_path) as source, sqlite3.connect(output_path) as target:
+        source.backup(target)
+
+
+def _remove_staging_gpkg(staging_path):
+    for suffix in ("", "-wal", "-shm"):
+        try:
+            os.remove(staging_path + suffix)
+        except FileNotFoundError:
+            pass
+
+
+def _profile_plans_for_records(records, plan_by_sort_key):
+    """Return only atlas plans owned by one bounded record batch."""
+
+    from ....atlas.publish_atlas import atlas_sort_key
+
+    batch_plans = []
+    for record in records:
+        plan = plan_by_sort_key.get(atlas_sort_key(record))
+        if plan is not None:
+            batch_plans.append(plan)
+    return batch_plans
+
+
+def _compact_atlas_record(record, atlas_page_settings):
+    from ....atlas.publish_atlas import activity_bounds, build_profile_summary
+
+    compact = dict(record)
+    bounds, geometry_source = activity_bounds(
+        record,
+        min_extent_degrees=atlas_page_settings.min_extent_degrees,
+    )
+    compact["geometry_source"] = geometry_source
+    compact["_qfit_precomputed_bounds"] = bounds
+    compact["_qfit_precomputed_profile_summary"] = asdict(
+        build_profile_summary(record)
+    )
+    compact["geometry_points"] = []
+    details = dict(compact.get("details_json") or {})
+    details.pop("stream_metrics", None)
+    compact["details_json"] = details
+    return compact

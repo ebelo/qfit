@@ -45,6 +45,14 @@ from .activities.application.storage_selection import (
 )
 from .activities.application.sync_strategy import ActivitySyncMode, plan_activity_sync
 from .activities.application.store_task import build_store_task
+from .activities.application.strava_bulk_import import (
+    StravaBulkImportRequest,
+    StravaBulkImportWorkflow,
+)
+from .activities.application.strava_bulk_import_task import (
+    build_strava_bulk_import_task,
+    build_strava_bulk_preflight_task,
+)
 from .analysis.infrastructure.activity_heatmap_layer import (
     ACTIVITY_HEATMAP_LAYER_NAME,
 )
@@ -136,6 +144,18 @@ def _storage_selection_message(result: StorageSelectionResult) -> str:
     return result.status_text
 
 
+def _format_bulk_import_eta(seconds) -> str:
+    remaining = max(int(round(seconds or 0)), 0)
+    if remaining >= 3600:
+        hours, remainder = divmod(remaining, 3600)
+        minutes = remainder // 60
+        return f"{hours}h {minutes}m"
+    if remaining >= 60:
+        minutes, secs = divmod(remaining, 60)
+        return f"{minutes}m {secs}s"
+    return f"{remaining}s"
+
+
 class QfitDockWidget(QDockWidget, FORM_CLASS):
     SETTINGS_PREFIX = "qfit"
     LEGACY_SETTINGS_PREFIX = "QFIT"
@@ -183,6 +203,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._atlas_export_output_path = None
         self._atlas_export_task_output_path = None
         self._detailed_route_count = None
+        self._bulk_preflight_task = None
+        self._bulk_import_task = None
+        self._bulk_archive_path = None
+        self._bulk_destination_path = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -293,6 +317,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     )
                 ),
                 sync_activities=self.on_refresh_clicked,
+                import_bulk_archive=self.on_import_strava_bulk_export_clicked,
                 store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
@@ -699,6 +724,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status)
 
     def on_browse_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before changing databases.")
+            return
         path, _selected = QFileDialog.getSaveFileName(
             self,
             "Choose new GeoPackage",
@@ -709,6 +737,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._commit_output_path_selection(path)
 
     def on_open_existing_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before changing databases.")
+            return
         path, _selected = QFileDialog.getOpenFileName(
             self,
             "Open existing GeoPackage",
@@ -718,7 +749,251 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if path:
             self._commit_output_path_selection(path)
 
+    def on_import_strava_bulk_export_clicked(self):
+        """Validate and import an official Strava Bulk Data Export ZIP."""
+
+        active_task = self._bulk_import_task or self._bulk_preflight_task
+        if active_task is not None:
+            active_task.cancel()
+            self._set_status("Strava bulk import cancellation requested…")
+            return
+        if self._non_bulk_data_task_active():
+            self._set_status(
+                "Wait for the current data task to finish before importing a Strava export."
+            )
+            return
+
+        archive_path, _selected = QFileDialog.getOpenFileName(
+            self,
+            "Choose Strava Bulk Data Export",
+            "",
+            "ZIP archives (*.zip)",
+        )
+        if not archive_path:
+            return
+        storage_result = self._commit_output_path_selection(
+            self.outputPathLineEdit.text(),
+            show_error=True,
+        )
+        if not storage_result.can_store:
+            return
+
+        self._bulk_archive_path = archive_path
+        workflow = StravaBulkImportWorkflow()
+        task = build_strava_bulk_preflight_task(
+            workflow,
+            archive_path,
+            on_finished=lambda result, error, cancelled: (
+                self._handle_bulk_preflight_finished(
+                    workflow,
+                    storage_result.normalized_path,
+                    result,
+                    error,
+                    cancelled,
+                )
+            ),
+        )
+        self._bulk_preflight_task = task
+        self._set_bulk_import_running(True, "Validating…")
+        self._set_status("Validating Strava bulk export safely…")
+        QgsApplication.taskManager().addTask(task)
+
+    def _handle_bulk_preflight_finished(
+        self,
+        workflow,
+        output_path,
+        preflight,
+        error_message,
+        cancelled,
+    ):
+        self._bulk_preflight_task = None
+        if cancelled:
+            self._bulk_archive_path = None
+            self._set_bulk_import_running(False)
+            self._set_status("Strava bulk import validation cancelled")
+            return
+        if error_message or preflight is None:
+            self._bulk_archive_path = None
+            self._set_bulk_import_running(False)
+            self._show_error(
+                "Strava bulk export is not safe to import",
+                error_message or "Archive validation did not complete.",
+            )
+            self._set_status("Strava bulk export validation failed")
+            return
+
+        formats = ", ".join(
+            f"{name.upper()}: {count}"
+            for name, count in preflight.format_counts.items()
+        ) or "none"
+        confirmation = (
+            f"Activities: {preflight.activity_count}\n"
+            f"Referenced originals: {preflight.referenced_file_count}\n"
+            f"Formats: {formats}\n"
+            f"Summary-only activities: {preflight.summary_only_count}\n"
+            f"Conflicts requiring review: {preflight.conflict_count}\n\n"
+            f"Estimated source work: {preflight.referenced_expanded_bytes / 1024 / 1024:.1f} MiB\n"
+            f"Destination: {os.path.basename(output_path)}\n\n"
+            "The export and resulting GeoPackage contain sensitive personal "
+            "location and health data. Import in bounded batches now?"
+        )
+        reply = QMessageBox.question(
+            self,
+            "Import Strava bulk export",
+            confirmation,
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            self._bulk_archive_path = None
+            self._set_bulk_import_running(False)
+            self._set_status("Strava bulk import not started")
+            return
+
+        request = StravaBulkImportRequest(
+            archive_path=self._bulk_archive_path,
+            output_path=output_path,
+            expected_archive_fingerprint=preflight.archive_fingerprint,
+            write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
+            point_stride=self.pointSamplingStrideSpinBox.value(),
+        )
+        self._bulk_destination_path = output_path
+        task = build_strava_bulk_import_task(
+            workflow,
+            request,
+            on_finished=self._handle_bulk_import_finished,
+        )
+        task.progressChanged.connect(lambda _value: self._refresh_bulk_import_progress(task))
+        self._bulk_import_task = task
+        self._set_bulk_import_running(True, "Cancel import")
+        self._set_status("Importing Strava activities…")
+        QgsApplication.taskManager().addTask(task)
+
+    def _refresh_bulk_import_progress(self, task):
+        progress = task.latest_progress
+        if progress.phase == "derived_layers":
+            self._set_bulk_import_running(
+                True,
+                "Finalizing layers…",
+                cancellable=False,
+            )
+        eta = ""
+        if progress.eta_seconds is not None:
+            eta = f" · about {_format_bulk_import_eta(progress.eta_seconds)} remaining"
+        self._set_status(f"{progress.message}{eta}")
+
+    def _handle_bulk_import_finished(self, result, error_message, cancelled):
+        destination_path = getattr(self, "_bulk_destination_path", None)
+        self._bulk_import_task = None
+        self._bulk_archive_path = None
+        self._bulk_destination_path = None
+        self._set_bulk_import_running(False)
+        if cancelled:
+            total = result.total_stored if result is not None else 0
+            self._set_status(
+                "Strava bulk import cancelled safely; committed batches are retained "
+                f"({total} activities stored). Restart the import to resume idempotently."
+            )
+            return
+        if error_message or result is None:
+            self._show_error(
+                "Strava bulk import failed",
+                error_message or "The import did not return a result.",
+            )
+            self._set_status("Strava bulk import failed")
+            return
+
+        self._runtime_store().finish_store(
+            output_path=destination_path,
+            stored_activity_count=result.total_stored,
+        )
+        self._mark_atlas_export_stale()
+        self._refresh_detailed_route_coverage_from_storage(
+            output_path=destination_path,
+        )
+        self._update_stored_activities_summary(result.total_stored)
+        summary = (
+            f"Imported {result.imported_count} activities: {result.inserted} inserted, "
+            f"{result.updated} updated, {result.unchanged} unchanged. "
+            f"Summary-only {result.summary_only}, no GPS {result.no_gps}, "
+            f"no altitude {result.no_altitude}, "
+            f"unsupported {result.unsupported}, conflicted {result.conflicted}, "
+            f"failed {result.failed}."
+        )
+        self._set_status(summary)
+        message_box = QMessageBox(self)
+        message_box.setWindowTitle("Strava bulk import complete")
+        message_box.setText(summary)
+        message_box.setDetailedText(result.private_diagnostic_report())
+        message_box.setStandardButtons(QMessageBox.Ok)
+        exec_method = getattr(message_box, "exec", None) or message_box.exec_
+        exec_method()
+
+    def _set_bulk_import_running(self, running, label=None, *, cancellable=True):
+        self._bulk_import_ui_state = (running, label, cancellable)
+        composition = getattr(self, "_local_first_dock_composition", None)
+        content = getattr(composition, "sync_content", None)
+        button = getattr(content, "bulk_button", None)
+        if button is not None:
+            button.setText(label or "Import Strava export…")
+            button.setEnabled(not running or cancellable)
+        for name in (
+            "outputPathLineEdit",
+            "browseButton",
+            "openExistingButton",
+            "refreshButton",
+            "backfillMissingDetailedRoutesButton",
+            "loadButton",
+            "syncRoutesButton",
+            "loadLayersButton",
+            "clearDatabaseButton",
+            "generateAtlasPdfButton",
+            "writeActivityPointsCheckBox",
+            "pointSamplingStrideSpinBox",
+        ):
+            widget = getattr(self, name, None)
+            if widget is not None:
+                widget.setEnabled(not running)
+
+    def _bulk_work_active(self):
+        return any(
+            task is not None
+            for task in (
+                getattr(self, "_bulk_preflight_task", None),
+                getattr(self, "_bulk_import_task", None),
+            )
+        )
+
+    def _non_bulk_data_task_active(self):
+        return any(
+            task is not None
+            for task in (
+                getattr(self, "_fetch_task", None),
+                getattr(self, "_store_task", None),
+                getattr(self, "_route_sync_task", None),
+                getattr(self, "_atlas_export_task", None),
+            )
+        )
+
+    def cancel_background_tasks(self):
+        """Request cancellation before the dock and plugin are destroyed."""
+
+        tasks = (
+            self._fetch_task,
+            self._store_task,
+            self._route_sync_task,
+            self._atlas_export_task,
+            self._bulk_preflight_task,
+            self._bulk_import_task,
+        )
+        for task in tasks:
+            if task is not None:
+                task.cancel()
+
     def on_refresh_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before fetching activities.")
+            return
         # If a fetch is already running, cancel it.
         if self._fetch_task is not None:
             self._fetch_task.cancel()
@@ -733,6 +1008,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def on_backfill_missing_detailed_routes_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before backfilling routes.")
+            return
         if self._fetch_task is not None:
             return
 
@@ -850,6 +1128,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._start_store_activities(status_text="Store started...")
 
     def _start_store_activities(self, *, status_text):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before storing activities.")
+            return None
         if self._store_task is not None:
             self._set_status("Store already in progress...")
             return None
@@ -923,6 +1204,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_sync_routes_clicked(self):
         """Fetch saved Strava routes, persist them, and load route layers."""
 
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before syncing routes.")
+            return
         if self._route_sync_task is not None:
             self._route_sync_task.cancel()
             self._set_route_sync_cancelling()
@@ -1036,6 +1320,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before loading layers.")
+            return
         project_crs = self._current_project_crs()
         preview_snapshot = self._activity_preview_snapshot()
         loaded_activities_layer = None
@@ -1151,6 +1438,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._fetch_task is not None
             or self._store_task is not None
             or self._route_sync_task is not None
+            or getattr(self, "_bulk_preflight_task", None) is not None
+            or getattr(self, "_bulk_import_task", None) is not None
         ):
             self._set_status(
                 "Wait for the current synchronization to finish before clearing the database."
@@ -1465,8 +1754,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._refresh_summary_status()
 
-    def _refresh_detailed_route_coverage_from_storage(self):
-        output_path = self._widget_text("outputPathLineEdit").strip()
+    def _refresh_detailed_route_coverage_from_storage(self, output_path=None):
+        output_path = (
+            output_path
+            if output_path is not None
+            else self._widget_text("outputPathLineEdit")
+        ).strip()
         if not output_path:
             self._detailed_route_count = None
             self._runtime_store().set_detailed_route_coverage(
@@ -1577,6 +1870,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._refresh_summary_status()
 
     def on_generate_atlas_pdf_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before exporting the atlas.")
+            return
         # Cancel any running export
         if self._atlas_export_task is not None:
             self._atlas_export_task.cancel()
@@ -1701,6 +1997,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _set_status(self, text):
         self.statusLabel.setText(text)
         self._refresh_summary_status()
+        bulk_state = getattr(self, "_bulk_import_ui_state", None)
+        if bulk_state is not None and bulk_state[0]:
+            self._set_bulk_import_running(
+                bulk_state[0],
+                bulk_state[1],
+                cancellable=bulk_state[2],
+            )
 
     def _refresh_summary_status(self) -> None:
         label = getattr(self, "summaryStatusLabel", None)

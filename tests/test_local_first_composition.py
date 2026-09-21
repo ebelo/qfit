@@ -126,6 +126,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         callbacks = self.module.DockWorkflowActionCallbacks(
             configure_connection=lambda: calls.append("settings"),
             sync_activities=lambda: calls.append("sync"),
+            import_bulk_archive=lambda: calls.append("bulk"),
             store_activities=lambda: calls.append("store"),
             sync_saved_routes=lambda: calls.append("routes"),
             load_activity_layers=lambda: calls.append("layers"),
@@ -142,6 +143,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.module.connect_local_first_action_callbacks(composition, callbacks)
         composition.settings_content.configureRequested.emit()
         composition.sync_content.syncRequested.emit()
+        composition.sync_content.importBulkRequested.emit()
         composition.sync_content.storeRequested.emit()
         composition.sync_content.syncRoutesRequested.emit()
         composition.sync_content.loadActivitiesRequested.emit()
@@ -159,6 +161,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             [
                 "settings",
                 "sync",
+                "bulk",
                 "store",
                 "routes",
                 "layers",
