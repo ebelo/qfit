@@ -7,7 +7,12 @@ from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.models import Activity
-from qfit.sync_repository import ActivitySyncState, DetailedRouteCoverage, SyncRepository
+from qfit.sync_repository import (
+    ActivityDetailPayloadError,
+    ActivitySyncState,
+    DetailedRouteCoverage,
+    SyncRepository,
+)
 
 
 class SyncRepositoryTests(unittest.TestCase):
@@ -108,6 +113,52 @@ class SyncRepositoryTests(unittest.TestCase):
 
             self.assertEqual(result.unchanged, 1)
             self.assertEqual(result.updated, 0)
+
+    def test_corrupt_detail_payload_is_reported_and_bulk_reimport_repairs_it(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activity = self._activity(
+                geometry_source="stream",
+                details_json={
+                    "stream_metrics": {
+                        "distance": [0.0, 100.0],
+                        "altitude": [450.0, 455.0],
+                    },
+                },
+            )
+            repo.upsert_activities([activity], compress_detail_payloads=True)
+            with repo._connect() as connection:
+                connection.execute(
+                    "UPDATE activity_detail_payloads SET payload_zlib = ?",
+                    (b"not-zlib",),
+                )
+                connection.commit()
+
+            with self.assertRaises(ActivityDetailPayloadError):
+                repo.load_all_activities()
+            with self.assertRaises(ActivityDetailPayloadError):
+                repo.upsert_activities(
+                    [
+                        self._activity(
+                            geometry_source="summary_polyline",
+                            geometry_points=[(46.5, 6.6)],
+                        )
+                    ]
+                )
+
+            repaired = repo.upsert_activities(
+                [activity],
+                compress_detail_payloads=True,
+            )
+
+            self.assertEqual(repaired.updated, 1)
+            stored = repo.load_all_activities()[0]
+            self.assertEqual(stored.geometry_points, [[46.5, 6.6], [46.6, 6.7]])
+            self.assertEqual(
+                stored.details_json["stream_metrics"]["altitude"],
+                [450.0, 455.0],
+            )
 
     def test_iter_activity_record_batches_hydrates_with_stable_global_keys(self):
         with tempfile.TemporaryDirectory() as tmpdir:

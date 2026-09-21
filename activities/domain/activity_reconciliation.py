@@ -71,7 +71,7 @@ def _geometry_quality(record, details):
     source = record.get("geometry_source")
     if not points:
         rank = 0
-    elif source == "stream":
+    elif source == "stream" and len(points) >= 2:
         rank = 3
     elif source == "summary_polyline":
         rank = 2

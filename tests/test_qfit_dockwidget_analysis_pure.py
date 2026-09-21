@@ -326,6 +326,95 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(self.module._format_bulk_import_eta(125), "2m 5s")
         self.assertEqual(self.module._format_bulk_import_eta(7380), "2h 3m")
 
+    def test_bulk_import_is_blocked_while_another_data_task_is_active(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._bulk_import_task = None
+        dock._bulk_preflight_task = None
+        dock._non_bulk_data_task_active = MagicMock(return_value=True)
+        dock._set_status = MagicMock()
+
+        with patch.object(
+            self.module.QFileDialog,
+            "getOpenFileName",
+            create=True,
+        ) as file_dialog:
+            self.module.QfitDockWidget.on_import_strava_bulk_export_clicked(dock)
+
+        file_dialog.assert_not_called()
+        dock._set_status.assert_called_once_with(
+            "Wait for the current data task to finish before importing a Strava export."
+        )
+
+    def test_bulk_import_running_disables_conflicting_controls(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        bulk_button = _FakeButton("Import Strava export…")
+        dock._local_first_dock_composition = SimpleNamespace(
+            sync_content=SimpleNamespace(bulk_button=bulk_button)
+        )
+        dock.outputPathLineEdit = _FakeButton("database")
+        dock.loadButton = _FakeButton("Store activities")
+        dock.syncRoutesButton = _FakeButton("Sync saved routes")
+
+        self.module.QfitDockWidget._set_bulk_import_running(
+            dock,
+            True,
+            "Cancel import",
+        )
+
+        self.assertTrue(bulk_button.isEnabled())
+        self.assertFalse(dock.outputPathLineEdit.isEnabled())
+        self.assertFalse(dock.loadButton.isEnabled())
+        self.assertFalse(dock.syncRoutesButton.isEnabled())
+
+    def test_bulk_import_completion_uses_captured_destination(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._bulk_destination_path = "/tmp/original.gpkg"
+        dock._bulk_import_task = object()
+        dock._bulk_archive_path = "/tmp/export.zip"
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/changed.gpkg")
+        runtime_store = MagicMock()
+        dock._runtime_store = MagicMock(return_value=runtime_store)
+        dock._set_bulk_import_running = MagicMock()
+        dock._mark_atlas_export_stale = MagicMock()
+        dock._refresh_detailed_route_coverage_from_storage = MagicMock()
+        dock._update_stored_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        result = SimpleNamespace(
+            total_stored=4,
+            imported_count=4,
+            inserted=4,
+            updated=0,
+            unchanged=0,
+            summary_only=0,
+            no_gps=0,
+            no_altitude=0,
+            unsupported=0,
+            conflicted=0,
+            failed=0,
+            private_diagnostic_report=lambda: "report",
+        )
+        message_box = MagicMock()
+
+        with patch.object(
+            self.module,
+            "QMessageBox",
+            return_value=message_box,
+        ):
+            self.module.QfitDockWidget._handle_bulk_import_finished(
+                dock,
+                result,
+                None,
+                False,
+            )
+
+        runtime_store.finish_store.assert_called_once_with(
+            output_path="/tmp/original.gpkg",
+            stored_activity_count=4,
+        )
+        dock._refresh_detailed_route_coverage_from_storage.assert_called_once_with(
+            output_path="/tmp/original.gpkg"
+        )
+
     @classmethod
     def setUpClass(cls):
         cls.module = cls._import_module_with_stubs()
@@ -356,7 +445,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         qgis_core = _AutoModule("qgis.core")
         pyqt = ModuleType("qgis.PyQt")
         uic = ModuleType("qgis.PyQt.uic")
-        uic.loadUiType = lambda _path: (type("FakeForm", (), {}), None)
+        uic.loadUiType = lambda _ui_path: (type("FakeForm", (), {}), None)
         qtcore = _AutoModule("qgis.PyQt.QtCore")
         qtgui = _AutoModule("qgis.PyQt.QtGui")
         qtwidgets = _AutoModule("qgis.PyQt.QtWidgets")

@@ -94,6 +94,12 @@ REGISTRY_COLUMNS = [
     "first_seen_at",
     "last_synced_at",
 ]
+
+
+class ActivityDetailPayloadError(RuntimeError):
+    """Raised when compressed activity detail cannot be trusted or decoded."""
+
+
 HASH_FIELDS = [
     "source",
     "source_activity_id",
@@ -294,13 +300,29 @@ class SyncRepository:
             ),
             (record.get("source"), record.get("source_activity_id")),
         ).fetchone()
+        recover_detail_payload = False
         if existing_row is not None and reconcile_existing:
             key = (record.get("source"), str(record.get("source_activity_id")))
-            payloads = self._load_detail_payloads(cursor.connection, keys=[key])
+            try:
+                payloads = self._load_detail_payloads(cursor.connection, keys=[key])
+            except ActivityDetailPayloadError:
+                incoming_details = record.get("details_json") or {}
+                incoming_has_detail = bool(
+                    record.get("geometry_points")
+                    or incoming_details.get("stream_metrics")
+                )
+                if not compress_detail_payloads or not incoming_has_detail:
+                    raise
+                payloads = {}
+                recover_detail_payload = True
             existing_record = self._row_to_record(existing_row, payloads=payloads)
             record = reconcile_activity_records(record, existing_record)
         summary_hash = self._compute_summary_hash(record)
-        if existing_row is not None and existing_row["summary_hash"] == summary_hash:
+        if (
+            existing_row is not None
+            and existing_row["summary_hash"] == summary_hash
+            and not recover_detail_payload
+        ):
             return "unchanged"
 
         first_seen_at = (
@@ -776,17 +798,34 @@ class SyncRepository:
             raise
         payloads = {}
         for row in rows:
-            if row["encoding"] != DETAIL_PAYLOAD_ENCODING:
-                continue
-            try:
-                encoded = zlib.decompress(row["payload_zlib"])
-                if hashlib.sha256(encoded).hexdigest() != row["payload_sha256"]:
-                    continue
-                decoded = json.loads(encoded.decode("utf-8"))
-            except (OSError, UnicodeDecodeError, json.JSONDecodeError, zlib.error):
-                continue
-            payloads[(row["source"], row["source_activity_id"])] = decoded
+            key = (row["source"], row["source_activity_id"])
+            payloads[key] = self._decode_detail_payload(row)
         return payloads
+
+    @staticmethod
+    def _decode_detail_payload(row):
+        if row["encoding"] != DETAIL_PAYLOAD_ENCODING:
+            raise ActivityDetailPayloadError(
+                "The GeoPackage contains an unsupported activity detail payload."
+            )
+        try:
+            encoded = zlib.decompress(row["payload_zlib"])
+            if hashlib.sha256(encoded).hexdigest() != row["payload_sha256"]:
+                raise ActivityDetailPayloadError(
+                    "A stored activity detail payload failed its integrity check."
+                )
+            decoded = json.loads(encoded.decode("utf-8"))
+        except ActivityDetailPayloadError:
+            raise
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, zlib.error) as exc:
+            raise ActivityDetailPayloadError(
+                "A stored activity detail payload is corrupt and cannot be decoded."
+            ) from exc
+        if not isinstance(decoded, dict):
+            raise ActivityDetailPayloadError(
+                "A stored activity detail payload has an invalid structure."
+            )
+        return decoded
 
     def _compute_summary_hash(self, record):
         hash_payload = {}

@@ -77,7 +77,9 @@ class _Reader:
         self.results = results
         self.value = preflight
 
-    def preflight(self, progress=None):
+    def preflight(self, progress=None, cancelled=None):
+        if cancelled and cancelled():
+            raise AssertionError("test preflight unexpectedly cancelled")
         if progress:
             progress("validation")
             progress("manifest_parsing")
@@ -257,6 +259,23 @@ class ReconcileBulkActivityTests(unittest.TestCase):
         self.assertEqual(merged.geometry_points, [(1, 2), (3, 4)])
         self.assertEqual(merged.details_json["user_tag"], "holiday")
         self.assertEqual(merged.details_json["stream_metrics"]["altitude"], [50, 60])
+
+    def test_one_point_stream_does_not_replace_usable_summary_geometry(self):
+        existing = _activity(
+            "42",
+            points=[(10, 20), (11, 21), (12, 22)],
+            geometry_source="summary_polyline",
+        ).to_record()
+        incoming = _activity(
+            "42",
+            points=[(1, 2)],
+            geometry_source="stream",
+        )
+
+        merged = reconcile_bulk_activity(incoming, existing)
+
+        self.assertEqual(merged.geometry_source, "summary_polyline")
+        self.assertEqual(merged.geometry_points, [(10, 20), (11, 21), (12, 22)])
 
     def test_does_not_replace_profile_with_lower_fidelity_stream(self):
         existing = _activity(

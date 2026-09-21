@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from qfit.providers.infrastructure.strava_bulk_archive import (
     ArchiveLimits,
+    StravaBulkArchiveCancelled,
     StravaBulkArchiveError,
     StravaBulkArchiveReader,
 )
@@ -416,6 +417,47 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             "nested activity file exceeds",
         ):
             reader.preflight()
+
+    def test_nested_gzip_total_limit_is_enforced_across_members(self):
+        first = "activities/first.gpx.gz"
+        second = "activities/second.gpx.gz"
+        reader = self._write_archive(
+            [_row("one", first), _row("two", second)],
+            {
+                first: gzip.compress(b"x" * 800),
+                second: gzip.compress(b"y" * 800),
+            },
+        )
+        reader.limits = ArchiveLimits(
+            max_nested_bytes=1024,
+            max_total_bytes=1200,
+        )
+
+        with self.assertRaisesRegex(
+            StravaBulkArchiveError,
+            "Nested activity files exceed",
+        ):
+            reader.preflight()
+
+    def test_preflight_cancellation_interrupts_member_streaming(self):
+        filename = "activities/large.gpx"
+        with zipfile.ZipFile(
+            self.archive_path,
+            "w",
+            compression=zipfile.ZIP_STORED,
+        ) as archive:
+            archive.writestr("activities.csv", _manifest([_row(filename=filename)]))
+            archive.writestr(filename, b"x" * (2 * 1024 * 1024))
+        reader = StravaBulkArchiveReader(str(self.archive_path))
+        checks = 0
+
+        def cancelled():
+            nonlocal checks
+            checks += 1
+            return checks >= 5
+
+        with self.assertRaises(StravaBulkArchiveCancelled):
+            reader.preflight(cancelled=cancelled)
 
     def test_progress_and_cancellation_stop_between_activity_members(self):
         reader = self._write_archive(

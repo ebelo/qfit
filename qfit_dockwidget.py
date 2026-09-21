@@ -206,6 +206,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._bulk_preflight_task = None
         self._bulk_import_task = None
         self._bulk_archive_path = None
+        self._bulk_destination_path = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -723,6 +724,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status)
 
     def on_browse_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before changing databases.")
+            return
         path, _selected = QFileDialog.getSaveFileName(
             self,
             "Choose new GeoPackage",
@@ -733,6 +737,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._commit_output_path_selection(path)
 
     def on_open_existing_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before changing databases.")
+            return
         path, _selected = QFileDialog.getOpenFileName(
             self,
             "Open existing GeoPackage",
@@ -749,6 +756,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if active_task is not None:
             active_task.cancel()
             self._set_status("Strava bulk import cancellation requested…")
+            return
+        if self._non_bulk_data_task_active():
+            self._set_status(
+                "Wait for the current data task to finish before importing a Strava export."
+            )
             return
 
         archive_path, _selected = QFileDialog.getOpenFileName(
@@ -796,10 +808,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     ):
         self._bulk_preflight_task = None
         if cancelled:
+            self._bulk_archive_path = None
             self._set_bulk_import_running(False)
             self._set_status("Strava bulk import validation cancelled")
             return
         if error_message or preflight is None:
+            self._bulk_archive_path = None
             self._set_bulk_import_running(False)
             self._show_error(
                 "Strava bulk export is not safe to import",
@@ -831,6 +845,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             QMessageBox.No,
         )
         if reply != QMessageBox.Yes:
+            self._bulk_archive_path = None
             self._set_bulk_import_running(False)
             self._set_status("Strava bulk import not started")
             return
@@ -841,6 +856,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
             point_stride=self.pointSamplingStrideSpinBox.value(),
         )
+        self._bulk_destination_path = output_path
         task = build_strava_bulk_import_task(
             workflow,
             request,
@@ -866,8 +882,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(f"{progress.message}{eta}")
 
     def _handle_bulk_import_finished(self, result, error_message, cancelled):
+        destination_path = getattr(self, "_bulk_destination_path", None)
         self._bulk_import_task = None
         self._bulk_archive_path = None
+        self._bulk_destination_path = None
         self._set_bulk_import_running(False)
         if cancelled:
             total = result.total_stored if result is not None else 0
@@ -885,11 +903,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._runtime_store().finish_store(
-            output_path=self.outputPathLineEdit.text().strip(),
+            output_path=destination_path,
             stored_activity_count=result.total_stored,
         )
         self._mark_atlas_export_stale()
-        self._refresh_detailed_route_coverage_from_storage()
+        self._refresh_detailed_route_coverage_from_storage(
+            output_path=destination_path,
+        )
         self._update_stored_activities_summary(result.total_stored)
         summary = (
             f"Imported {result.imported_count} activities: {result.inserted} inserted, "
@@ -915,6 +935,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if button is not None:
             button.setText(label or "Import Strava export…")
             button.setEnabled(not running or cancellable)
+        for name in (
+            "outputPathLineEdit",
+            "browseButton",
+            "openExistingButton",
+            "refreshButton",
+            "backfillMissingDetailedRoutesButton",
+            "loadButton",
+            "syncRoutesButton",
+            "loadLayersButton",
+            "clearDatabaseButton",
+            "generateAtlasPdfButton",
+            "writeActivityPointsCheckBox",
+            "pointSamplingStrideSpinBox",
+        ):
+            widget = getattr(self, name, None)
+            if widget is not None:
+                widget.setEnabled(not running)
+
+    def _bulk_work_active(self):
+        return any(
+            task is not None
+            for task in (
+                getattr(self, "_bulk_preflight_task", None),
+                getattr(self, "_bulk_import_task", None),
+            )
+        )
+
+    def _non_bulk_data_task_active(self):
+        return any(
+            task is not None
+            for task in (
+                getattr(self, "_fetch_task", None),
+                getattr(self, "_store_task", None),
+                getattr(self, "_route_sync_task", None),
+                getattr(self, "_atlas_export_task", None),
+            )
+        )
 
     def cancel_background_tasks(self):
         """Request cancellation before the dock and plugin are destroyed."""
@@ -932,6 +989,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 task.cancel()
 
     def on_refresh_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before fetching activities.")
+            return
         # If a fetch is already running, cancel it.
         if self._fetch_task is not None:
             self._fetch_task.cancel()
@@ -946,6 +1006,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def on_backfill_missing_detailed_routes_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before backfilling routes.")
+            return
         if self._fetch_task is not None:
             return
 
@@ -1063,6 +1126,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._start_store_activities(status_text="Store started...")
 
     def _start_store_activities(self, *, status_text):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before storing activities.")
+            return None
         if self._store_task is not None:
             self._set_status("Store already in progress...")
             return None
@@ -1136,6 +1202,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_sync_routes_clicked(self):
         """Fetch saved Strava routes, persist them, and load route layers."""
 
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before syncing routes.")
+            return
         if self._route_sync_task is not None:
             self._route_sync_task.cancel()
             self._set_route_sync_cancelling()
@@ -1249,6 +1318,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before loading layers.")
+            return
         project_crs = self._current_project_crs()
         preview_snapshot = self._activity_preview_snapshot()
         loaded_activities_layer = None
@@ -1680,8 +1752,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._refresh_summary_status()
 
-    def _refresh_detailed_route_coverage_from_storage(self):
-        output_path = self._widget_text("outputPathLineEdit").strip()
+    def _refresh_detailed_route_coverage_from_storage(self, output_path=None):
+        output_path = (
+            output_path
+            if output_path is not None
+            else self._widget_text("outputPathLineEdit")
+        ).strip()
         if not output_path:
             self._detailed_route_count = None
             self._runtime_store().set_detailed_route_coverage(
@@ -1792,6 +1868,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._refresh_summary_status()
 
     def on_generate_atlas_pdf_clicked(self):
+        if self._bulk_work_active():
+            self._set_status("Wait for the Strava bulk import to finish before exporting the atlas.")
+            return
         # Cancel any running export
         if self._atlas_export_task is not None:
             self._atlas_export_task.cancel()

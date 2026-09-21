@@ -106,8 +106,17 @@ class StravaBulkImportWorkflow:
         self._writer_factory = writer_factory
         self._reader_factory = reader_factory or StravaBulkArchiveReader
 
-    def preflight(self, archive_path: str, *, progress=None) -> BulkArchivePreflight:
-        return self._reader_factory(archive_path).preflight(progress=progress)
+    def preflight(
+        self,
+        archive_path: str,
+        *,
+        progress=None,
+        cancelled=None,
+    ) -> BulkArchivePreflight:
+        return self._reader_factory(archive_path).preflight(
+            progress=progress,
+            cancelled=cancelled,
+        )
 
     def run(
         self,
@@ -128,7 +137,8 @@ class StravaBulkImportWorkflow:
                 progress,
                 phase,
                 message=_preflight_phase_message(phase),
-            )
+            ),
+            cancelled=cancelled,
         )
         if self._is_cancelled(cancelled):
             return StravaBulkImportResult(preflight=preflight, cancelled=True)

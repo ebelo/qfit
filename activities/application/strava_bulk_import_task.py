@@ -12,6 +12,9 @@ from .strava_bulk_import import (
     StravaBulkImportResult,
     StravaBulkImportWorkflow,
 )
+from ...providers.infrastructure.strava_bulk_archive import (
+    StravaBulkArchiveCancelled,
+)
 
 PreflightFinished = Callable[[object | None, str | None, bool], None]
 ImportFinished = Callable[[StravaBulkImportResult | None, str | None, bool], None]
@@ -32,8 +35,13 @@ class StravaBulkPreflightTask(QgsTask):
         if self.isCanceled():
             return False
         try:
-            self._result = self._workflow.preflight(self._archive_path)
+            self._result = self._workflow.preflight(
+                self._archive_path,
+                cancelled=self.isCanceled,
+            )
             return not self.isCanceled()
+        except StravaBulkArchiveCancelled:
+            return False
         except Exception as exc:  # pragma: no cover - surfaced by finished()
             self._error_message = _safe_task_error(exc)
             return False
@@ -66,6 +74,8 @@ class StravaBulkImportTask(QgsTask):
                 progress=self._handle_progress,
             )
             return not self._result.cancelled and not self.isCanceled()
+        except StravaBulkArchiveCancelled:
+            return False
         except Exception as exc:  # pragma: no cover - surfaced by finished()
             self._error_message = _safe_task_error(exc)
             return False

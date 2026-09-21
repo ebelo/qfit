@@ -55,6 +55,10 @@ class StravaBulkArchiveError(RuntimeError):
     """Raised when an archive cannot be imported safely."""
 
 
+class StravaBulkArchiveCancelled(RuntimeError):
+    """Raised when archive validation is cancelled cooperatively."""
+
+
 @dataclass(frozen=True)
 class ArchiveLimits:
     max_members: int = 100_000
@@ -125,11 +129,14 @@ class StravaBulkArchiveReader:
     def preflight(
         self,
         progress: Callable[[str], None] | None = None,
+        cancelled: Callable[[], bool] | None = None,
     ) -> BulkArchivePreflight:
+        _raise_if_cancelled(cancelled)
         if progress is not None:
             progress("validation")
         with self._open_archive() as archive:
             infos = self._validate_central_directory(archive)
+            _raise_if_cancelled(cancelled)
             info_by_name = {_normalize_member_name(info.filename): info for info in infos}
             manifest_info = info_by_name.get(MANIFEST_NAME)
             if manifest_info is None:
@@ -140,7 +147,12 @@ class StravaBulkArchiveReader:
             entries = self._read_manifest(manifest_bytes, info_by_name)
             if progress is not None:
                 progress("archive_integrity")
-            self._validate_referenced_crcs(archive, entries, info_by_name)
+            self._validate_referenced_crcs(
+                archive,
+                entries,
+                info_by_name,
+                cancelled=cancelled,
+            )
 
         fingerprint = _archive_fingerprint(manifest_bytes, entries, info_by_name)
         formats = Counter(
@@ -282,7 +294,14 @@ class StravaBulkArchiveReader:
             )
         return entries
 
-    def _validate_referenced_crcs(self, archive, entries, info_by_name):
+    def _validate_referenced_crcs(
+        self,
+        archive,
+        entries,
+        info_by_name,
+        *,
+        cancelled=None,
+    ):
         """Read only allowlisted activity members so ZIP CRC checks run pre-write."""
 
         referenced = {
@@ -290,31 +309,47 @@ class StravaBulkArchiveReader:
             for entry in entries
             if entry.member_name and entry.member_name in info_by_name
         }
+        total_nested_bytes = 0
         try:
             for member_name in sorted(referenced):
+                _raise_if_cancelled(cancelled)
                 info = info_by_name[member_name]
                 with archive.open(info) as handle:
-                    expanded_bytes = sum(
-                        len(chunk)
-                        for chunk in iter(lambda: handle.read(1024 * 1024), b"")
-                    )
+                    expanded_bytes = 0
+                    while True:
+                        _raise_if_cancelled(cancelled)
+                        chunk = handle.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        expanded_bytes += len(chunk)
                 if expanded_bytes != info.file_size:
                     raise zipfile.BadZipFile("referenced member size mismatch")
                 if member_name.lower().endswith(".gz"):
-                    self._validate_nested_gzip_size(archive, info)
+                    total_nested_bytes += self._validate_nested_gzip_size(
+                        archive,
+                        info,
+                        cancelled=cancelled,
+                    )
+                    if total_nested_bytes > self.limits.max_total_bytes:
+                        raise StravaBulkArchiveError(
+                            "Nested activity files exceed the safe total expanded-size limit"
+                        )
+        except StravaBulkArchiveCancelled:
+            raise
         except (OSError, EOFError, zipfile.BadZipFile) as exc:
             raise StravaBulkArchiveError(
                 "The Strava archive contains a corrupt referenced activity member"
             ) from exc
 
-    def _validate_nested_gzip_size(self, archive, info):
+    def _validate_nested_gzip_size(self, archive, info, *, cancelled=None):
         expanded_bytes = 0
         try:
             with archive.open(info) as zip_handle, gzip.GzipFile(fileobj=zip_handle) as handle:
                 while True:
+                    _raise_if_cancelled(cancelled)
                     chunk = handle.read(1024 * 1024)
                     if not chunk:
-                        return
+                        return expanded_bytes
                     expanded_bytes += len(chunk)
                     if expanded_bytes > self.limits.max_nested_bytes:
                         raise StravaBulkArchiveError(
@@ -322,10 +357,12 @@ class StravaBulkArchiveReader:
                         )
         except StravaBulkArchiveError:
             raise
+        except StravaBulkArchiveCancelled:
+            raise
         except (OSError, EOFError):
             # A structurally invalid activity member is isolated and reported
             # during parsing; only excessive expansion makes the archive unsafe.
-            return
+            return 0
 
     def _import_entry(self, archive, info_by_name, preflight, entry):
         if entry.conflict_reason:
@@ -410,6 +447,11 @@ def _normalize_member_name(raw_name: str) -> str:
     if normalized in ("", ".") or ".." in parts:
         raise StravaBulkArchiveError(UNSAFE_MEMBER_PATH_ERROR)
     return normalized
+
+
+def _raise_if_cancelled(cancelled):
+    if cancelled is not None and cancelled():
+        raise StravaBulkArchiveCancelled("Strava bulk archive validation cancelled")
 
 
 def _manifest_member_name(value: str | None) -> str | None:
