@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import fields
 
 from .models import Activity
+from ...polyline_utils import decode_polyline
 
 
 def reconcile_activity_records(incoming: dict, existing: dict | None) -> dict:
@@ -69,9 +70,12 @@ def _merge_details(incoming_details, existing_details, keep_existing_geometry):
 def _geometry_quality(record, details):
     points = record.get("geometry_points") or []
     source = record.get("geometry_source")
-    if not points:
+    point_count = len(points)
+    if not points and source == "summary_polyline":
+        point_count = len(decode_polyline(record.get("summary_polyline")))
+    if point_count < 2:
         rank = 0
-    elif source == "stream" and len(points) >= 2:
+    elif source == "stream":
         rank = 3
     elif source == "summary_polyline":
         rank = 2
@@ -86,7 +90,7 @@ def _geometry_quality(record, details):
         any(value is not None for value in (metrics.get("distance") or []))
         and sum(value is not None for value in (metrics.get("altitude") or [])) >= 2
     )
-    return rank, int(has_profile), metric_count, len(points)
+    return rank, int(has_profile), metric_count, point_count
 
 
 def _merged_ingest_sources(existing_details, incoming_details):

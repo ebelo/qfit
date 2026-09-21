@@ -381,6 +381,26 @@ class ReconcileBulkActivityTests(unittest.TestCase):
         self.assertEqual(merged.geometry_source, "summary_polyline")
         self.assertEqual(merged.geometry_points, [(10, 20), (11, 21), (12, 22)])
 
+    def test_one_point_stream_does_not_replace_encoded_summary_polyline(self):
+        encoded = "_p~iF~ps|U_ulLnnqC_mqNvxq`@"
+        existing = _activity(
+            "42",
+            points=[],
+            geometry_source="summary_polyline",
+            summary_polyline=encoded,
+        ).to_record()
+        incoming = _activity(
+            "42",
+            points=[(1, 2)],
+            geometry_source="stream",
+        )
+
+        merged = reconcile_bulk_activity(incoming, existing)
+
+        self.assertEqual(merged.geometry_source, "summary_polyline")
+        self.assertEqual(merged.summary_polyline, encoded)
+        self.assertEqual(merged.geometry_points, [])
+
     def test_does_not_replace_profile_with_lower_fidelity_stream(self):
         existing = _activity(
             "42",

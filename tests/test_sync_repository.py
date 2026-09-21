@@ -180,6 +180,43 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual([record["_activity_fk"] for record in records], [1, 2, 3])
             self.assertTrue(all(record["geometry_points"] for record in records))
 
+    def test_iter_activity_record_batches_keysets_nullable_and_tied_dates(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            activities = [
+                self._activity(
+                    source=source,
+                    source_activity_id=activity_id,
+                    start_date=start_date,
+                )
+                for source, activity_id, start_date in (
+                    ("strava", "same", "2026-03-20T06:00:00Z"),
+                    ("other", "same", "2026-03-20T06:00:00Z"),
+                    ("strava", "older", "2026-03-19T06:00:00Z"),
+                    ("strava", "undated", None),
+                )
+            ]
+            repo.upsert_activities(activities)
+
+            batches = list(repo.iter_activity_record_batches(batch_size=1))
+
+            records = [record for batch in batches for record in batch]
+            self.assertEqual(len(records), 4)
+            self.assertEqual(
+                {(record["source"], record["source_activity_id"]) for record in records},
+                {
+                    ("strava", "same"),
+                    ("other", "same"),
+                    ("strava", "older"),
+                    ("strava", "undated"),
+                },
+            )
+            self.assertEqual(
+                [record["_activity_fk"] for record in records],
+                [1, 2, 3, 4],
+            )
+
     def test_uncompressed_update_replaces_old_detail_payload(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))

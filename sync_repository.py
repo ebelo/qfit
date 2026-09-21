@@ -94,6 +94,7 @@ REGISTRY_COLUMNS = [
     "first_seen_at",
     "last_synced_at",
 ]
+START_DATE_COLUMN_INDEX = REGISTRY_COLUMNS.index("start_date")
 
 
 class ActivityDetailPayloadError(RuntimeError):
@@ -429,27 +430,63 @@ class SyncRepository:
         """Yield hydrated registry rows in bounded batches."""
 
         batch_size = max(int(batch_size), 1)
-        offset = 0
+        cursor_key = None
+        record_index = 0
         while True:
             with self._connect() as connection:
-                rows = connection.execute(
-                    "SELECT {columns} FROM activity_registry "
-                    "ORDER BY start_date DESC, source_activity_id DESC LIMIT ? OFFSET ?".format(
-                        columns=", ".join(REGISTRY_COLUMNS)
-                    ),
-                    (batch_size, offset),
-                ).fetchall()
+                rows = self._load_activity_batch(
+                    connection,
+                    batch_size,
+                    cursor_key,
+                )
                 if not rows:
                     return
                 keys = [(row[0], row[1]) for row in rows]
                 payloads = self._load_detail_payloads(connection, keys=keys)
             records = []
-            for index, row in enumerate(rows, start=offset + 1):
+            for row in rows:
+                record_index += 1
                 record = self._row_to_record(row, payloads=payloads)
-                record["_activity_fk"] = index
+                record["_activity_fk"] = record_index
                 records.append(record)
             yield records
-            offset += len(rows)
+            last = rows[-1]
+            cursor_key = (
+                last[START_DATE_COLUMN_INDEX] or "",
+                last[0],
+                last[1],
+            )
+
+    @staticmethod
+    def _load_activity_batch(connection, batch_size, cursor_key):
+        columns = ", ".join(REGISTRY_COLUMNS)
+        order = (
+            "ORDER BY COALESCE(start_date, '') DESC, source DESC, "
+            "source_activity_id DESC LIMIT ?"
+        )
+        if cursor_key is None:
+            return connection.execute(
+                f"SELECT {columns} FROM activity_registry {order}",
+                (batch_size,),
+            ).fetchall()
+        start_date, source, source_activity_id = cursor_key
+        return connection.execute(
+            f"SELECT {columns} FROM activity_registry "
+            "WHERE COALESCE(start_date, '') < ? "
+            "OR (COALESCE(start_date, '') = ? AND source < ?) "
+            "OR (COALESCE(start_date, '') = ? AND source = ? "
+            "AND source_activity_id < ?) "
+            f"{order}",
+            (
+                start_date,
+                start_date,
+                source,
+                start_date,
+                source,
+                source_activity_id,
+                batch_size,
+            ),
+        ).fetchall()
 
     def load_activity_record(self, source, source_activity_id):
         """Load one canonical record, hydrating any compressed point payload."""
