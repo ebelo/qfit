@@ -550,6 +550,31 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "Failed to open GeoPackage"):
                 moved._create_spatial_index_with_ogr("/tmp/full.gpkg", "activity_tracks", "geom")
 
+    def test_staging_cleanup_collects_qgis_wrappers_before_removing_files(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        events = []
+
+        with patch.object(
+            moved.gc,
+            "collect",
+            side_effect=lambda: events.append("collect"),
+        ), patch.object(
+            moved.os,
+            "remove",
+            side_effect=lambda path: events.append(path),
+        ):
+            moved._remove_staging_gpkg("/tmp/.qfit-bulk-rebuild-test.gpkg")
+
+        self.assertEqual(
+            events,
+            [
+                "collect",
+                "/tmp/.qfit-bulk-rebuild-test.gpkg",
+                "/tmp/.qfit-bulk-rebuild-test.gpkg-wal",
+                "/tmp/.qfit-bulk-rebuild-test.gpkg-shm",
+            ],
+        )
+
     def test_create_spatial_index_falls_back_to_qgis_when_ogr_fails(self):
         moved = self._import_gpkg_write_orchestration_with_stubs()
 
