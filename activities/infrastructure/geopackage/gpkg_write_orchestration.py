@@ -394,6 +394,7 @@ def build_and_write_all_layers_bounded(
     write_activity_points=True,
     point_stride=5,
     progress=None,
+    cancelled=None,
 ):
     """Rebuild detail-heavy layers without retaining every decoded payload."""
 
@@ -422,6 +423,8 @@ def build_and_write_all_layers_bounded(
             point_stride=point_stride,
             progress=progress,
         )
+        if cancelled is not None and cancelled():
+            raise InterruptedError("activity publication cancelled")
         _replace_gpkg_from_staging(staging_path, output_path)
     finally:
         _remove_staging_gpkg(staging_path)

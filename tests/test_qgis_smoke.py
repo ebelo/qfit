@@ -1428,6 +1428,47 @@ class QgisSmokeTests(unittest.TestCase):
                 ).fetchone()[0]
             self.assertEqual(dirty_count, 1)
 
+    def test_cancelled_small_fallback_rebuild_does_not_publish(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-fallback-cancel.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+            )
+            activities = self._sample_activities()
+            writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            visible_before = self._derived_database_snapshot(output_path)
+            backdated = dict(activities[0])
+            backdated.update(
+                source_activity_id="0999",
+                external_id="strava-0999",
+                name="Older Ride",
+                start_date="2026-03-19T07:00:00+00:00",
+                start_date_local="2026-03-19T08:00:00+01:00",
+            )
+            cancellation_checks = 0
+
+            def cancelled():
+                nonlocal cancellation_checks
+                cancellation_checks += 1
+                return cancellation_checks >= 3
+
+            with self.assertRaises(InterruptedError):
+                writer.write_activities(
+                    [backdated],
+                    sync_metadata={"provider": "strava"},
+                    cancelled=cancelled,
+                )
+
+            self.assertEqual(
+                self._derived_database_snapshot(output_path),
+                visible_before,
+            )
+
     def test_large_registry_incremental_update_never_hydrates_full_history(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = str(Path(temp_dir) / "qfit-large-incremental.gpkg")
@@ -1550,7 +1591,6 @@ class QgisSmokeTests(unittest.TestCase):
                     )
                     if row[1] not in {
                         "fid",
-                        "activity_fk",
                         "first_seen_at",
                         "last_synced_at",
                     }

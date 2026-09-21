@@ -242,7 +242,7 @@ class SyncRepositoryTests(unittest.TestCase):
 
             self.assertEqual([len(batch) for batch in batches], [2, 1])
             records = [record for batch in batches for record in batch]
-            self.assertEqual([record["_activity_fk"] for record in records], [1, 2, 3])
+            self.assertEqual([record["_activity_fk"] for record in records], [3, 2, 1])
             self.assertTrue(all(record["geometry_points"] for record in records))
 
     def test_load_activity_records_hydrates_only_requested_keys(self):
@@ -269,7 +269,10 @@ class SyncRepositoryTests(unittest.TestCase):
                 [record["source_activity_id"] for record in records],
                 ["2", "0"],
             )
-            self.assertTrue(all(record["_activity_fk"] > 0 for record in records))
+            self.assertEqual(
+                [record["_activity_fk"] for record in records],
+                [3, 1],
+            )
             self.assertEqual(
                 records[0]["details_json"]["stream_metrics"]["altitude"],
                 [502],

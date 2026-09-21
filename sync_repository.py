@@ -619,12 +619,19 @@ class SyncRepository:
         with self._connect() as connection:
             cursor = connection.cursor()
             rows = cursor.execute(
-                "SELECT {columns} FROM activity_registry ORDER BY start_date DESC, source_activity_id DESC".format(
+                "SELECT rowid AS registry_rowid, {columns} FROM activity_registry "
+                "ORDER BY COALESCE(start_date, '') DESC, source DESC, "
+                "source_activity_id DESC".format(
                     columns=", ".join(REGISTRY_COLUMNS)
                 )
             ).fetchall()
             payloads = self._load_detail_payloads(connection)
-        return [self._row_to_record(row, payloads=payloads) for row in rows]
+        records = []
+        for row in rows:
+            record = self._row_to_record(row[1:], payloads=payloads)
+            record["_activity_fk"] = int(row[0])
+            records.append(record)
+        return records
 
     def load_activity_records(self, keys):
         """Hydrate only the canonical activities identified by stable keys."""
@@ -656,8 +663,12 @@ class SyncRepository:
                 )
                 for row in rows:
                     record = self._row_to_record(row[1:], payloads=payloads)
+                    record_key = (
+                        record["source"],
+                        record["source_activity_id"],
+                    )
                     record["_activity_fk"] = int(row[0])
-                    records_by_key[(record["source"], record["source_activity_id"])] = record
+                    records_by_key[record_key] = record
         return [records_by_key[key] for key in normalized_keys if key in records_by_key]
 
     def iter_activity_record_batches(self, batch_size=25):
@@ -665,7 +676,6 @@ class SyncRepository:
 
         batch_size = max(int(batch_size), 1)
         cursor_key = None
-        record_index = 0
         while True:
             with self._connect() as connection:
                 rows = self._load_activity_batch(
@@ -675,25 +685,24 @@ class SyncRepository:
                 )
                 if not rows:
                     return
-                keys = [(row[0], row[1]) for row in rows]
+                keys = [(row[1], row[2]) for row in rows]
                 payloads = self._load_detail_payloads(connection, keys=keys)
             records = []
             for row in rows:
-                record_index += 1
-                record = self._row_to_record(row, payloads=payloads)
-                record["_activity_fk"] = record_index
+                record = self._row_to_record(row[1:], payloads=payloads)
+                record["_activity_fk"] = int(row[0])
                 records.append(record)
             yield records
             last = rows[-1]
             cursor_key = (
-                last[START_DATE_COLUMN_INDEX] or "",
-                last[0],
+                last[START_DATE_COLUMN_INDEX + 1] or "",
                 last[1],
+                last[2],
             )
 
     @staticmethod
     def _load_activity_batch(connection, batch_size, cursor_key):
-        columns = ", ".join(REGISTRY_COLUMNS)
+        columns = "rowid AS registry_rowid, " + ", ".join(REGISTRY_COLUMNS)
         order = (
             "ORDER BY COALESCE(start_date, '') DESC, source DESC, "
             "source_activity_id DESC LIMIT ?"

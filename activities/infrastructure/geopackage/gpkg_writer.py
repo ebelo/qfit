@@ -181,7 +181,8 @@ class GeoPackageWriter:
     ):
         """Use the bounded path when a large registry needs full publication."""
 
-        if int(total_count or 0) >= 200:
+        if cancelled is not None or int(total_count or 0) >= 200:
+
             def report(layer_name, completed, total, layer_index, layer_count):
                 if cancelled is not None and cancelled():
                     raise InterruptedError("activity publication cancelled")
@@ -195,6 +196,7 @@ class GeoPackageWriter:
             return self.rebuild_activity_layers_bounded(
                 activity_store=activity_store,
                 progress=report,
+                cancelled=cancelled,
             )
         self._report_progress(progress, "full_rebuild", 1, 2)
         return self.rebuild_activity_layers(activity_store=activity_store)
@@ -356,6 +358,7 @@ class GeoPackageWriter:
         activity_store=None,
         batch_size=25,
         progress=None,
+        cancelled=None,
     ):
         """Rebuild detail-heavy layers from repeatable bounded record batches."""
 
@@ -367,6 +370,7 @@ class GeoPackageWriter:
             write_activity_points=self.write_activity_points,
             point_stride=self.point_stride,
             progress=progress,
+            cancelled=cancelled,
         )
         self._mark_activity_layers_published(store)
         return layers
