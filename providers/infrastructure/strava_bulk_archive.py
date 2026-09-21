@@ -280,6 +280,19 @@ class StravaBulkArchiveReader:
         if not required.issubset(headers):
             raise StravaBulkArchiveError("activities.csv is missing required columns")
 
+        entries, id_counts, filename_counts = self._collect_manifest_entries(reader)
+        for index, entry in enumerate(entries):
+            conflict = _manifest_conflict_reason(
+                entry,
+                id_counts,
+                filename_counts,
+                info_by_name,
+            )
+            if conflict:
+                entries[index] = _entry_with_conflict(entry, conflict)
+        return entries
+
+    def _collect_manifest_entries(self, reader):
         id_counts = Counter()
         filename_counts = Counter()
         entries = []
@@ -303,25 +316,7 @@ class StravaBulkArchiveReader:
                     row={key: value or "" for key, value in row.items()},
                 )
             )
-        for index, entry in enumerate(entries):
-            conflict = None
-            if not entry.activity_id:
-                conflict = "missing_activity_id"
-            elif id_counts[entry.activity_id] > 1:
-                conflict = "duplicate_activity_id"
-            elif entry.member_name and filename_counts[entry.member_name] > 1:
-                conflict = "duplicate_activity_filename"
-            elif entry.member_name and entry.member_name not in info_by_name:
-                conflict = "missing_activity_file"
-            if conflict:
-                entries[index] = BulkArchiveEntry(
-                    row_number=entry.row_number,
-                    activity_id=entry.activity_id,
-                    member_name=entry.member_name,
-                    row=entry.row,
-                    conflict_reason=conflict,
-                )
-        return entries
+        return entries, id_counts, filename_counts
 
     def _validate_referenced_crcs(
         self,
@@ -494,6 +489,28 @@ def _manifest_member_name(value: str | None) -> str | None:
     if not value or not value.strip():
         return None
     return _normalize_member_name(value.strip())
+
+
+def _manifest_conflict_reason(entry, id_counts, filename_counts, info_by_name):
+    if not entry.activity_id:
+        return "missing_activity_id"
+    if id_counts[entry.activity_id] > 1:
+        return "duplicate_activity_id"
+    if entry.member_name and filename_counts[entry.member_name] > 1:
+        return "duplicate_activity_filename"
+    if entry.member_name and entry.member_name not in info_by_name:
+        return "missing_activity_file"
+    return None
+
+
+def _entry_with_conflict(entry, conflict):
+    return BulkArchiveEntry(
+        row_number=entry.row_number,
+        activity_id=entry.activity_id,
+        member_name=entry.member_name,
+        row=entry.row,
+        conflict_reason=conflict,
+    )
 
 
 def _activity_format(member_name: str | None) -> str | None:

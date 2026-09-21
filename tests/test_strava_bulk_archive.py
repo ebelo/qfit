@@ -352,9 +352,10 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         )
         with zipfile.ZipFile(self.archive_path, "w") as archive:
             archive.writestr("activities.csv", manifest)
+        reader = StravaBulkArchiveReader(str(self.archive_path))
 
         with self.assertRaisesRegex(StravaBulkArchiveError, "more values than headers"):
-            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+            reader.preflight()
 
     def test_archive_replacement_after_preflight_is_rejected(self):
         reader = self._write_archive(
