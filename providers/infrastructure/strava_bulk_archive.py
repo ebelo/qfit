@@ -28,6 +28,7 @@ ACTIVITY_TYPE_FIELD = "Activity Type"
 ACTIVITY_DATE_FIELD = "Activity Date"
 FILENAME_FIELD = "Filename"
 MEMBER_SIZE_ERROR = "An archive member exceeds the safe expanded-size limit"
+MANIFEST_SIZE_ERROR = "activities.csv exceeds the safe parser-size limit"
 REFERENCED_TOTAL_SIZE_ERROR = (
     "Referenced files exceed the safe total expanded-size limit"
 )
@@ -69,6 +70,8 @@ class ArchiveLimits:
     max_member_bytes: int = 512 * 1024 * 1024
     max_total_bytes: int = 8 * 1024 * 1024 * 1024
     max_nested_bytes: int = 512 * 1024 * 1024
+    max_manifest_bytes: int = 32 * 1024 * 1024
+    max_fit_bytes: int = 16 * 1024 * 1024
     max_xml_bytes: int = 16 * 1024 * 1024
     max_compression_ratio: float = 250.0
 
@@ -146,13 +149,19 @@ class StravaBulkArchiveReader:
             manifest_info = info_by_name.get(MANIFEST_NAME)
             if manifest_info is None:
                 raise StravaBulkArchiveError("The Strava archive does not contain activities.csv")
-            self._validate_imported_member(manifest_info)
+            self._validate_imported_member(
+                manifest_info,
+                size_limit=self.limits.max_manifest_bytes,
+                size_error=MANIFEST_SIZE_ERROR,
+            )
             if progress is not None:
                 progress("manifest_parsing")
             manifest_bytes = self._read_zip_member(
                 archive,
                 manifest_info,
                 cancelled=cancelled,
+                max_bytes=self.limits.max_manifest_bytes,
+                size_error=MANIFEST_SIZE_ERROR,
             )
             entries = self._read_manifest(manifest_bytes, info_by_name)
             if progress is not None:
@@ -216,11 +225,17 @@ class StravaBulkArchiveReader:
                 raise StravaBulkArchiveError(
                     "The Strava archive changed after validation"
                 )
-            self._validate_imported_member(manifest_info)
+            self._validate_imported_member(
+                manifest_info,
+                size_limit=self.limits.max_manifest_bytes,
+                size_error=MANIFEST_SIZE_ERROR,
+            )
             manifest_bytes = self._read_zip_member(
                 archive,
                 manifest_info,
                 cancelled=cancelled,
+                max_bytes=self.limits.max_manifest_bytes,
+                size_error=MANIFEST_SIZE_ERROR,
             )
             member_hashes = self._hash_referenced_members(
                 archive,
@@ -273,13 +288,20 @@ class StravaBulkArchiveReader:
             raise StravaBulkArchiveError("The archive contains duplicate normalized member paths")
         normalized_names.add(normalized)
 
-    def _validate_imported_member(self, info):
+    def _validate_imported_member(
+        self,
+        info,
+        *,
+        size_limit=None,
+        size_error=MEMBER_SIZE_ERROR,
+    ):
         if info.flag_bits & 0x1:
             raise StravaBulkArchiveError("Encrypted ZIP members are not supported")
         if not info.is_dir() and info.compress_type not in ALLOWED_ZIP_COMPRESSION:
             raise StravaBulkArchiveError("The archive uses an unsupported ZIP compression method")
-        if info.file_size > self.limits.max_member_bytes:
-            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
+        size_limit = size_limit or self.limits.max_member_bytes
+        if info.file_size > size_limit:
+            raise StravaBulkArchiveError(size_error)
         if (
             info.file_size > 1024 * 1024
             and info.compress_size > 0
@@ -564,9 +586,18 @@ class StravaBulkArchiveReader:
             diagnostic=diagnostic,
         )
 
-    def _read_zip_member(self, archive, info, *, cancelled=None):
-        if info.file_size > self.limits.max_member_bytes:
-            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
+    def _read_zip_member(
+        self,
+        archive,
+        info,
+        *,
+        cancelled=None,
+        max_bytes=None,
+        size_error=MEMBER_SIZE_ERROR,
+    ):
+        max_bytes = max_bytes or self.limits.max_member_bytes
+        if info.file_size > max_bytes:
+            raise StravaBulkArchiveError(size_error)
         with archive.open(info) as handle:
             buffer = io.BytesIO()
             while True:
@@ -575,17 +606,17 @@ class StravaBulkArchiveReader:
                 if not chunk:
                     return buffer.getvalue()
                 buffer.write(chunk)
-                if buffer.tell() > self.limits.max_member_bytes:
-                    raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
+                if buffer.tell() > max_bytes:
+                    raise StravaBulkArchiveError(size_error)
 
     def _read_activity_member(self, archive, info, *, compressed, cancelled=None):
         source_format = _activity_format(info.filename)
-        is_xml = source_format in {"gpx", "tcx"}
-        expanded_limit = (
-            self.limits.max_xml_bytes
-            if is_xml
-            else self.limits.max_nested_bytes
-        )
+        if source_format in {"gpx", "tcx"}:
+            expanded_limit = self.limits.max_xml_bytes
+        elif source_format == "fit":
+            expanded_limit = self.limits.max_fit_bytes
+        else:
+            expanded_limit = self.limits.max_nested_bytes
         if not compressed and info.file_size > expanded_limit:
             raise ValueError("activity file exceeds the safe parser-size limit")
         if not compressed:

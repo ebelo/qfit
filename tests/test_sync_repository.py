@@ -368,6 +368,45 @@ class SyncRepositoryTests(unittest.TestCase):
             rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
             self.assertEqual(rows, [])
 
+    def test_bulk_checkpoint_initializes_sync_state_without_overwriting_existing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [self._activity()],
+                sync_metadata={"provider": "strava", "suppress_sync_state": True},
+            )
+
+            created = repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=1,
+                inserted=1,
+                is_full_sync=True,
+                checkpoint="strava_bulk_import",
+            )
+            state = repo.load_activity_sync_state("strava")
+            with repo._connect() as connection:
+                initial_stats = connection.execute(
+                    "SELECT last_sync_stats_json FROM sync_state WHERE provider = 'strava'"
+                ).fetchone()[0]
+
+            preserved = repo.record_activity_sync_checkpoint(
+                provider="strava",
+                fetched_count=999,
+                checkpoint="replacement",
+            )
+            with repo._connect() as connection:
+                final_stats = connection.execute(
+                    "SELECT last_sync_stats_json FROM sync_state WHERE provider = 'strava'"
+                ).fetchone()[0]
+
+            self.assertTrue(created)
+            self.assertFalse(preserved)
+            self.assertTrue(state.has_completed_sync)
+            self.assertEqual(state.latest_activity_start_date, "2026-03-20T06:00:00Z")
+            self.assertEqual(json.loads(initial_stats)["checkpoint"], "strava_bulk_import")
+            self.assertEqual(final_stats, initial_stats)
+
     def test_load_activity_sync_state_returns_completed_metadata(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))

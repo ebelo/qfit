@@ -593,6 +593,49 @@ class SyncRepository:
             latest_activity_start_date=activity_row["latest_activity_start_date"],
         )
 
+    def record_activity_sync_checkpoint(
+        self,
+        provider="strava",
+        *,
+        fetched_count=0,
+        inserted=0,
+        updated=0,
+        unchanged=0,
+        is_full_sync=False,
+        checkpoint=None,
+    ):
+        """Record an initial completed sync boundary after publication succeeds."""
+
+        now = datetime.now(UTC).isoformat()
+        with self._connect() as connection:
+            cursor = connection.cursor()
+            existing = cursor.execute(
+                "SELECT 1 FROM sync_state WHERE provider = ?",
+                (provider,),
+            ).fetchone()
+            if existing is not None:
+                return False
+            total_count = cursor.execute(
+                "SELECT COUNT(*) FROM activity_registry"
+            ).fetchone()[0]
+            self._update_sync_state(
+                cursor,
+                [],
+                {
+                    "provider": provider,
+                    "fetched_count": fetched_count,
+                    "is_full_sync": is_full_sync,
+                    "checkpoint": checkpoint,
+                },
+                now,
+                inserted,
+                updated,
+                unchanged,
+                total_count,
+            )
+            connection.commit()
+        return True
+
     def load_detailed_route_coverage(self, provider="strava") -> DetailedRouteCoverage:
         """Return stored detailed activity-route coverage for *provider*."""
 
@@ -663,6 +706,7 @@ class SyncRepository:
             "stored_total": total_count,
             "detailed_count": sync_metadata.get("detailed_count"),
             "stream_stats": stream_stats,
+            "checkpoint": sync_metadata.get("checkpoint"),
         }
         cursor.execute(
             """

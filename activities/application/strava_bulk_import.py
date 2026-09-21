@@ -201,6 +201,11 @@ class StravaBulkImportWorkflow:
             for name, layer in layers.items()
             if hasattr(layer, "featureCount")
         }
+        self._record_sync_checkpoint(
+            activity_store,
+            preflight,
+            counters,
+        )
         result = self._result(
             preflight,
             counters,
@@ -219,6 +224,21 @@ class StravaBulkImportWorkflow:
             message="Bulk import complete",
         )
         return result
+
+    @staticmethod
+    def _record_sync_checkpoint(activity_store, preflight, counters):
+        recorder = getattr(activity_store, "record_activity_sync_checkpoint", None)
+        if recorder is None:
+            return
+        recorder(
+            provider="strava",
+            fetched_count=preflight.activity_count,
+            inserted=counters["inserted"],
+            updated=counters["updated"],
+            unchanged=counters["unchanged"],
+            is_full_sync=True,
+            checkpoint="strava_bulk_import",
+        )
 
     def _build_writer(self, request):
         if self._writer_factory is None:

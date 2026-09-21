@@ -105,9 +105,10 @@ repository and public diagnostics.
   data. qfit does not upload them or apply automatic expiry.
 - A missing original is valid and imports as summary-only. A corrupt original
   is isolated and reported without aborting other activities.
-- To bound QGIS memory use, a single expanded GPX or TCX original is limited to
-  16 MiB. An oversized XML original is isolated like any other member failure;
-  its manifest summary can still be imported.
+- To bound QGIS memory use, `activities.csv` is limited to 32 MiB and a single
+  expanded FIT, GPX, or TCX original is limited to 16 MiB. An oversized
+  original is isolated like any other member failure; its manifest summary can
+  still be imported.
 - Duplicate IDs, duplicate referenced filenames, or missing referenced members
   are reported as conflicts rather than guessed.
 - Unsupported members remain in the final counts but unrelated account files

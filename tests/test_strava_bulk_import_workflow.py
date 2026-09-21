@@ -37,12 +37,16 @@ def _activity(activity_id, *, points=None, details=None, **overrides):
 class _Store:
     def __init__(self, records=None):
         self.records = records or {}
+        self.checkpoint = None
 
     def load_activity_record(self, source, activity_id):
         return self.records.get((source, str(activity_id)))
 
     def load_all_activity_records(self):
         return list(self.records.values())
+
+    def record_activity_sync_checkpoint(self, **kwargs):
+        self.checkpoint = kwargs
 
 
 class _Writer:
@@ -162,6 +166,8 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
         self.assertEqual(result.inserted, 5)
         self.assertEqual(result.total_stored, 5)
         self.assertEqual(result.layer_counts["activity_tracks"], 5)
+        self.assertEqual(writer.store.checkpoint["checkpoint"], "strava_bulk_import")
+        self.assertTrue(writer.store.checkpoint["is_full_sync"])
         self.assertEqual(progress[-1].phase, "complete")
         self.assertEqual(progress[-1].percent, 100.0)
         integrity_updates = [
@@ -304,6 +310,7 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
 
         self.assertTrue(result.cancelled)
         self.assertFalse(writer.rebuilt)
+        self.assertIsNone(writer.store.checkpoint)
         self.assertEqual(len(writer.batches), 1)
         self.assertGreaterEqual(result.total_stored, 1)
 

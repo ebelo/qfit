@@ -364,6 +364,14 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "too many activity rows"):
             reader.preflight()
 
+    def test_manifest_byte_limit_is_enforced_before_decoding(self):
+        manifest = _manifest([_row(filename="")])
+        reader = self._write_archive([_row(filename="")], {})
+        reader.limits = ArchiveLimits(max_manifest_bytes=len(manifest) - 1)
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "activities.csv exceeds"):
+            reader.preflight()
+
     def test_manifest_row_with_surplus_fields_is_rejected(self):
         manifest = (
             "Activity ID,Activity Date,Activity Name,Activity Type,Filename,Extra\n"
@@ -568,6 +576,20 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
             {filename: gzip.compress(payload)},
         )
         reader.limits = ArchiveLimits(max_xml_bytes=len(payload) - 1)
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.diagnostic, "invalid_activity_file")
+
+    def test_fit_parser_size_limit_isolated_to_oversized_activity(self):
+        filename = "activities/arbitrary-name.fit"
+        payload = b"not-a-fit-file"
+        reader = self._write_archive(
+            [_row(filename=filename)],
+            {filename: payload},
+        )
+        reader.limits = ArchiveLimits(max_fit_bytes=len(payload) - 1)
 
         result = list(reader.iter_activity_results())[0]
 
