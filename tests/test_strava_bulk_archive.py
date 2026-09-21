@@ -163,8 +163,44 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         result = list(reader.iter_activity_results())[0]
 
         self.assertEqual(result.status, "detailed_profile")
-        self.assertEqual(result.activity.sport_type, "Biking")
+        self.assertEqual(result.activity.sport_type, "Run")
+        self.assertEqual(
+            result.activity.details_json["bulk_import"]["member_sport_type"],
+            "Biking",
+        )
         self.assertEqual(result.activity.details_json["stream_metrics"]["distance"], [0.0, 200.0])
+
+    def test_original_sport_fills_blank_manifest_type(self):
+        filename = "activities/no-manifest-type.tcx"
+        reader = self._write_archive(
+            [_row(filename=filename, **{"Activity Type": ""})],
+            {filename: _tcx_with_leading_whitespace()},
+        )
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertIsNone(result.activity.activity_type)
+        self.assertEqual(result.activity.sport_type, "Biking")
+        self.assertEqual(
+            result.activity.details_json["bulk_import"]["member_sport_type"],
+            "Biking",
+        )
+
+    def test_manifest_type_preserves_qfit_style_category(self):
+        filename = "activities/backcountry-ski.tcx"
+        reader = self._write_archive(
+            [_row(filename=filename, **{"Activity Type": "Backcountry Ski"})],
+            {filename: _tcx_with_leading_whitespace()},
+        )
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.activity.activity_type, "Backcountry Ski")
+        self.assertEqual(result.activity.sport_type, "Backcountry Ski")
+        self.assertEqual(
+            result.activity.details_json["bulk_import"]["member_sport_type"],
+            "Biking",
+        )
 
     def test_summary_only_row_imports_without_geometry(self):
         reader = self._write_archive([_row(filename="", **{"Activity Type": "Rowing"})])
@@ -821,7 +857,11 @@ class FitAdapterTests(unittest.TestCase):
                 result = list(reader.iter_activity_results())[0]
 
         self.assertEqual(result.status, "detailed_profile")
-        self.assertEqual(result.activity.sport_type, "trail")
+        self.assertEqual(result.activity.sport_type, "Run")
+        self.assertEqual(
+            result.activity.details_json["bulk_import"]["member_sport_type"],
+            "trail",
+        )
         self.assertAlmostEqual(result.activity.geometry_points[0][0], 46.0, places=5)
         metrics = result.activity.details_json["stream_metrics"]
         self.assertEqual(metrics["time"], [0, 60])

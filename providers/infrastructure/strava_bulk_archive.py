@@ -1066,17 +1066,21 @@ def _activity_from_manifest(
 ):
     row = entry.row
     points = track.geometry_points
+    manifest_activity_type = _none_if_blank(row.get(ACTIVITY_TYPE_FIELD))
+    bulk_import_details = {
+        "schema_version": 1,
+        "archive_fingerprint": archive_fingerprint,
+        "member_identity": entry.member_name,
+        "member_sha256": member_hash,
+        "parse_status": parse_status,
+        "source_format": source_format,
+    }
+    if track.sport_type:
+        bulk_import_details["member_sport_type"] = track.sport_type
     details = {
         "ingest_source": INGEST_SOURCE,
         "ingest_sources": [INGEST_SOURCE],
-        "bulk_import": {
-            "schema_version": 1,
-            "archive_fingerprint": archive_fingerprint,
-            "member_identity": entry.member_name,
-            "member_sha256": member_hash,
-            "parse_status": parse_status,
-            "source_format": source_format,
-        },
+        "bulk_import": bulk_import_details,
         "bulk_imported_at": datetime.now(UTC).isoformat(),
         "bulk_summary": {
             "schema_version": 1,
@@ -1093,8 +1097,8 @@ def _activity_from_manifest(
         source="strava",
         source_activity_id=entry.activity_id,
         name=_none_if_blank(row.get(ACTIVITY_NAME_FIELD)),
-        activity_type=_none_if_blank(row.get(ACTIVITY_TYPE_FIELD)),
-        sport_type=track.sport_type or _none_if_blank(row.get(ACTIVITY_TYPE_FIELD)),
+        activity_type=manifest_activity_type,
+        sport_type=manifest_activity_type or track.sport_type,
         start_date=track.start_date,
         start_date_local=_manifest_date(row.get(ACTIVITY_DATE_FIELD)),
         distance_m=_float_or_none(row.get("Distance")),
