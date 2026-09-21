@@ -46,6 +46,12 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(result.updated, 0)
             self.assertEqual(result.unchanged, 0)
             self.assertEqual(result.total_count, 1)
+            self.assertEqual(result.inserted_keys, (("strava", "42"),))
+            self.assertEqual(result.updated_keys, ())
+            self.assertEqual(result.unchanged_keys, ())
+            self.assertEqual(result.removed_keys, ())
+            self.assertEqual(result.changed_keys, (("strava", "42"),))
+            self.assertTrue(result.has_derived_changes)
 
             activities = repo.load_all_activities()
             self.assertEqual(len(activities), 1)
@@ -117,6 +123,61 @@ class SyncRepositoryTests(unittest.TestCase):
 
             self.assertEqual(result.unchanged, 1)
             self.assertEqual(result.updated, 0)
+            self.assertEqual(result.unchanged_keys, (("strava", "42"),))
+            self.assertEqual(result.changed_keys, ())
+            self.assertFalse(result.has_derived_changes)
+
+    def test_full_sync_reports_pruned_activity_keys(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(source_activity_id="keep"),
+                    self._activity(source_activity_id="remove"),
+                ],
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+
+            result = repo.upsert_activities(
+                [self._activity(source_activity_id="keep")],
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+
+            self.assertEqual(result.unchanged_keys, (("strava", "keep"),))
+            self.assertEqual(result.removed_keys, (("strava", "remove"),))
+            self.assertEqual(result.changed_keys, (("strava", "remove"),))
+            self.assertTrue(result.has_derived_changes)
+
+    def test_derived_dirty_journal_survives_unchanged_retry_until_cleared(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            inserted = repo.upsert_activities([self._activity()])
+            pending_insert = repo.with_pending_derived_changes(inserted)
+            self.assertEqual(
+                pending_insert.pending_derived_keys,
+                (("strava", "42"),),
+            )
+
+            unchanged = repo.upsert_activities([self._activity()])
+            pending_retry = repo.with_pending_derived_changes(unchanged)
+            self.assertEqual(unchanged.changed_keys, ())
+            self.assertEqual(pending_retry.changed_keys, (("strava", "42"),))
+            self.assertTrue(pending_retry.has_derived_changes)
+
+            repo.clear_derived_dirty()
+            clean = repo.with_pending_derived_changes(unchanged)
+            self.assertEqual(clean.changed_keys, ())
+            self.assertFalse(clean.has_derived_changes)
+
+            self.assertIsNone(repo.load_derived_publication_signature())
+            repo.record_derived_publication_signature("settings-v1")
+            self.assertEqual(
+                repo.load_derived_publication_signature(),
+                "settings-v1",
+            )
 
     def test_corrupt_detail_payload_is_reported_and_bulk_reimport_repairs_it(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -183,6 +244,36 @@ class SyncRepositoryTests(unittest.TestCase):
             records = [record for batch in batches for record in batch]
             self.assertEqual([record["_activity_fk"] for record in records], [1, 2, 3])
             self.assertTrue(all(record["geometry_points"] for record in records))
+
+    def test_load_activity_records_hydrates_only_requested_keys(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        source_activity_id=str(index),
+                        geometry_source="stream",
+                        details_json={"stream_metrics": {"altitude": [500 + index]}},
+                    )
+                    for index in range(3)
+                ],
+                compress_detail_payloads=True,
+            )
+
+            records = repo.load_activity_records(
+                (("strava", "2"), ("strava", "missing"), ("strava", "0"))
+            )
+
+            self.assertEqual(
+                [record["source_activity_id"] for record in records],
+                ["2", "0"],
+            )
+            self.assertTrue(all(record["_activity_fk"] > 0 for record in records))
+            self.assertEqual(
+                records[0]["details_json"]["stream_metrics"]["altitude"],
+                [502],
+            )
 
     def test_iter_activity_record_batches_keysets_nullable_and_tied_dates(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -829,6 +920,9 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             def executemany(self, sql, seq_of_params):
                 self.executemany_calls.append((sql, list(seq_of_params)))
                 return self
+
+            def fetchall(self):
+                return []
 
         cursor = RecordingCursor()
         activities = [

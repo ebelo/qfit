@@ -64,6 +64,7 @@ class StoreActivitiesResult:
     start_count: int = 0
     point_count: int = 0
     atlas_count: int = 0
+    publication_mode: str = ""
 
 
 @dataclass
@@ -127,11 +128,16 @@ def _default_geopackage_writer_factory(**kwargs):
 
 
 def _build_store_database_status(result: StoreActivitiesResult) -> str:
+    publication_note = {
+        "incremental": "Changed map rows were published incrementally.",
+        "unchanged": "Derived map layers were already current.",
+        "full_rebuild": "Derived map layers were rebuilt.",
+    }.get(result.publication_mode, "Derived map layers were updated.")
     return (
         "Synced {fetched} fetched activities into GeoPackage: "
         "inserted {inserted}, updated {updated}, unchanged {unchanged}, "
         "stored total {total}. GeoPackage updated at {path}. "
-        "Use Load stored map layers in Visualize when you want the stored data in QGIS."
+        "{publication_note} Use Load stored map layers in Visualize when you want the stored data in QGIS."
     ).format(
         fetched=result.fetched_count,
         inserted=result.sync.inserted if result.sync else 0,
@@ -139,6 +145,7 @@ def _build_store_database_status(result: StoreActivitiesResult) -> str:
         unchanged=result.sync.unchanged if result.sync else 0,
         total=result.total_stored,
         path=result.output_path,
+        publication_note=publication_note,
     )
 
 
@@ -234,7 +241,13 @@ class StoreActivitiesWorkflow:
         if not request.output_path:
             raise LoadWorkflowError("Choose a GeoPackage output path first.")
 
-    def _write_database(self, request: StoreActivitiesRequest) -> StoreActivitiesResult:
+    def _write_database(
+        self,
+        request: StoreActivitiesRequest,
+        *,
+        progress=None,
+        cancelled=None,
+    ) -> StoreActivitiesResult:
         """Write activities to the GeoPackage without loading layers into QGIS.
 
         Raises ``LoadWorkflowError`` for validation failures and
@@ -243,7 +256,12 @@ class StoreActivitiesWorkflow:
         self._validate_request(request)
 
         writer = self._build_writer(request)
-        write_result = writer.write_activities(request.activities, sync_metadata=request.sync_metadata)
+        write_kwargs = {"sync_metadata": request.sync_metadata}
+        if progress is not None:
+            write_kwargs["progress"] = progress
+        if cancelled is not None:
+            write_kwargs["cancelled"] = cancelled
+        write_result = writer.write_activities(request.activities, **write_kwargs)
         sync: SyncStats | None = write_result.get("sync") or None
         result = StoreActivitiesResult(
             output_path=write_result["path"],
@@ -254,6 +272,7 @@ class StoreActivitiesWorkflow:
             start_count=write_result.get("start_count", 0),
             point_count=write_result.get("point_count", 0),
             atlas_count=write_result.get("atlas_count", 0),
+            publication_mode=write_result.get("publication_mode", ""),
         )
         result.status = _build_store_database_status(result)
         return result
@@ -267,8 +286,18 @@ class StoreActivitiesWorkflow:
             request = self.build_write_request(**legacy_kwargs)
         return self._write_database(request)
 
-    def write_database_request(self, request: StoreActivitiesRequest) -> StoreActivitiesResult:
-        return self._write_database(request)
+    def write_database_request(
+        self,
+        request: StoreActivitiesRequest,
+        *,
+        progress=None,
+        cancelled=None,
+    ) -> StoreActivitiesResult:
+        return self._write_database(
+            request,
+            progress=progress,
+            cancelled=cancelled,
+        )
 
 
 class LoadDatasetWorkflow:

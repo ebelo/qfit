@@ -3,7 +3,7 @@ import json
 import os
 import sqlite3
 import zlib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 
 from .activities.domain.models import Activity
@@ -16,6 +16,36 @@ class SyncStats:
     updated: int
     unchanged: int
     total_count: int
+    inserted_keys: tuple[tuple[str, str], ...] = ()
+    updated_keys: tuple[tuple[str, str], ...] = ()
+    unchanged_keys: tuple[tuple[str, str], ...] = ()
+    removed_keys: tuple[tuple[str, str], ...] = ()
+    pending_derived_keys: tuple[tuple[str, str], ...] = ()
+    pending_removed_keys: tuple[tuple[str, str], ...] = ()
+
+    @property
+    def changed_keys(self) -> tuple[tuple[str, str], ...]:
+        """Stable activity identities whose derived rows may have changed."""
+
+        return _unique_activity_keys(
+            self.inserted_keys
+            + self.updated_keys
+            + self.removed_keys
+            + self.pending_derived_keys
+            + self.pending_removed_keys
+        )
+
+    @property
+    def has_derived_changes(self) -> bool:
+        """Whether visible derived layers require publication."""
+
+        return bool(self.changed_keys)
+
+    @property
+    def requires_full_rebuild(self) -> bool:
+        """Whether pending deletions prevent safe row-level publication."""
+
+        return bool(self.removed_keys or self.pending_removed_keys)
 
 
 @dataclass(frozen=True)
@@ -59,6 +89,8 @@ SYNC_STATE_COLUMNS = [
 REGISTRY_TABLE = "activity_registry"
 SYNC_STATE_TABLE = "sync_state"
 DETAIL_PAYLOAD_TABLE = "activity_detail_payloads"
+DERIVED_DIRTY_TABLE = "activity_derived_dirty"
+DERIVED_STATE_TABLE = "activity_derived_state"
 DETAIL_PAYLOAD_ENCODING = "json+zlib-v1"
 ACTIVITY_COUNT_QUERY = f"SELECT COUNT(*) FROM {REGISTRY_TABLE}"
 REGISTRY_COLUMNS = [
@@ -145,6 +177,29 @@ VOLATILE_DETAILS_KEYS = {
 }
 
 
+def _unique_activity_keys(keys):
+    """Return normalized activity identities once, preserving input order."""
+
+    unique = []
+    seen = set()
+    for source, source_activity_id in keys:
+        key = (str(source or ""), str(source_activity_id or ""))
+        if not key[0] or not key[1] or key in seen:
+            continue
+        seen.add(key)
+        unique.append(key)
+    return tuple(unique)
+
+
+def _activity_identity(activity):
+    def value(name):
+        if hasattr(activity, name):
+            return getattr(activity, name)
+        return activity.get(name)
+
+    return str(value("source") or ""), str(value("source_activity_id") or "")
+
+
 class SyncRepository:
     def __init__(self, db_path):
         self.db_path = db_path
@@ -220,6 +275,26 @@ class SyncRepository:
                 )
                 """
             )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS activity_derived_dirty (
+                    source TEXT NOT NULL,
+                    source_activity_id TEXT NOT NULL,
+                    removed INTEGER NOT NULL DEFAULT 0,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (source, source_activity_id)
+                )
+                """
+            )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS activity_derived_state (
+                    singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1),
+                    publication_signature TEXT NOT NULL,
+                    published_at TEXT NOT NULL
+                )
+                """
+            )
             for statement in (
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date ON activity_registry(start_date)",
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_type ON activity_registry(activity_type)",
@@ -250,6 +325,7 @@ class SyncRepository:
         suppress_sync_state = bool(sync_metadata.get("suppress_sync_state"))
         now = datetime.now(UTC).isoformat()
         counts = {"inserted": 0, "updated": 0, "unchanged": 0}
+        keys_by_outcome = {"inserted": [], "updated": [], "unchanged": []}
 
         with self._connect() as connection:
             cursor = connection.cursor()
@@ -262,8 +338,27 @@ class SyncRepository:
                     reconcile_existing=reconcile_existing,
                 )
                 counts[outcome] += 1
+                keys_by_outcome[outcome].append(_activity_identity(activity))
 
-            self._prune_missing_activities(cursor, activities, sync_metadata)
+            removed_keys = self._prune_missing_activities(
+                cursor,
+                activities,
+                sync_metadata,
+            )
+            self._mark_derived_dirty(
+                cursor,
+                _unique_activity_keys(
+                    keys_by_outcome["inserted"] + keys_by_outcome["updated"]
+                ),
+                removed=False,
+                now=now,
+            )
+            self._mark_derived_dirty(
+                cursor,
+                removed_keys,
+                removed=True,
+                now=now,
+            )
             # Partial bulk batches never prune registry rows, so they cannot
             # create orphaned detail payloads. Avoid a full-table scan for
             # every batch in a large export.
@@ -288,6 +383,81 @@ class SyncRepository:
             updated=counts["updated"],
             unchanged=counts["unchanged"],
             total_count=total_count,
+            inserted_keys=_unique_activity_keys(keys_by_outcome["inserted"]),
+            updated_keys=_unique_activity_keys(keys_by_outcome["updated"]),
+            unchanged_keys=_unique_activity_keys(keys_by_outcome["unchanged"]),
+            removed_keys=_unique_activity_keys(removed_keys),
+        )
+
+    def with_pending_derived_changes(self, sync_stats):
+        """Attach the durable publication journal to one upsert result."""
+
+        with self._connect() as connection:
+            rows = connection.execute(
+                f"SELECT source, source_activity_id, removed "
+                f"FROM {DERIVED_DIRTY_TABLE} ORDER BY updated_at, source, source_activity_id"
+            ).fetchall()
+        pending = tuple((row[0], row[1]) for row in rows if not int(row[2]))
+        removed = tuple((row[0], row[1]) for row in rows if int(row[2]))
+        return replace(
+            sync_stats,
+            pending_derived_keys=_unique_activity_keys(pending),
+            pending_removed_keys=_unique_activity_keys(removed),
+        )
+
+    def clear_derived_dirty(self):
+        """Mark all canonical-to-derived changes as durably published."""
+
+        with self._connect() as connection:
+            connection.execute(f"DELETE FROM {DERIVED_DIRTY_TABLE}")
+            connection.commit()
+
+    def load_derived_publication_signature(self):
+        """Return the settings signature for the currently published layers."""
+
+        with self._connect() as connection:
+            row = connection.execute(
+                f"SELECT publication_signature FROM {DERIVED_STATE_TABLE} "
+                "WHERE singleton_id = 1"
+            ).fetchone()
+        return row[0] if row is not None else None
+
+    def record_derived_publication_signature(self, signature):
+        """Record the settings used by a successfully published layer set."""
+
+        with self._connect() as connection:
+            connection.execute(
+                f"""
+                INSERT INTO {DERIVED_STATE_TABLE} (
+                    singleton_id, publication_signature, published_at
+                ) VALUES (1, ?, ?)
+                ON CONFLICT(singleton_id) DO UPDATE SET
+                    publication_signature = excluded.publication_signature,
+                    published_at = excluded.published_at
+                """,
+                (str(signature), datetime.now(UTC).isoformat()),
+            )
+            connection.commit()
+
+    @staticmethod
+    def _mark_derived_dirty(cursor, keys, *, removed, now):
+        rows = [
+            (source, source_activity_id, int(bool(removed)), now)
+            for source, source_activity_id in _unique_activity_keys(keys)
+        ]
+        if not rows:
+            return
+        cursor.executemany(
+            f"""
+            INSERT INTO {DERIVED_DIRTY_TABLE} (
+                source, source_activity_id, removed, updated_at
+            )
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(source, source_activity_id) DO UPDATE SET
+                removed = excluded.removed,
+                updated_at = excluded.updated_at
+            """,
+            rows,
         )
 
     def _upsert_activity(
@@ -379,7 +549,7 @@ class SyncRepository:
 
     def _prune_missing_activities(self, cursor, activities, sync_metadata):
         if not sync_metadata.get("is_full_sync"):
-            return
+            return ()
 
         provider = sync_metadata.get("provider") or (activities[0].source if activities else "strava")
 
@@ -402,6 +572,22 @@ class SyncRepository:
                 "INSERT INTO incoming_sync_ids (source_activity_id) VALUES (?)",
                 [(activity_id,) for activity_id in sorted(incoming_ids)],
             )
+            removed_keys = tuple(
+                (row[0], row[1])
+                for row in cursor.execute(
+                    """
+                    SELECT source, source_activity_id
+                    FROM activity_registry
+                    WHERE source = ?
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM incoming_sync_ids
+                          WHERE incoming_sync_ids.source_activity_id = activity_registry.source_activity_id
+                      )
+                    """,
+                    [provider],
+                ).fetchall()
+            )
             cursor.execute(
                 """
                 DELETE FROM activity_registry
@@ -414,12 +600,20 @@ class SyncRepository:
                 """,
                 [provider],
             )
-            return
+            return removed_keys
 
+        removed_keys = tuple(
+            (row[0], row[1])
+            for row in cursor.execute(
+                "SELECT source, source_activity_id FROM activity_registry WHERE source = ?",
+                (provider,),
+            ).fetchall()
+        )
         cursor.execute(
             "DELETE FROM activity_registry WHERE source = ?",
             (provider,),
         )
+        return removed_keys
 
     def load_all_activity_records(self):
         with self._connect() as connection:
@@ -431,6 +625,40 @@ class SyncRepository:
             ).fetchall()
             payloads = self._load_detail_payloads(connection)
         return [self._row_to_record(row, payloads=payloads) for row in rows]
+
+    def load_activity_records(self, keys):
+        """Hydrate only the canonical activities identified by stable keys."""
+
+        normalized_keys = _unique_activity_keys(keys)
+        if not normalized_keys:
+            return []
+        records_by_key = {}
+        chunk_size = 400
+        with self._connect() as connection:
+            for offset in range(0, len(normalized_keys), chunk_size):
+                chunk = normalized_keys[offset : offset + chunk_size]
+                predicates = " OR ".join(
+                    "(source = ? AND source_activity_id = ?)" for _key in chunk
+                )
+                params = [value for key in chunk for value in key]
+                rows = connection.execute(
+                    "SELECT rowid AS registry_rowid, {columns} "
+                    "FROM activity_registry WHERE {predicates}".format(
+                        columns=", ".join(REGISTRY_COLUMNS),
+                        predicates=predicates,
+                    ),
+                    params,
+                ).fetchall()
+                present_keys = [(row[1], row[2]) for row in rows]
+                payloads = self._load_detail_payloads(
+                    connection,
+                    keys=present_keys,
+                )
+                for row in rows:
+                    record = self._row_to_record(row[1:], payloads=payloads)
+                    record["_activity_fk"] = int(row[0])
+                    records_by_key[(record["source"], record["source_activity_id"])] = record
+        return [records_by_key[key] for key in normalized_keys if key in records_by_key]
 
     def iter_activity_record_batches(self, batch_size=25):
         """Yield hydrated registry rows in bounded batches."""

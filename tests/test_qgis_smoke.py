@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -1216,6 +1217,350 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertLess(points_layer.featureCount(), initial_point_count)
             remaining_ids = sorted({feature["source_activity_id"] for feature in points_layer.getFeatures()})
             self.assertEqual(remaining_ids, ["1001"])
+
+    def test_activity_publication_is_incremental_after_initial_import(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-incremental.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            )
+            activities = self._sample_activities()
+
+            initial = writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            unchanged_fingerprints = self._derived_activity_fingerprints(
+                output_path,
+                "1001",
+            )
+
+            changed = dict(activities[1])
+            changed["distance_m"] = 10250
+            changed["total_elevation_gain_m"] = 92
+            updated = writer.write_activities(
+                [changed],
+                sync_metadata={"provider": "strava"},
+            )
+
+            appended = dict(changed)
+            appended.update(
+                source_activity_id="1003",
+                external_id="strava-1003",
+                name="Evening Run",
+                start_date="2026-03-22T17:30:00+00:00",
+                start_date_local="2026-03-22T18:30:00+01:00",
+            )
+            inserted = writer.write_activities(
+                [appended],
+                sync_metadata={"provider": "strava"},
+            )
+            no_op = writer.write_activities(
+                [appended],
+                sync_metadata={"provider": "strava"},
+            )
+
+            self.assertEqual(initial["publication_mode"], "full_rebuild")
+            self.assertEqual(updated["publication_mode"], "incremental")
+            self.assertEqual(inserted["publication_mode"], "incremental")
+            self.assertEqual(no_op["publication_mode"], "unchanged")
+            self.assertEqual(inserted["track_count"], 3)
+            self.assertEqual(inserted["atlas_count"], 3)
+            self.assertEqual(
+                self._derived_activity_fingerprints(output_path, "1001"),
+                unchanged_fingerprints,
+            )
+
+            with sqlite3.connect(output_path) as connection:
+                page_rows = connection.execute(
+                    "SELECT source_activity_id, page_number FROM activity_atlas_pages "
+                    "ORDER BY page_number"
+                ).fetchall()
+                summary = connection.execute(
+                    "SELECT activity_count, total_distance_m "
+                    "FROM atlas_document_summary"
+                ).fetchone()
+            self.assertEqual(page_rows, [("1001", 1), ("1002", 2), ("1003", 3)])
+            self.assertEqual(summary[0], 3)
+            self.assertAlmostEqual(summary[1], 45700)
+
+            expected_path = str(Path(temp_dir) / "qfit-full-equivalent.gpkg")
+            GeoPackageWriter(
+                expected_path,
+                write_activity_points=True,
+                point_stride=1,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            ).write_activities(
+                [activities[0], changed, appended],
+                sync_metadata={"provider": "strava"},
+            )
+            self.assertEqual(
+                self._derived_database_snapshot(output_path),
+                self._derived_database_snapshot(expected_path),
+            )
+
+            backdated = dict(appended)
+            backdated.update(
+                source_activity_id="0999",
+                external_id="strava-0999",
+                name="Older Run",
+                start_date="2026-03-19T17:30:00+00:00",
+                start_date_local="2026-03-19T18:30:00+01:00",
+            )
+            fallback = writer.write_activities(
+                [backdated],
+                sync_metadata={"provider": "strava"},
+            )
+            self.assertEqual(fallback["publication_mode"], "full_rebuild")
+            self.assertIn("append-only", fallback["publication_fallback_reason"])
+
+    def test_failed_incremental_publication_rolls_back_and_retries_dirty_keys(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-incremental-retry.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+            )
+            activities = self._sample_activities()
+            writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            visible_before = self._derived_database_snapshot(output_path)
+            changed = dict(activities[1])
+            changed["distance_m"] = 10999
+
+            incremental = __import__(
+                "qfit.activities.infrastructure.geopackage.gpkg_incremental_publication",
+                fromlist=["_copy_feature"],
+            )
+            real_copy = incremental._copy_feature
+            calls = 0
+
+            def fail_after_first_copy(*args, **kwargs):
+                nonlocal calls
+                calls += 1
+                if calls == 2:
+                    raise RuntimeError("synthetic incremental merge failure")
+                return real_copy(*args, **kwargs)
+
+            with patch.object(
+                incremental,
+                "_copy_feature",
+                side_effect=fail_after_first_copy,
+            ):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "synthetic incremental merge failure",
+                ):
+                    writer.write_activities(
+                        [changed],
+                        sync_metadata={"provider": "strava"},
+                    )
+
+            self.assertEqual(
+                self._derived_database_snapshot(output_path),
+                visible_before,
+            )
+
+            retried = writer.write_activities(
+                [changed],
+                sync_metadata={"provider": "strava"},
+            )
+            self.assertEqual(retried["sync"].unchanged, 1)
+            self.assertEqual(retried["publication_mode"], "incremental")
+            with sqlite3.connect(output_path) as connection:
+                distance = connection.execute(
+                    "SELECT distance_m FROM activity_tracks "
+                    "WHERE source = 'strava' AND source_activity_id = '1002'"
+                ).fetchone()[0]
+                dirty_count = connection.execute(
+                    "SELECT COUNT(*) FROM activity_derived_dirty"
+                ).fetchone()[0]
+            self.assertAlmostEqual(distance, 10999)
+            self.assertEqual(dirty_count, 0)
+
+    def test_cancelled_incremental_publication_preserves_visible_layers(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-incremental-cancel.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+            )
+            activities = self._sample_activities()
+            writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            visible_before = self._derived_database_snapshot(output_path)
+            changed = dict(activities[1])
+            changed["distance_m"] = 10888
+            cancellation_checks = 0
+
+            def cancelled():
+                nonlocal cancellation_checks
+                cancellation_checks += 1
+                return cancellation_checks >= 6
+
+            with self.assertRaises(InterruptedError):
+                writer.write_activities(
+                    [changed],
+                    sync_metadata={"provider": "strava"},
+                    cancelled=cancelled,
+                )
+
+            self.assertEqual(
+                self._derived_database_snapshot(output_path),
+                visible_before,
+            )
+            with sqlite3.connect(output_path) as connection:
+                dirty_count = connection.execute(
+                    "SELECT COUNT(*) FROM activity_derived_dirty"
+                ).fetchone()[0]
+            self.assertEqual(dirty_count, 1)
+
+    def test_large_registry_incremental_update_never_hydrates_full_history(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-large-incremental.gpkg")
+            template = self._sample_activities()[0]
+            activities = []
+            for index in range(24):
+                activity = dict(template)
+                activity.update(
+                    source_activity_id=f"large-{index:03d}",
+                    external_id=f"strava-large-{index:03d}",
+                    name=f"Scalability Ride {index:03d}",
+                    start_date=f"2026-03-{index + 1:02d}T07:00:00+00:00",
+                    start_date_local=f"2026-03-{index + 1:02d}T08:00:00+01:00",
+                )
+                activities.append(activity)
+
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=2,
+            )
+            writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            changed = dict(activities[-1])
+            changed["distance_m"] = 26001
+
+            with patch(
+                "qfit.activities.infrastructure.geopackage.activity_storage."
+                "GeoPackageActivityStore.load_all_activity_records",
+                side_effect=AssertionError("full history must not be hydrated"),
+            ):
+                result = writer.write_activities(
+                    [changed],
+                    sync_metadata={"provider": "strava"},
+                )
+
+            self.assertEqual(result["publication_mode"], "incremental")
+            self.assertEqual(result["track_count"], 24)
+
+    def test_changed_publication_settings_force_complete_rebuild(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-publication-settings.gpkg")
+            activities = self._sample_activities()
+            first = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+            ).write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            changed_settings = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=3,
+            ).write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+
+            self.assertEqual(first["publication_mode"], "full_rebuild")
+            self.assertEqual(changed_settings["sync"].unchanged, 2)
+            self.assertEqual(changed_settings["publication_mode"], "full_rebuild")
+            self.assertIn(
+                "settings changed",
+                changed_settings["publication_fallback_reason"],
+            )
+            self.assertLess(
+                changed_settings["point_count"],
+                first["point_count"],
+            )
+
+    def _derived_activity_fingerprints(self, output_path, activity_id):
+        queries = {
+            "activity_tracks": "SELECT fid, hex(geom), summary_hash, details_json",
+            "activity_starts": "SELECT fid, hex(geom), activity_fk, start_date",
+            "activity_points": (
+                "SELECT fid, hex(geom), activity_fk, point_index, altitude_m"
+            ),
+            "activity_atlas_pages": (
+                "SELECT fid, hex(geom), page_number, page_sort_key, "
+                "page_title, page_stats_summary, profile_point_count"
+            ),
+            "atlas_profile_samples": (
+                "SELECT fid, page_number, page_sort_key, profile_point_index, "
+                "distance_m, altitude_m"
+            ),
+        }
+        with sqlite3.connect(output_path) as connection:
+            return {
+                table_name: connection.execute(
+                    f'{select_sql} FROM "{table_name}" '
+                    "WHERE source = 'strava' AND source_activity_id = ? ORDER BY fid",
+                    (activity_id,),
+                ).fetchall()
+                for table_name, select_sql in queries.items()
+            }
+
+    def _derived_database_snapshot(self, output_path):
+        tables = (
+            "activity_tracks",
+            "activity_starts",
+            "activity_points",
+            "activity_atlas_pages",
+            "atlas_document_summary",
+            "atlas_cover_highlights",
+            "atlas_page_detail_items",
+            "atlas_profile_samples",
+            "atlas_toc_entries",
+        )
+        snapshots = {}
+        with sqlite3.connect(output_path) as connection:
+            for table_name in tables:
+                columns = [
+                    row[1]
+                    for row in connection.execute(
+                        f'PRAGMA table_info("{table_name}")'
+                    )
+                    if row[1] not in {
+                        "fid",
+                        "activity_fk",
+                        "first_seen_at",
+                        "last_synced_at",
+                    }
+                ]
+                column_sql = ", ".join(f'"{column}"' for column in columns)
+                rows = connection.execute(
+                    f'SELECT {column_sql} FROM "{table_name}"'
+                ).fetchall()
+                snapshots[table_name] = sorted(rows, key=repr)
+        return snapshots
 
     def test_rewrite_preserves_richer_activity_points_when_geometry_falls_back(self):
         with tempfile.TemporaryDirectory() as temp_dir:

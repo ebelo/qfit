@@ -33,17 +33,23 @@ from ....atlas.publish_atlas import (
 )
 
 
-def build_document_summary_layer(records=None, atlas_page_settings=None, plans=None):
+def build_document_summary_layer(
+    records=None,
+    atlas_page_settings=None,
+    plans=None,
+    summary=None,
+):
     """Build and return a memory ``QgsVectorLayer`` with one document-summary row."""
     layer = QgsVectorLayer("None", "atlas_document_summary", "memory")
     provider = layer.dataProvider()
     provider.addAttributes(make_qgs_fields(DOCUMENT_SUMMARY_FIELDS))
     layer.updateFields()
 
-    resolved_plans = plans if plans is not None else build_atlas_page_plans(
-        records or [], settings=atlas_page_settings,
-    )
-    summary = build_atlas_document_summary_from_plans(resolved_plans)
+    if summary is None:
+        resolved_plans = plans if plans is not None else build_atlas_page_plans(
+            records or [], settings=atlas_page_settings,
+        )
+        summary = build_atlas_document_summary_from_plans(resolved_plans)
     if summary.activity_count > 0:
         feature = QgsFeature(layer.fields())
         feature["activity_count"] = summary.activity_count
@@ -64,17 +70,23 @@ def build_document_summary_layer(records=None, atlas_page_settings=None, plans=N
     return layer
 
 
-def build_cover_highlight_layer(records=None, atlas_page_settings=None, plans=None):
+def build_cover_highlight_layer(
+    records=None,
+    atlas_page_settings=None,
+    plans=None,
+    summary=None,
+):
     """Build and return a memory ``QgsVectorLayer`` of cover highlight entries."""
     layer = QgsVectorLayer("None", "atlas_cover_highlights", "memory")
     provider = layer.dataProvider()
     provider.addAttributes(make_qgs_fields(COVER_HIGHLIGHT_FIELDS))
     layer.updateFields()
 
-    resolved_plans = plans if plans is not None else build_atlas_page_plans(
-        records or [], settings=atlas_page_settings,
-    )
-    summary = build_atlas_document_summary_from_plans(resolved_plans)
+    if summary is None:
+        resolved_plans = plans if plans is not None else build_atlas_page_plans(
+            records or [], settings=atlas_page_settings,
+        )
+        summary = build_atlas_document_summary_from_plans(resolved_plans)
 
     features = []
     for highlight in build_atlas_cover_highlights_from_summary(summary):

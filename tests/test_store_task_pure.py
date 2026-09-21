@@ -13,12 +13,16 @@ class _FakeQgsTask:
         self.description = description
         self.flags = flags
         self._canceled = False
+        self.progress = 0
 
     def isCanceled(self):
         return self._canceled
 
     def cancel(self):
         self._canceled = True
+
+    def setProgress(self, value):
+        self.progress = value
 
 
 class TestStoreTaskPure(unittest.TestCase):
@@ -69,7 +73,11 @@ class TestStoreTaskPure(unittest.TestCase):
         task.finished(ok)
 
         self.assertTrue(ok)
-        workflow.write_database_request.assert_called_once_with("request")
+        workflow.write_database_request.assert_called_once_with(
+            "request",
+            progress=task._handle_progress,
+            cancelled=task.isCanceled,
+        )
         finished.assert_called_once_with(result, None, False)
 
     def test_run_reports_error_message(self):
@@ -92,7 +100,7 @@ class TestStoreTaskPure(unittest.TestCase):
         finished = MagicMock()
         task = self.module.build_store_task(workflow, "request", on_finished=finished)
 
-        def _write_database_request(_request):
+        def _write_database_request(_request, **_kwargs):
             task.cancel()
             return SimpleNamespace(status="stored")
 
@@ -103,6 +111,23 @@ class TestStoreTaskPure(unittest.TestCase):
 
         self.assertFalse(ok)
         finished.assert_called_once_with(task._result, None, True)
+
+    def test_progress_callback_updates_native_progress_and_message(self):
+        workflow = MagicMock()
+
+        def _write_database_request(_request, *, progress, cancelled):
+            self.assertFalse(cancelled())
+            progress("stage", 1, 4)
+            progress("complete", 4, 4)
+            return SimpleNamespace(status="stored")
+
+        workflow.write_database_request.side_effect = _write_database_request
+        task = self.module.build_store_task(workflow, "request")
+
+        self.assertTrue(task.run())
+        self.assertEqual(task.latest_phase, "complete")
+        self.assertEqual(task.latest_message, "Activity store complete")
+        self.assertEqual(task.progress, 100)
 
 
 if __name__ == "__main__":
