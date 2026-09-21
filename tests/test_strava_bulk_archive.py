@@ -283,6 +283,36 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         self.assertEqual([result.status for result in results], ["conflicted", "conflicted"])
         self.assertTrue(all(result.diagnostic == "duplicate_activity_id" for result in results))
 
+    def test_conflicted_originals_do_not_consume_import_limits(self):
+        large_payload = b"x" * 8192
+        reader = self._write_archive(
+            [
+                _row("duplicate", "activities/duplicate-one.gpx"),
+                _row("duplicate", "activities/duplicate-two.gpx"),
+                _row("valid", "activities/valid.gpx"),
+            ],
+            {
+                "activities/duplicate-one.gpx": large_payload,
+                "activities/duplicate-two.gpx": large_payload,
+                "activities/valid.gpx": _gpx(),
+            },
+        )
+        reader.limits = ArchiveLimits(
+            max_member_bytes=2048,
+            max_total_bytes=4096,
+            max_compression_ratio=10_000.0,
+        )
+
+        preflight = reader.preflight()
+        results = list(reader.iter_activity_results())
+
+        self.assertEqual(preflight.conflict_count, 2)
+        self.assertLess(preflight.referenced_expanded_bytes, 2048)
+        self.assertEqual(
+            [result.status for result in results],
+            ["conflicted", "conflicted", "detailed_profile"],
+        )
+
     def test_duplicate_activity_filenames_are_conflicted(self):
         reader = self._write_archive(
             [_row("one"), _row("two")],

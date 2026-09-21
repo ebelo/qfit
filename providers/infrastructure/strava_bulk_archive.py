@@ -175,6 +175,7 @@ class StravaBulkArchiveReader:
             )
 
         fingerprint = _archive_fingerprint(manifest_bytes, entries, member_hashes)
+        imported_members = _imported_member_names(entries, info_by_name)
         formats = Counter(
             _activity_format(entry.member_name)
             for entry in entries
@@ -195,10 +196,8 @@ class StravaBulkArchiveReader:
                 for entry in entries
             ),
             referenced_expanded_bytes=sum(
-                info_by_name[entry.member_name].file_size
-                for entry in entries
-                if entry.member_name in info_by_name
-                and _activity_format(entry.member_name) is not None
+                info_by_name[member_name].file_size
+                for member_name in imported_members
             ),
             format_counts=dict(sorted(formats.items())),
         )
@@ -703,6 +702,7 @@ def _imported_member_names(entries, info_by_name):
         entry.member_name
         for entry in entries
         if entry.member_name
+        and not entry.conflict_reason
         and entry.member_name in info_by_name
         and _activity_format(entry.member_name) is not None
     }
