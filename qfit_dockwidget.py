@@ -853,6 +853,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         request = StravaBulkImportRequest(
             archive_path=self._bulk_archive_path,
             output_path=output_path,
+            expected_archive_fingerprint=preflight.archive_fingerprint,
             write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
             point_stride=self.pointSamplingStrideSpinBox.value(),
         )

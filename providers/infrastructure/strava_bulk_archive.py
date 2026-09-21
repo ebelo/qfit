@@ -144,7 +144,11 @@ class StravaBulkArchiveReader:
                 raise StravaBulkArchiveError("The Strava archive does not contain activities.csv")
             if progress is not None:
                 progress("manifest_parsing")
-            manifest_bytes = self._read_zip_member(archive, manifest_info)
+            manifest_bytes = self._read_zip_member(
+                archive,
+                manifest_info,
+                cancelled=cancelled,
+            )
             entries = self._read_manifest(manifest_bytes, info_by_name)
             if progress is not None:
                 progress("archive_integrity")
@@ -205,7 +209,11 @@ class StravaBulkArchiveReader:
                 raise StravaBulkArchiveError(
                     "The Strava archive changed after validation"
                 )
-            manifest_bytes = self._read_zip_member(archive, manifest_info)
+            manifest_bytes = self._read_zip_member(
+                archive,
+                manifest_info,
+                cancelled=cancelled,
+            )
             reopened_fingerprint = _archive_fingerprint(
                 manifest_bytes,
                 entries,
@@ -218,7 +226,13 @@ class StravaBulkArchiveReader:
             for completed, entry in enumerate(entries, start=1):
                 if cancelled is not None and cancelled():
                     return
-                yield self._import_entry(archive, info_by_name, preflight, entry)
+                yield self._import_entry(
+                    archive,
+                    info_by_name,
+                    preflight,
+                    entry,
+                    cancelled=cancelled,
+                )
                 if progress is not None:
                     progress(completed, len(entries))
 
@@ -395,7 +409,15 @@ class StravaBulkArchiveReader:
             # during parsing; only excessive expansion makes the archive unsafe.
             return 0
 
-    def _import_entry(self, archive, info_by_name, preflight, entry):
+    def _import_entry(
+        self,
+        archive,
+        info_by_name,
+        preflight,
+        entry,
+        *,
+        cancelled=None,
+    ):
         if entry.conflict_reason:
             return BulkActivityImportResult(
                 row_number=entry.row_number,
@@ -420,9 +442,14 @@ class StravaBulkArchiveReader:
                         archive,
                         info_by_name[entry.member_name],
                         compressed=entry.member_name.lower().endswith(".gz"),
+                        cancelled=cancelled,
                     )
                     member_hash = hashlib.sha256(payload).hexdigest()
-                    track = _parse_activity_payload(payload, source_format)
+                    track = _parse_activity_payload(
+                        payload,
+                        source_format,
+                        cancelled=cancelled,
+                    )
                     parse_status = _track_status(track)
                 except (OSError, ValueError, ElementTree.ParseError, EOFError, ImportError) as exc:
                     parse_status = "failed"
@@ -444,26 +471,40 @@ class StravaBulkArchiveReader:
             diagnostic=diagnostic,
         )
 
-    def _read_zip_member(self, archive, info):
+    def _read_zip_member(self, archive, info, *, cancelled=None):
         if info.file_size > self.limits.max_member_bytes:
             raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
         with archive.open(info) as handle:
-            payload = handle.read(self.limits.max_member_bytes + 1)
-        if len(payload) > self.limits.max_member_bytes:
-            raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
-        return payload
+            buffer = io.BytesIO()
+            while True:
+                _raise_if_cancelled(cancelled)
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    return buffer.getvalue()
+                buffer.write(chunk)
+                if buffer.tell() > self.limits.max_member_bytes:
+                    raise StravaBulkArchiveError(MEMBER_SIZE_ERROR)
 
-    def _read_activity_member(self, archive, info, *, compressed):
-        payload = self._read_zip_member(archive, info)
+    def _read_activity_member(self, archive, info, *, compressed, cancelled=None):
+        payload = self._read_zip_member(archive, info, cancelled=cancelled)
         if not compressed:
             return payload
         try:
             with gzip.GzipFile(fileobj=io.BytesIO(payload)) as handle:
-                expanded = handle.read(self.limits.max_nested_bytes + 1)
+                buffer = io.BytesIO()
+                while True:
+                    _raise_if_cancelled(cancelled)
+                    chunk = handle.read(1024 * 1024)
+                    if not chunk:
+                        expanded = buffer.getvalue()
+                        break
+                    buffer.write(chunk)
+                    if buffer.tell() > self.limits.max_nested_bytes:
+                        raise ValueError(
+                            "nested activity file exceeds the safe expanded-size limit"
+                        )
         except (OSError, EOFError) as exc:
             raise ValueError("invalid nested gzip activity file") from exc
-        if len(expanded) > self.limits.max_nested_bytes:
-            raise ValueError("nested activity file exceeds the safe expanded-size limit")
         return expanded
 
 
@@ -534,17 +575,22 @@ def _archive_fingerprint(manifest_bytes, entries, info_by_name):
     return digest.hexdigest()
 
 
-def _parse_activity_payload(payload: bytes, source_format: str) -> ParsedActivityTrack:
+def _parse_activity_payload(
+    payload: bytes,
+    source_format: str,
+    *,
+    cancelled=None,
+) -> ParsedActivityTrack:
     if source_format == "fit":
-        return _parse_fit(payload)
+        return _parse_fit(payload, cancelled=cancelled)
     if source_format == "tcx":
-        return _parse_tcx(payload)
+        return _parse_tcx(payload, cancelled=cancelled)
     if source_format == "gpx":
-        return _parse_gpx(payload)
+        return _parse_gpx(payload, cancelled=cancelled)
     raise ValueError("unsupported activity format")
 
 
-def _parse_fit(payload: bytes) -> ParsedActivityTrack:
+def _parse_fit(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
     fitdecode = load_fitdecode()
     points = []
     metric_rows = []
@@ -557,6 +603,7 @@ def _parse_fit(payload: bytes) -> ParsedActivityTrack:
             check_crc=fitdecode.CrcCheck.WARN,
         ) as reader:
             for frame in reader:
+                _raise_if_cancelled(cancelled)
                 if not isinstance(frame, fitdecode.FitDataMessage):
                     continue
                 frame_fields = {
@@ -614,13 +661,14 @@ def _parse_fit(payload: bytes) -> ParsedActivityTrack:
     )
 
 
-def _parse_tcx(payload: bytes) -> ParsedActivityTrack:
-    root = _safe_xml_root(payload)
+def _parse_tcx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
+    root = _safe_xml_root(payload, cancelled=cancelled)
     points = []
     metric_rows = []
     first_timestamp = None
     sport_type = None
     for element in root.iter():
+        _raise_if_cancelled(cancelled)
         if _local_name(element.tag) == "Activity" and sport_type is None:
             sport_type = element.attrib.get("Sport")
         if _local_name(element.tag) != "Trackpoint":
@@ -656,8 +704,8 @@ def _parse_tcx(payload: bytes) -> ParsedActivityTrack:
     )
 
 
-def _parse_gpx(payload: bytes) -> ParsedActivityTrack:
-    root = _safe_xml_root(payload)
+def _parse_gpx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
+    root = _safe_xml_root(payload, cancelled=cancelled)
     points = []
     metric_rows = []
     first_timestamp = None
@@ -665,6 +713,7 @@ def _parse_gpx(payload: bytes) -> ParsedActivityTrack:
 
     def append_point(element):
         nonlocal first_timestamp
+        _raise_if_cancelled(cancelled)
         lat = _float_or_none(element.attrib.get("lat"))
         lon = _float_or_none(element.attrib.get("lon"))
         if not _valid_coordinate(lat, lon):
@@ -686,7 +735,7 @@ def _parse_gpx(payload: bytes) -> ParsedActivityTrack:
             }
         )
 
-    for candidates in _gpx_point_groups(root):
+    for candidates in _gpx_point_groups(root, cancelled=cancelled):
         segment_starts.add(len(points))
         for candidate in candidates:
             append_point(candidate)
@@ -698,21 +747,22 @@ def _parse_gpx(payload: bytes) -> ParsedActivityTrack:
     )
 
 
-def _gpx_point_groups(root):
-    containers = [
-        element
-        for element in root.iter()
-        if _local_name(element.tag) in ("trkseg", "rte")
-    ]
+def _gpx_point_groups(root, *, cancelled=None):
+    containers = []
+    for element in root.iter():
+        _raise_if_cancelled(cancelled)
+        if _local_name(element.tag) in ("trkseg", "rte"):
+            containers.append(element)
     if not containers:
-        candidates = [
-            element
-            for element in root.iter()
-            if _local_name(element.tag) in ("trkpt", "rtept")
-        ]
+        candidates = []
+        for element in root.iter():
+            _raise_if_cancelled(cancelled)
+            if _local_name(element.tag) in ("trkpt", "rtept"):
+                candidates.append(element)
         return [candidates] if candidates else []
     groups = []
     for container in containers:
+        _raise_if_cancelled(cancelled)
         point_name = "trkpt" if _local_name(container.tag) == "trkseg" else "rtept"
         candidates = [
             child for child in container if _local_name(child.tag) == point_name
@@ -722,11 +772,24 @@ def _gpx_point_groups(root):
     return groups
 
 
-def _safe_xml_root(payload: bytes):
+def _safe_xml_root(payload: bytes, *, cancelled=None):
     stripped = payload.lstrip()
-    if re.search(br"<!\s*(?:DOCTYPE|ENTITY)\b", stripped, flags=re.IGNORECASE):
-        raise ValueError("XML document type declarations are not supported")
-    return ElementTree.fromstring(stripped)
+    parser = ElementTree.XMLParser()
+    overlap = b""
+    for offset in range(0, len(stripped), 1024 * 1024):
+        _raise_if_cancelled(cancelled)
+        chunk = stripped[offset : offset + 1024 * 1024]
+        searchable = overlap + chunk
+        if re.search(
+            br"<!\s*(?:DOCTYPE|ENTITY)\b",
+            searchable,
+            flags=re.IGNORECASE,
+        ):
+            raise ValueError("XML document type declarations are not supported")
+        parser.feed(chunk)
+        overlap = searchable[-32:]
+    _raise_if_cancelled(cancelled)
+    return parser.close()
 
 
 def _finalize_track(

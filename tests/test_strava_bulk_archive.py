@@ -15,6 +15,7 @@ from qfit.providers.infrastructure.strava_bulk_archive import (
     ArchiveLimits,
     StravaBulkArchiveCancelled,
     StravaBulkArchiveError,
+    StravaBulkArchiveCancelled,
     StravaBulkArchiveReader,
 )
 
@@ -368,6 +369,24 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
 
         with self.assertRaisesRegex(StravaBulkArchiveError, "changed after validation"):
             list(reader.iter_activity_results())
+
+    def test_activity_member_read_honors_cancellation_between_chunks(self):
+        large_comment = b"<!--" + b"x" * (3 * 1024 * 1024) + b"-->"
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": large_comment + b"<gpx/>"},
+        )
+        reader.limits = ArchiveLimits(max_compression_ratio=10_000.0)
+        reader.preflight()
+        calls = 0
+
+        def cancelled():
+            nonlocal calls
+            calls += 1
+            return calls >= 4
+
+        with self.assertRaises(StravaBulkArchiveCancelled):
+            list(reader.iter_activity_results(cancelled=cancelled))
 
     def test_duplicate_normalized_zip_paths_are_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w") as archive:

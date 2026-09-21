@@ -15,7 +15,9 @@ It depends on :mod:`gpkg_io` (disk writes), :mod:`gpkg_layer_builders`
 but contains no schema definitions or repository logic.
 """
 
+import os
 import sqlite3
+import tempfile
 from dataclasses import asdict
 
 from .gpkg_io import write_layer_to_gpkg
@@ -380,6 +382,50 @@ def build_and_write_all_layers_bounded(
             total_records += 1
     plans = build_atlas_page_plans(compact_records, settings=atlas_page_settings)
     plan_by_sort_key = {plan.page_sort_key: plan for plan in plans}
+    staging_path = _staged_gpkg_copy(output_path)
+
+    try:
+        layer_names = _write_bounded_layers_to_staging(
+            record_batches_factory,
+            staging_path,
+            atlas_page_settings,
+            compact_records,
+            plans,
+            plan_by_sort_key,
+            total_records,
+            write_activity_points=write_activity_points,
+            point_stride=point_stride,
+            progress=progress,
+        )
+        _replace_gpkg_from_staging(staging_path, output_path)
+    finally:
+        _remove_staging_gpkg(staging_path)
+
+    qgs_vector_layer = _import_qgis_spatial_index_api()[2]
+    return {
+        layer_name: qgs_vector_layer(
+            f"{output_path}|layername={layer_name}",
+            layer_name,
+            "ogr",
+        )
+        for layer_name in layer_names
+    }
+
+
+def _write_bounded_layers_to_staging(
+    record_batches_factory,
+    staging_path,
+    atlas_page_settings,
+    compact_records,
+    plans,
+    plan_by_sort_key,
+    total_records,
+    *,
+    write_activity_points,
+    point_stride,
+    progress,
+):
+    """Build a complete derived-layer set away from the visible GeoPackage."""
 
     lightweight_layers = {
         "activity_starts": build_start_layer(compact_records),
@@ -402,7 +448,7 @@ def build_and_write_all_layers_bounded(
         ),
     }
     for layer_name, layer in lightweight_layers.items():
-        write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
+        write_layer_to_gpkg(layer, staging_path, layer_name, overwrite_file=False)
 
     heavy_builders = {
         "activity_tracks": lambda records: build_track_layer(records),
@@ -420,7 +466,7 @@ def build_and_write_all_layers_bounded(
     for layer_index, (layer_name, builder) in enumerate(heavy_builders.items()):
         write_layer_to_gpkg(
             builder([]),
-            output_path,
+            staging_path,
             layer_name,
             overwrite_file=False,
         )
@@ -430,7 +476,7 @@ def build_and_write_all_layers_bounded(
             if batch_layer.featureCount() > 0:
                 write_layer_to_gpkg(
                     batch_layer,
-                    output_path,
+                    staging_path,
                     layer_name,
                     overwrite_file=False,
                     append=True,
@@ -439,18 +485,41 @@ def build_and_write_all_layers_bounded(
             if progress is not None:
                 progress(layer_name, completed, total_records, layer_index, len(heavy_builders))
 
-    ensure_attribute_indexes(output_path)
-    ensure_spatial_indexes(output_path)
-    qgs_vector_layer = _import_qgis_spatial_index_api()[2]
-    layer_names = tuple(heavy_builders) + tuple(lightweight_layers)
-    return {
-        layer_name: qgs_vector_layer(
-            f"{output_path}|layername={layer_name}",
-            layer_name,
-            "ogr",
-        )
-        for layer_name in layer_names
-    }
+    ensure_attribute_indexes(staging_path)
+    ensure_spatial_indexes(staging_path)
+    return tuple(heavy_builders) + tuple(lightweight_layers)
+
+
+def _staged_gpkg_copy(output_path):
+    directory = os.path.dirname(os.path.abspath(output_path)) or "."
+    descriptor, staging_path = tempfile.mkstemp(
+        prefix=".qfit-bulk-rebuild-",
+        suffix=".gpkg",
+        dir=directory,
+    )
+    os.close(descriptor)
+    try:
+        with sqlite3.connect(output_path) as source, sqlite3.connect(staging_path) as target:
+            source.backup(target)
+    except Exception:
+        _remove_staging_gpkg(staging_path)
+        raise
+    return staging_path
+
+
+def _replace_gpkg_from_staging(staging_path, output_path):
+    """Atomically publish a complete staged database through SQLite backup."""
+
+    with sqlite3.connect(staging_path) as source, sqlite3.connect(output_path) as target:
+        source.backup(target)
+
+
+def _remove_staging_gpkg(staging_path):
+    for suffix in ("", "-wal", "-shm"):
+        try:
+            os.remove(staging_path + suffix)
+        except FileNotFoundError:
+            pass
 
 
 def _profile_plans_for_records(records, plan_by_sort_key):

@@ -10,6 +10,7 @@ from ..domain.models import Activity
 from ..domain.activity_reconciliation import reconcile_activity_records
 from ...providers.infrastructure.strava_bulk_archive import (
     BulkArchivePreflight,
+    StravaBulkArchiveError,
     StravaBulkArchiveReader,
 )
 from ...sync_repository import SyncStats
@@ -22,6 +23,7 @@ class StravaBulkImportRequest:
     batch_size: int = 25
     write_activity_points: bool = True
     point_stride: int = 5
+    expected_archive_fingerprint: str | None = None
 
 
 @dataclass(frozen=True)
@@ -140,6 +142,13 @@ class StravaBulkImportWorkflow:
             ),
             cancelled=cancelled,
         )
+        if (
+            request.expected_archive_fingerprint is not None
+            and preflight.archive_fingerprint != request.expected_archive_fingerprint
+        ):
+            raise StravaBulkArchiveError(
+                "The Strava archive changed after confirmation; validate it again"
+            )
         if self._is_cancelled(cancelled):
             return StravaBulkImportResult(preflight=preflight, cancelled=True)
 

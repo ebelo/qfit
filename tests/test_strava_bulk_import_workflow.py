@@ -14,6 +14,7 @@ from qfit.activities.domain.models import Activity
 from qfit.providers.infrastructure.strava_bulk_archive import (
     BulkActivityImportResult,
     BulkArchivePreflight,
+    StravaBulkArchiveError,
 )
 from qfit.sync_repository import SyncStats
 from qfit.sync_repository import SyncRepository
@@ -164,6 +165,23 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
                 "complete",
             }.issubset(phases)
         )
+
+    def test_confirmed_archive_fingerprint_is_checked_before_writing(self):
+        workflow, writer = self._workflow(
+            [BulkActivityImportResult(2, "1", "summary_only", _activity("1"))]
+        )
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "changed after confirmation"):
+            workflow.run(
+                StravaBulkImportRequest(
+                    "export.zip",
+                    "qfit.gpkg",
+                    expected_archive_fingerprint="different",
+                )
+            )
+
+        self.assertEqual(writer.batches, [])
+        self.assertFalse(writer.rebuilt)
 
     def test_member_failures_are_counted_without_aborting_valid_rows(self):
         results = [
