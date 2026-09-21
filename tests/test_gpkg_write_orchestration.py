@@ -16,6 +16,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 
 if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_write_orchestration import (
+        _profile_plans_for_records,
         bootstrap_empty_gpkg,
         build_and_write_route_layers,
         build_and_write_all_layers,
@@ -24,6 +25,7 @@ if QgsApplication is not None:
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
 else:  # pragma: no cover
     bootstrap_empty_gpkg = None
+    _profile_plans_for_records = None
     build_and_write_route_layers = None
     build_and_write_all_layers = None
     ensure_spatial_indexes = None
@@ -138,6 +140,24 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
         finally:
             if os.path.exists(path):
                 os.unlink(path)
+
+    def test_profile_plans_are_restricted_to_the_current_batch(self):
+        first = dict(self.records[0])
+        second = dict(
+            first,
+            source_activity_id="200",
+            name="Evening Ride",
+            start_date_local="2026-03-19T18:10:00+01:00",
+        )
+        from qfit.atlas.publish_atlas import build_atlas_page_plans
+
+        plans = build_atlas_page_plans([first, second], settings=self.settings)
+        plan_by_sort_key = {plan.page_sort_key: plan for plan in plans}
+
+        selected = _profile_plans_for_records([second], plan_by_sort_key)
+
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0].source_activity_id, "200")
 
     def test_written_layers_match_returned_counts(self):
         path = self._temp_gpkg()

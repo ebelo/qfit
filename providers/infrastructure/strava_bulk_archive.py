@@ -62,6 +62,7 @@ class StravaBulkArchiveCancelled(RuntimeError):
 @dataclass(frozen=True)
 class ArchiveLimits:
     max_members: int = 100_000
+    max_activity_rows: int = 100_000
     max_member_bytes: int = 512 * 1024 * 1024
     max_total_bytes: int = 8 * 1024 * 1024 * 1024
     max_nested_bytes: int = 512 * 1024 * 1024
@@ -263,35 +264,43 @@ class StravaBulkArchiveReader:
         if not required.issubset(headers):
             raise StravaBulkArchiveError("activities.csv is missing required columns")
 
-        rows = list(reader)
-        id_counts = Counter((row.get(ACTIVITY_ID_FIELD) or "").strip() for row in rows)
-        filename_counts = Counter(
-            _manifest_member_name(row.get(FILENAME_FIELD))
-            for row in rows
-            if (row.get(FILENAME_FIELD) or "").strip()
-        )
+        id_counts = Counter()
+        filename_counts = Counter()
         entries = []
-        for row_number, row in enumerate(rows, start=2):
+        for row_number, row in enumerate(reader, start=2):
+            if len(entries) >= self.limits.max_activity_rows:
+                raise StravaBulkArchiveError("activities.csv contains too many activity rows")
             activity_id = (row.get(ACTIVITY_ID_FIELD) or "").strip()
             member_name = _manifest_member_name(row.get(FILENAME_FIELD))
-            conflict = None
-            if not activity_id:
-                conflict = "missing_activity_id"
-            elif id_counts[activity_id] > 1:
-                conflict = "duplicate_activity_id"
-            elif member_name and filename_counts[member_name] > 1:
-                conflict = "duplicate_activity_filename"
-            elif member_name and member_name not in info_by_name:
-                conflict = "missing_activity_file"
+            id_counts[activity_id] += 1
+            if member_name:
+                filename_counts[member_name] += 1
             entries.append(
                 BulkArchiveEntry(
                     row_number=row_number,
                     activity_id=activity_id,
                     member_name=member_name,
                     row={key: value or "" for key, value in row.items()},
-                    conflict_reason=conflict,
                 )
             )
+        for index, entry in enumerate(entries):
+            conflict = None
+            if not entry.activity_id:
+                conflict = "missing_activity_id"
+            elif id_counts[entry.activity_id] > 1:
+                conflict = "duplicate_activity_id"
+            elif entry.member_name and filename_counts[entry.member_name] > 1:
+                conflict = "duplicate_activity_filename"
+            elif entry.member_name and entry.member_name not in info_by_name:
+                conflict = "missing_activity_file"
+            if conflict:
+                entries[index] = BulkArchiveEntry(
+                    row_number=entry.row_number,
+                    activity_id=entry.activity_id,
+                    member_name=entry.member_name,
+                    row=entry.row,
+                    conflict_reason=conflict,
+                )
         return entries
 
     def _validate_referenced_crcs(
@@ -678,8 +687,7 @@ def _gpx_point_groups(root):
 
 def _safe_xml_root(payload: bytes):
     stripped = payload.lstrip()
-    upper_prefix = stripped[:4096].upper()
-    if b"<!DOCTYPE" in upper_prefix or b"<!ENTITY" in upper_prefix:
+    if re.search(br"<!\s*(?:DOCTYPE|ENTITY)\b", stripped, flags=re.IGNORECASE):
         raise ValueError("XML document type declarations are not supported")
     return ElementTree.fromstring(stripped)
 

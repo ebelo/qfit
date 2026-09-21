@@ -335,6 +335,16 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "total expanded-size"):
             reader.preflight()
 
+    def test_manifest_activity_row_limit_is_enforced_while_streaming(self):
+        reader = self._write_archive(
+            [_row("one", ""), _row("two", "")],
+            {},
+        )
+        reader.limits = ArchiveLimits(max_activity_rows=1)
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "too many activity rows"):
+            reader.preflight()
+
     def test_duplicate_normalized_zip_paths_are_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w") as archive:
             archive.writestr("activities.csv", _manifest([_row(filename="")]))
@@ -403,6 +413,21 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         self.assertEqual(result.status, "failed")
         self.assertEqual(result.diagnostic, "invalid_activity_file")
         self.assertIsNotNone(result.activity)
+
+    def test_xml_document_type_after_long_comment_is_rejected_per_activity(self):
+        payload = (
+            b"<!--" + b"x" * 5000 + b"-->"
+            b'<!DOCTYPE gpx [<!ENTITY x "unsafe">]><gpx>&x;</gpx>'
+        )
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": payload},
+        )
+
+        result = list(reader.iter_activity_results())[0]
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.diagnostic, "invalid_activity_file")
 
     def test_nested_gzip_limit_is_enforced_per_activity(self):
         filename = "activities/large.gpx.gz"

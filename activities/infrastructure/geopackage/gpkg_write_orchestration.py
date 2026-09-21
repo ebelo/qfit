@@ -379,6 +379,7 @@ def build_and_write_all_layers_bounded(
             )
             total_records += 1
     plans = build_atlas_page_plans(compact_records, settings=atlas_page_settings)
+    plan_by_sort_key = {plan.page_sort_key: plan for plan in plans}
 
     lightweight_layers = {
         "activity_starts": build_start_layer(compact_records),
@@ -413,7 +414,7 @@ def build_and_write_all_layers_bounded(
         "atlas_profile_samples": lambda records: build_profile_sample_layer(
             records,
             atlas_page_settings,
-            plans=plans,
+            plans=_profile_plans_for_records(records, plan_by_sort_key),
         ),
     }
     for layer_index, (layer_name, builder) in enumerate(heavy_builders.items()):
@@ -450,6 +451,19 @@ def build_and_write_all_layers_bounded(
         )
         for layer_name in layer_names
     }
+
+
+def _profile_plans_for_records(records, plan_by_sort_key):
+    """Return only atlas plans owned by one bounded record batch."""
+
+    from ....atlas.publish_atlas import atlas_sort_key
+
+    batch_plans = []
+    for record in records:
+        plan = plan_by_sort_key.get(atlas_sort_key(record))
+        if plan is not None:
+            batch_plans.append(plan)
+    return batch_plans
 
 
 def _compact_atlas_record(record, atlas_page_settings):
