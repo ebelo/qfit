@@ -748,28 +748,39 @@ def _parse_gpx(payload: bytes, *, cancelled=None) -> ParsedActivityTrack:
 
 
 def _gpx_point_groups(root, *, cancelled=None):
-    containers = []
-    for element in root.iter():
-        _raise_if_cancelled(cancelled)
-        if _local_name(element.tag) in ("trkseg", "rte"):
-            containers.append(element)
+    containers = _xml_elements_named(
+        root.iter(),
+        {"trkseg", "rte"},
+        cancelled=cancelled,
+    )
     if not containers:
-        candidates = []
-        for element in root.iter():
-            _raise_if_cancelled(cancelled)
-            if _local_name(element.tag) in ("trkpt", "rtept"):
-                candidates.append(element)
+        candidates = _xml_elements_named(
+            root.iter(),
+            {"trkpt", "rtept"},
+            cancelled=cancelled,
+        )
         return [candidates] if candidates else []
     groups = []
     for container in containers:
         _raise_if_cancelled(cancelled)
         point_name = "trkpt" if _local_name(container.tag) == "trkseg" else "rtept"
-        candidates = [
-            child for child in container if _local_name(child.tag) == point_name
-        ]
+        candidates = _xml_elements_named(
+            container,
+            {point_name},
+            cancelled=cancelled,
+        )
         if candidates:
             groups.append(candidates)
     return groups
+
+
+def _xml_elements_named(elements, names, *, cancelled=None):
+    matches = []
+    for element in elements:
+        _raise_if_cancelled(cancelled)
+        if _local_name(element.tag) in names:
+            matches.append(element)
+    return matches
 
 
 def _safe_xml_root(payload: bytes, *, cancelled=None):

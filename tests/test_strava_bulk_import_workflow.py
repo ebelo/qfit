@@ -170,15 +170,14 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
         workflow, writer = self._workflow(
             [BulkActivityImportResult(2, "1", "summary_only", _activity("1"))]
         )
+        request = StravaBulkImportRequest(
+            "export.zip",
+            "qfit.gpkg",
+            expected_archive_fingerprint="different",
+        )
 
         with self.assertRaisesRegex(StravaBulkArchiveError, "changed after confirmation"):
-            workflow.run(
-                StravaBulkImportRequest(
-                    "export.zip",
-                    "qfit.gpkg",
-                    expected_archive_fingerprint="different",
-                )
-            )
+            workflow.run(request)
 
         self.assertEqual(writer.batches, [])
         self.assertFalse(writer.rebuilt)
