@@ -195,6 +195,7 @@ class StravaBulkArchiveReader:
         *,
         cancelled: Callable[[], bool] | None = None,
         progress: Callable[[int, int], None] | None = None,
+        integrity_progress: Callable[[int, int], None] | None = None,
     ) -> Iterator[BulkActivityImportResult]:
         preflight = self._preflight or self.preflight()
         entries = self._entries or []
@@ -219,6 +220,7 @@ class StravaBulkArchiveReader:
                 entries,
                 info_by_name,
                 cancelled=cancelled,
+                progress=integrity_progress,
             )
             reopened_fingerprint = _archive_fingerprint(
                 manifest_bytes,
@@ -400,6 +402,7 @@ class StravaBulkArchiveReader:
         info_by_name,
         *,
         cancelled=None,
+        progress=None,
     ):
         referenced = {
             entry.member_name
@@ -407,6 +410,8 @@ class StravaBulkArchiveReader:
             if entry.member_name and entry.member_name in info_by_name
         }
         member_hashes = {}
+        total_bytes = sum(info_by_name[name].file_size for name in referenced)
+        completed_bytes = 0
         try:
             for member_name in sorted(referenced):
                 info = info_by_name[member_name]
@@ -414,10 +419,14 @@ class StravaBulkArchiveReader:
                     archive,
                     info,
                     cancelled=cancelled,
+                    progress=progress,
+                    progress_offset=completed_bytes,
+                    progress_total=total_bytes,
                 )
                 if expanded_bytes != info.file_size:
                     raise zipfile.BadZipFile("referenced member size mismatch")
                 member_hashes[member_name] = member_hash
+                completed_bytes += expanded_bytes
         except StravaBulkArchiveCancelled:
             raise
         except (OSError, EOFError, zipfile.BadZipFile) as exc:
@@ -427,7 +436,15 @@ class StravaBulkArchiveReader:
         return member_hashes
 
     @staticmethod
-    def _hash_zip_member(archive, info, *, cancelled=None):
+    def _hash_zip_member(
+        archive,
+        info,
+        *,
+        cancelled=None,
+        progress=None,
+        progress_offset=0,
+        progress_total=0,
+    ):
         _raise_if_cancelled(cancelled)
         digest = hashlib.sha256()
         with archive.open(info) as handle:
@@ -439,6 +456,8 @@ class StravaBulkArchiveReader:
                     break
                 expanded_bytes += len(chunk)
                 digest.update(chunk)
+                if progress is not None:
+                    progress(progress_offset + expanded_bytes, progress_total)
         return expanded_bytes, digest.hexdigest()
 
     def _validate_nested_gzip_size(self, archive, info, *, cancelled=None):

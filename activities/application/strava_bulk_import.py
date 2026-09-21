@@ -41,11 +41,15 @@ class StravaBulkImportProgress:
             "queued": 0.0,
             "validation": 1.0,
             "manifest_parsing": 3.0,
-            "archive_integrity": 5.0,
             "complete": 100.0,
         }
         if self.phase in fixed:
             return fixed[self.phase]
+        if self.phase == "archive_integrity":
+            if self.total <= 0:
+                return 3.0
+            ratio = min(max(self.completed / self.total, 0.0), 1.0)
+            return 3.0 + 2.0 * ratio
         if self.total <= 0:
             return 0.0
         ratio = min(max(self.completed / self.total, 0.0), 1.0)
@@ -255,6 +259,24 @@ class StravaBulkImportWorkflow:
         diagnostics,
     ):
         batch = []
+        integrity_started = time.monotonic()
+
+        def on_integrity(completed, total):
+            phase_elapsed = time.monotonic() - integrity_started
+            rate = completed / phase_elapsed if phase_elapsed > 0 else 0.0
+            eta = (total - completed) / rate if rate > 0 else None
+            self._report(
+                progress,
+                "archive_integrity",
+                completed=completed,
+                total=total,
+                elapsed_seconds=time.monotonic() - started,
+                eta_seconds=eta,
+                message=(
+                    f"Verified {_format_byte_count(completed)} of "
+                    f"{_format_byte_count(total)}"
+                ),
+            )
 
         def on_parsed(completed, total):
             elapsed = time.monotonic() - started
@@ -271,7 +293,11 @@ class StravaBulkImportWorkflow:
                 message=f"Parsed {completed} of {total} activities",
             )
 
-        results = reader.iter_activity_results(cancelled=cancelled, progress=on_parsed)
+        results = reader.iter_activity_results(
+            cancelled=cancelled,
+            progress=on_parsed,
+            integrity_progress=on_integrity,
+        )
         for completed, parsed in enumerate(results, start=1):
             self._report(
                 progress,
@@ -414,6 +440,17 @@ def _preflight_phase_message(phase):
         "manifest_parsing": "Parsing activity manifest",
         "archive_integrity": "Checking referenced activity files",
     }.get(phase, "Validating archive")
+
+
+def _format_byte_count(value):
+    value = max(int(value), 0)
+    if value < 1024:
+        return f"{value} B"
+    if value < 1024 * 1024:
+        return f"{value / 1024:.1f} KiB"
+    if value < 1024 * 1024 * 1024:
+        return f"{value / (1024 * 1024):.1f} MiB"
+    return f"{value / (1024 * 1024 * 1024):.1f} GiB"
 
 
 __all__ = [

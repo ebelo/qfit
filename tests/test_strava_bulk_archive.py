@@ -389,6 +389,27 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "changed after validation"):
             list(reader.iter_activity_results())
 
+    def test_reopened_archive_hashing_reports_byte_progress(self):
+        payload = _gpx()
+        reader = self._write_archive(
+            [_row()],
+            {"activities/arbitrary-name.gpx": payload},
+        )
+        reader.preflight()
+        updates = []
+
+        list(
+            reader.iter_activity_results(
+                integrity_progress=lambda completed, total: updates.append(
+                    (completed, total)
+                )
+            )
+        )
+
+        self.assertTrue(updates)
+        self.assertEqual(updates[-1], (len(payload), len(payload)))
+        self.assertEqual(updates, sorted(updates))
+
     def test_activity_member_read_honors_cancellation_between_chunks(self):
         large_comment = b"<!--" + b"x" * (3 * 1024 * 1024) + b"-->"
         reader = self._write_archive(

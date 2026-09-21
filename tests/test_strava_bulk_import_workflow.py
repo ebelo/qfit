@@ -90,7 +90,16 @@ class _Reader:
             progress("archive_integrity")
         return self.value
 
-    def iter_activity_results(self, *, cancelled=None, progress=None):
+    def iter_activity_results(
+        self,
+        *,
+        cancelled=None,
+        progress=None,
+        integrity_progress=None,
+    ):
+        if integrity_progress:
+            integrity_progress(5, 10)
+            integrity_progress(10, 10)
         for index, result in enumerate(self.results, start=1):
             if cancelled and cancelled():
                 return
@@ -105,6 +114,8 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
             StravaBulkImportProgress("validation").percent,
             StravaBulkImportProgress("manifest_parsing").percent,
             StravaBulkImportProgress("archive_integrity").percent,
+            StravaBulkImportProgress("archive_integrity", 5, 10).percent,
+            StravaBulkImportProgress("archive_integrity", 10, 10).percent,
             StravaBulkImportProgress("activity_parsing", 10, 10).percent,
             StravaBulkImportProgress("derived_layers", 0, 30).percent,
             StravaBulkImportProgress("derived_layers", 30, 30).percent,
@@ -153,6 +164,15 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
         self.assertEqual(result.layer_counts["activity_tracks"], 5)
         self.assertEqual(progress[-1].phase, "complete")
         self.assertEqual(progress[-1].percent, 100.0)
+        integrity_updates = [
+            item for item in progress
+            if item.phase == "archive_integrity" and item.total
+        ]
+        self.assertEqual(
+            [item.completed for item in integrity_updates],
+            [5, 10],
+        )
+        self.assertEqual(integrity_updates[-1].message, "Verified 10 B of 10 B")
         phases = {item.phase for item in progress}
         self.assertTrue(
             {
