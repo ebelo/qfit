@@ -15,6 +15,7 @@ It depends on :mod:`gpkg_io` (disk writes), :mod:`gpkg_layer_builders`
 but contains no schema definitions or repository logic.
 """
 
+import gc
 import os
 import sqlite3
 import tempfile
@@ -515,6 +516,11 @@ def _replace_gpkg_from_staging(staging_path, output_path):
 
 
 def _remove_staging_gpkg(staging_path):
+    # PyQGIS wrappers can participate in reference cycles. On Windows their
+    # OGR providers keep the staging GeoPackage open until cyclic garbage is
+    # collected, which makes the otherwise-successful import fail with
+    # WinError 32 during cleanup.
+    gc.collect()
     for suffix in ("", "-wal", "-shm"):
         try:
             os.remove(staging_path + suffix)
