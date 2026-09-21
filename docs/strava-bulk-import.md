@@ -5,6 +5,10 @@ Data Export into the same GeoPackage used by daily Strava synchronization. The
 bulk export is the recommended way to seed historical data; API synchronization
 can then keep recent activities current.
 
+For the implementation architecture, threat model, parser contract, persistence
+benchmark, validation evidence, and review history, see the
+[engineering and validation guide](strava-bulk-import-engineering.md).
+
 ## Get and import an export
 
 1. Request a Bulk Data Export using Strava's

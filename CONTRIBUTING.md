@@ -33,6 +33,9 @@ All PRs must pass the following before merging:
 The Strava bulk-import formats, privacy rules, recovery model, and storage
 benchmark are documented in
 [`docs/strava-bulk-import.md`](docs/strava-bulk-import.md).
+The deeper implementation invariants, threat model, validation workflow, and
+review lessons are recorded in
+[`docs/strava-bulk-import-engineering.md`](docs/strava-bulk-import-engineering.md).
 
 qfit supports QGIS 3 and QGIS 4 from one source tree. Unit tests without QGIS
 **cannot** catch Qt 5 / Qt 6 import-surface differences. The Docker QGIS
