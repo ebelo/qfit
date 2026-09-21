@@ -28,6 +28,9 @@ ACTIVITY_TYPE_FIELD = "Activity Type"
 ACTIVITY_DATE_FIELD = "Activity Date"
 FILENAME_FIELD = "Filename"
 MEMBER_SIZE_ERROR = "An archive member exceeds the safe expanded-size limit"
+REFERENCED_TOTAL_SIZE_ERROR = (
+    "Referenced files exceed the safe total expanded-size limit"
+)
 UNSAFE_MEMBER_PATH_ERROR = "The archive contains an unsafe member path"
 SUPPORTED_ACTIVITY_SUFFIXES = (".fit.gz", ".tcx.gz", ".gpx.gz", ".fit", ".tcx", ".gpx")
 ALLOWED_ZIP_COMPRESSION = {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED}
@@ -362,9 +365,7 @@ class StravaBulkArchiveReader:
         total_nested_bytes = 0
         total_expanded_bytes = initial_expanded_bytes
         if total_expanded_bytes > self.limits.max_total_bytes:
-            raise StravaBulkArchiveError(
-                "Referenced files exceed the safe total expanded-size limit"
-            )
+            raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
         member_hashes = {}
         try:
             for member_name in sorted(referenced):
@@ -372,9 +373,7 @@ class StravaBulkArchiveReader:
                 self._validate_imported_member(info)
                 total_expanded_bytes += info.file_size
                 if total_expanded_bytes > self.limits.max_total_bytes:
-                    raise StravaBulkArchiveError(
-                        "Referenced files exceed the safe total expanded-size limit"
-                    )
+                    raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
                 nested_bytes, member_hash = self._validate_referenced_member(
                     archive,
                     info,
@@ -429,9 +428,7 @@ class StravaBulkArchiveReader:
         member_hashes = {}
         total_bytes = sum(info_by_name[name].file_size for name in referenced)
         if initial_expanded_bytes + total_bytes > self.limits.max_total_bytes:
-            raise StravaBulkArchiveError(
-                "Referenced files exceed the safe total expanded-size limit"
-            )
+            raise StravaBulkArchiveError(REFERENCED_TOTAL_SIZE_ERROR)
         completed_bytes = 0
         try:
             for member_name in sorted(referenced):
