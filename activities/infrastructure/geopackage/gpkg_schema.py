@@ -17,7 +17,12 @@ from qgis.PyQt.QtCore import QVariant
 from qgis.core import QgsField, QgsFields
 
 from .route_storage import ROUTE_REGISTRY_TABLE
-from ....sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE
+from ....sync_repository import (
+    DERIVED_DIRTY_TABLE,
+    DERIVED_STATE_TABLE,
+    REGISTRY_TABLE,
+    SYNC_STATE_TABLE,
+)
 
 # ---------------------------------------------------------------------------
 # Field definitions
@@ -290,6 +295,16 @@ GPKG_LAYER_SCHEMA = {
         "geometry": None,
         "kind": "table",
         "primary_key": ["provider"],
+    },
+    DERIVED_DIRTY_TABLE: {
+        "geometry": None,
+        "kind": "table",
+        "primary_key": ["source", "source_activity_id"],
+    },
+    DERIVED_STATE_TABLE: {
+        "geometry": None,
+        "kind": "table",
+        "primary_key": ["singleton_id"],
     },
     ROUTE_REGISTRY_TABLE: {
         "geometry": None,

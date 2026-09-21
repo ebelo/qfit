@@ -1172,8 +1172,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.loadButton.setEnabled(False)
         self.loadButton.setText("Store in progress...")
         self._set_status(status_text)
+        progress_signal = getattr(store_task, "progressChanged", None)
+        if progress_signal is not None and hasattr(progress_signal, "connect"):
+            progress_signal.connect(
+                lambda _value: self._refresh_store_progress(store_task)
+            )
         QgsApplication.taskManager().addTask(store_task)
         return True
+
+    def _refresh_store_progress(self, task):
+        message = getattr(task, "latest_message", None)
+        if message:
+            self._set_status(message)
 
     def _handle_store_task_finished(self, result, error_message, cancelled):
         self._runtime_store().clear_store()

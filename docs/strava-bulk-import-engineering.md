@@ -88,6 +88,7 @@ flowchart TD
 | `activities/application/strava_bulk_import_task.py` | Cancellable QGIS background-task adapters |
 | `activities/infrastructure/geopackage/gpkg_writer.py` | GeoPackage persistence bridge |
 | `activities/infrastructure/geopackage/gpkg_write_orchestration.py` | Bounded, atomic derived-layer rebuild |
+| `activities/infrastructure/geopackage/gpkg_incremental_publication.py` | Transactional changed-activity publication after the initial import |
 | `sync_repository.py` | Canonical registry, compressed details, idempotent upsert, keyset reads, sync state |
 | `qfit_dockwidget.py` | File picker, preflight confirmation, task ownership, status, cancellation, completion dialog |
 | `ui/dockwidget/sync_page.py` | Sync-page controls and bulk-import action state |
@@ -448,6 +449,36 @@ planner in a meaningful state.
 The next API plan can therefore use a bounded incremental overlap after a
 summary-only archive instead of assuming no history exists.
 
+### 10.1 Incremental top-up publication
+
+An incremental API fetch or detail backfill must not decode and rewrite the
+entire imported history. Canonical upserts therefore report stable changed
+keys, and `activity_derived_dirty` journals every registry mutation until its
+derived rows are durably published.
+
+The common top-up path:
+
+1. hydrates only journaled `(source, source_activity_id)` records;
+2. rebuilds only their track, start, sampled-point, atlas, profile, page-detail,
+   and TOC rows;
+3. writes those rows to a temporary GeoPackage;
+4. replaces affected rows through one GDAL/OGR GeoPackage transaction; and
+5. clears the dirty journal only after the transaction and index checks
+   succeed.
+
+Document summary and cover tables are recomputed from lightweight atlas rows;
+historical point payloads are not decoded. Existing atlas page numbers are
+retained. A recent page may append, but deletions, changed sort keys, backdated
+pages, schema drift, or a large mutation set force the established bounded full
+rebuild. Repeating an identical overlap is a no-op when the journal is empty.
+
+If QGIS closes or publication fails after the canonical upsert, the journal
+survives. The next sync republishes those keys even if Strava returns identical
+data, preventing an interrupted run from leaving the visible layers stale.
+Store-task progress distinguishes reconciliation, planning, staging, commit,
+fallback rebuild, and completion; cancellation before commit leaves the
+visible derived layers unchanged.
+
 ## 11. User interface and diagnostics
 
 The sync page exposes **Import Strava export…**. Its flow is file picker ->
@@ -584,6 +615,7 @@ lessons are listed here so they are not lost in PR comments.
 | One corrupt ZIP member aborted all activities | Isolate the member, preserve its summary, and continue intact originals |
 | A review proposed multiplying Distance by 1,000 | Reject the premise using dimensional analysis over sanitized real-export data |
 | Packaging worked in the development environment only | Vendor pinned `fitdecode` and its license into both release profiles and test it in both QGIS runtimes |
+| A small API top-up rebuilt every detailed historical payload | Journal changed keys and transactionally replace only their derived rows; retain the bounded rebuild for unsafe reorder/delete cases |
 
 The general rule is to turn each accepted review finding into a regression test.
 When a finding conflicts with real source evidence, document the evidence and do

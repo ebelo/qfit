@@ -68,6 +68,22 @@ import again to resume safely; already imported activities become unchanged.
 The source ZIP is no longer needed after a completed import because exact point
 payloads and provenance are stored in the GeoPackage.
 
+## Daily sync and detail backfill after import
+
+After the initial bulk import, **Sync activities** continues from the stored
+checkpoint with the normal recent overlap. qfit compares those activities with
+the canonical registry and updates only changed map rows. **Backfill missing
+detailed routes** uses the same incremental publication path, so adding precise
+geometry for a few activities does not reprocess every historical FIT, TCX, or
+GPX payload.
+
+The QGIS task shows separate reconciliation, staging, publication, and
+completion phases. An unchanged overlap skips derived publication entirely.
+Safety cases that can renumber atlas pages—such as a deletion or backdated
+activity—use a bounded full rebuild instead. If QGIS closes or publication
+fails after storing canonical data, qfit retains a repair marker and retries
+the affected activities on the next sync.
+
 ## Storage design and benchmark
 
 The canonical summary remains in `activity_registry`. Detailed geometry and

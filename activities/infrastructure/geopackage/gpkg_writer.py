@@ -1,4 +1,6 @@
+import json
 import os
+import sqlite3
 from importlib import import_module
 
 from .activity_storage import GeoPackageActivityStore
@@ -7,6 +9,10 @@ from .gpkg_schema import GPKG_LAYER_SCHEMA
 
 gpkg_write_orchestration = import_module(__package__ + ".gpkg_write_orchestration")
 from ....atlas.publish_atlas import normalize_atlas_page_settings
+
+
+def _incremental_publication_module():
+    return import_module(__package__ + ".gpkg_incremental_publication")
 
 
 class GeoPackageWriter:
@@ -62,15 +68,147 @@ class GeoPackageWriter:
             "sync": sync_result,
         }
 
-    def write_activities(self, activities, sync_metadata=None):
+    def write_activities(
+        self,
+        activities,
+        sync_metadata=None,
+        *,
+        progress=None,
+        cancelled=None,
+    ):
+        if cancelled is not None and cancelled():
+            raise InterruptedError("activity publication cancelled")
+        self._report_progress(progress, "reconcile", 0, 4)
         activity_store = self.prepare_activity_storage()
         sync_result = activity_store.upsert_activities(activities, sync_metadata=sync_metadata)
-        layers = self.rebuild_activity_layers(activity_store=activity_store)
+        if hasattr(activity_store, "with_pending_derived_changes") and hasattr(
+            sync_result,
+            "changed_keys",
+        ):
+            sync_result = activity_store.with_pending_derived_changes(sync_result)
+        publication_signature = self._publication_signature()
+        signature_matches = (
+            not hasattr(activity_store, "load_derived_publication_signature")
+            or activity_store.load_derived_publication_signature()
+            == publication_signature
+        )
+        self._report_progress(progress, "reconcile", 1, 4)
+        if self._can_skip_derived_publication(sync_result, signature_matches):
+            self._report_progress(progress, "complete", 4, 4)
+            return {
+                "schema": self.schema(),
+                "path": self.output_path,
+                "fetched_count": len(activities),
+                **self._existing_activity_layer_counts(),
+                "sync": sync_result,
+                "publication_mode": "unchanged",
+            }
+        publication_mode = "incremental"
+        fallback_reason = None
+        rebuilt_layers = None
+        if not signature_matches:
+            publication_mode = "full_rebuild"
+            fallback_reason = "derived publication settings changed"
+            rebuilt_layers = self._rebuild_activity_layers_fallback(
+                activity_store,
+                getattr(sync_result, "total_count", 0),
+                progress=progress,
+                cancelled=cancelled,
+            )
+        elif not hasattr(sync_result, "changed_keys"):
+            publication_mode = "full_rebuild"
+            fallback_reason = "activity store does not report mutation keys"
+            rebuilt_layers = self._rebuild_activity_layers_fallback(
+                activity_store,
+                getattr(sync_result, "total_count", 0),
+                progress=progress,
+                cancelled=cancelled,
+            )
+        else:
+            incremental = _incremental_publication_module()
+            try:
+                changed_records = activity_store.load_activity_records(
+                    sync_result.changed_keys
+                )
+                incremental.publish_incremental_activity_layers(
+                    changed_records,
+                    self.output_path,
+                    self.atlas_page_settings,
+                    sync_result,
+                    write_activity_points=self.write_activity_points,
+                    point_stride=self.point_stride,
+                    progress=progress,
+                    cancelled=cancelled,
+                )
+                gpkg_write_orchestration.ensure_attribute_indexes(
+                    self.output_path
+                )
+                self._mark_activity_layers_published(activity_store)
+            except incremental.IncrementalPublicationNotEligible as exc:
+                publication_mode = "full_rebuild"
+                fallback_reason = str(exc)
+                rebuilt_layers = self._rebuild_activity_layers_fallback(
+                    activity_store,
+                    sync_result.total_count,
+                    progress=progress,
+                    cancelled=cancelled,
+                )
+
+        counts = (
+            self._activity_layer_counts(rebuilt_layers)
+            if rebuilt_layers is not None
+            else self._existing_activity_layer_counts()
+        )
+        self._report_progress(progress, "complete", 4, 4)
 
         return {
             "schema": self.schema(),
             "path": self.output_path,
             "fetched_count": len(activities),
+            **counts,
+            "sync": sync_result,
+            "publication_mode": publication_mode,
+            "publication_fallback_reason": fallback_reason,
+        }
+
+    def _rebuild_activity_layers_fallback(
+        self,
+        activity_store,
+        total_count,
+        *,
+        progress=None,
+        cancelled=None,
+    ):
+        """Use the bounded path when a large registry needs full publication."""
+
+        if cancelled is not None or int(total_count or 0) >= 200:
+
+            def report(layer_name, completed, total, layer_index, layer_count):
+                if cancelled is not None and cancelled():
+                    raise InterruptedError("activity publication cancelled")
+                if progress is not None:
+                    progress(
+                        "full_rebuild",
+                        layer_index + (completed / max(total, 1)),
+                        layer_count,
+                    )
+
+            return self.rebuild_activity_layers_bounded(
+                activity_store=activity_store,
+                progress=report,
+                cancelled=cancelled,
+            )
+        self._report_progress(progress, "full_rebuild", 1, 2)
+        return self.rebuild_activity_layers(activity_store=activity_store)
+
+    @staticmethod
+    def _report_progress(progress, phase, completed, total):
+        if progress is not None:
+            progress(phase, completed, total)
+
+    @staticmethod
+    def _activity_layer_counts(layers):
+        return {
             "track_count": layers["activity_tracks"].featureCount(),
             "start_count": layers["activity_starts"].featureCount(),
             "point_count": layers["activity_points"].featureCount(),
@@ -80,8 +218,98 @@ class GeoPackageWriter:
             "page_detail_item_count": layers["atlas_page_detail_items"].featureCount(),
             "profile_sample_count": layers["atlas_profile_samples"].featureCount(),
             "toc_count": layers["atlas_toc_entries"].featureCount(),
-            "sync": sync_result,
         }
+
+    def _can_skip_derived_publication(self, sync_result, signature_matches=True):
+        if not signature_matches:
+            return False
+        if not hasattr(sync_result, "has_derived_changes"):
+            return False
+        if sync_result.has_derived_changes:
+            return False
+        required = {
+            "activity_tracks",
+            "activity_starts",
+            "activity_points",
+            "activity_atlas_pages",
+            "atlas_document_summary",
+            "atlas_cover_highlights",
+            "atlas_page_detail_items",
+            "atlas_profile_samples",
+            "atlas_toc_entries",
+        }
+        with sqlite3.connect(self.output_path) as connection:
+            existing = {
+                row[0]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                )
+            }
+        return required.issubset(existing)
+
+    def _publication_signature(self):
+        settings = self.atlas_page_settings
+        payload = {
+            "version": 1,
+            "write_activity_points": self.write_activity_points,
+            "point_stride": self.point_stride,
+            "atlas_margin_percent": getattr(settings, "margin_percent", None),
+            "atlas_min_extent_degrees": getattr(
+                settings,
+                "min_extent_degrees",
+                None,
+            ),
+            "atlas_target_aspect_ratio": getattr(
+                settings,
+                "target_aspect_ratio",
+                None,
+            ),
+        }
+        return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+    def _mark_activity_layers_published(self, store):
+        if hasattr(store, "record_derived_publication_signature"):
+            store.record_derived_publication_signature(
+                self._publication_signature()
+            )
+        if hasattr(store, "clear_derived_dirty"):
+            store.clear_derived_dirty()
+
+    def _existing_activity_layer_counts(self):
+        result_keys = {
+            "activity_tracks": "track_count",
+            "activity_starts": "start_count",
+            "activity_points": "point_count",
+            "activity_atlas_pages": "atlas_count",
+            "atlas_document_summary": "document_summary_count",
+            "atlas_cover_highlights": "cover_highlight_count",
+            "atlas_page_detail_items": "page_detail_item_count",
+            "atlas_profile_samples": "profile_sample_count",
+            "atlas_toc_entries": "toc_count",
+        }
+        with sqlite3.connect(self.output_path) as connection:
+            try:
+                ogr_counts = {
+                    row[0]: int(row[1])
+                    for row in connection.execute(
+                        "SELECT table_name, feature_count FROM gpkg_ogr_contents "
+                        "WHERE feature_count IS NOT NULL"
+                    )
+                }
+            except sqlite3.OperationalError:
+                ogr_counts = {}
+            counts = {}
+            for layer_name, result_key in result_keys.items():
+                if layer_name in ogr_counts:
+                    counts[result_key] = ogr_counts[layer_name]
+                    continue
+                quoted_name = layer_name.replace('"', '""')
+                counts[result_key] = int(
+                    connection.execute(
+                        f'SELECT COUNT(*) FROM "{quoted_name}"'
+                    ).fetchone()[0]
+                )
+        return counts
 
     def prepare_activity_storage(self):
         """Create the GeoPackage and registry schema without rebuilding layers."""
@@ -114,13 +342,15 @@ class GeoPackageWriter:
 
         store = activity_store or self.prepare_activity_storage()
         records = store.load_all_activity_records()
-        return gpkg_write_orchestration.build_and_write_all_layers(
+        layers = gpkg_write_orchestration.build_and_write_all_layers(
             records,
             self.output_path,
             self.atlas_page_settings,
             write_activity_points=self.write_activity_points,
             point_stride=self.point_stride,
         )
+        self._mark_activity_layers_published(store)
+        return layers
 
     def rebuild_activity_layers_bounded(
         self,
@@ -128,15 +358,19 @@ class GeoPackageWriter:
         activity_store=None,
         batch_size=25,
         progress=None,
+        cancelled=None,
     ):
         """Rebuild detail-heavy layers from repeatable bounded record batches."""
 
         store = activity_store or self.prepare_activity_storage()
-        return gpkg_write_orchestration.build_and_write_all_layers_bounded(
+        layers = gpkg_write_orchestration.build_and_write_all_layers_bounded(
             lambda: store.iter_activity_record_batches(batch_size=batch_size),
             self.output_path,
             self.atlas_page_settings,
             write_activity_points=self.write_activity_points,
             point_stride=self.point_stride,
             progress=progress,
+            cancelled=cancelled,
         )
+        self._mark_activity_layers_published(store)
+        return layers

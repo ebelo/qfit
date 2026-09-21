@@ -306,6 +306,16 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
                         "idx_activity_atlas_pages_page_sort_key",
                         "idx_activity_atlas_pages_source_activity_id",
                     },
+                    "atlas_page_detail_items": {
+                        "idx_atlas_page_detail_items_page_sort_key",
+                    },
+                    "atlas_profile_samples": {
+                        "idx_atlas_profile_samples_source_activity_id",
+                        "idx_atlas_profile_samples_page_sort_key",
+                    },
+                    "atlas_toc_entries": {
+                        "idx_atlas_toc_entries_page_sort_key",
+                    },
                 }
 
                 for table_name, expected in expected_indexes.items():

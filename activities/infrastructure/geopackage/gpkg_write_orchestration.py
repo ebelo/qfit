@@ -92,7 +92,28 @@ DERIVED_LAYER_ATTRIBUTE_INDEXES = {
         "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_source_activity_id "
         "ON activity_atlas_pages(source, source_activity_id)",
     ),
+    "atlas_page_detail_items": (
+        "CREATE INDEX IF NOT EXISTS idx_atlas_page_detail_items_page_sort_key "
+        "ON atlas_page_detail_items(page_sort_key)",
+    ),
+    "atlas_profile_samples": (
+        "CREATE INDEX IF NOT EXISTS idx_atlas_profile_samples_source_activity_id "
+        "ON atlas_profile_samples(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_atlas_profile_samples_page_sort_key "
+        "ON atlas_profile_samples(page_sort_key)",
+    ),
+    "atlas_toc_entries": (
+        "CREATE INDEX IF NOT EXISTS idx_atlas_toc_entries_page_sort_key "
+        "ON atlas_toc_entries(page_sort_key)",
+    ),
 }
+
+ACTIVITY_SPATIAL_LAYER_NAMES = (
+    "activity_tracks",
+    "activity_starts",
+    "activity_points",
+    "activity_atlas_pages",
+)
 
 
 def ensure_attribute_indexes(output_path):
@@ -135,7 +156,10 @@ def _import_ogr_spatial_index_api():
 
 def ensure_spatial_indexes(output_path):
     """Create derived-layer spatial indexes inside *output_path* if missing."""
-    _ensure_spatial_indexes(output_path, DERIVED_LAYER_ATTRIBUTE_INDEXES)
+    _ensure_spatial_indexes(
+        output_path,
+        dict.fromkeys(ACTIVITY_SPATIAL_LAYER_NAMES),
+    )
 
 
 def ensure_route_spatial_indexes(output_path):
@@ -370,6 +394,7 @@ def build_and_write_all_layers_bounded(
     write_activity_points=True,
     point_stride=5,
     progress=None,
+    cancelled=None,
 ):
     """Rebuild detail-heavy layers without retaining every decoded payload."""
 
@@ -398,6 +423,8 @@ def build_and_write_all_layers_bounded(
             point_stride=point_stride,
             progress=progress,
         )
+        if cancelled is not None and cancelled():
+            raise InterruptedError("activity publication cancelled")
         _replace_gpkg_from_staging(staging_path, output_path)
     finally:
         _remove_staging_gpkg(staging_path)
