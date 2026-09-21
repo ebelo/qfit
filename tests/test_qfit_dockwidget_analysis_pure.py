@@ -366,6 +366,33 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertFalse(dock.loadButton.isEnabled())
         self.assertFalse(dock.syncRoutesButton.isEnabled())
 
+    def test_status_refresh_preserves_non_cancellable_bulk_finalization(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        bulk_button = _FakeButton("Import Strava export…")
+        dock._local_first_dock_composition = SimpleNamespace(
+            sync_content=SimpleNamespace(bulk_button=bulk_button)
+        )
+        dock.outputPathLineEdit = _FakeButton("database")
+        dock.statusLabel = MagicMock()
+
+        self.module.QfitDockWidget._set_bulk_import_running(
+            dock,
+            True,
+            "Finalizing layers…",
+            cancellable=False,
+        )
+
+        def refresh_that_reenables_controls():
+            bulk_button.setEnabled(True)
+            dock.outputPathLineEdit.setEnabled(True)
+
+        dock._refresh_summary_status = refresh_that_reenables_controls
+        self.module.QfitDockWidget._set_status(dock, "Rebuilding layers")
+
+        self.assertFalse(bulk_button.isEnabled())
+        self.assertEqual(bulk_button.text(), "Finalizing layers…")
+        self.assertFalse(dock.outputPathLineEdit.isEnabled())
+
     def test_bulk_import_completion_uses_captured_destination(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._bulk_destination_path = "/tmp/original.gpkg"

@@ -106,7 +106,7 @@ class GeoPackageWriter:
             activities,
             sync_metadata={"provider": "strava", "suppress_sync_state": True},
             compress_detail_payloads=compress_detail_payloads,
-            reconcile_existing=False,
+            reconcile_existing=True,
         )
 
     def rebuild_activity_layers(self, *, activity_store=None):

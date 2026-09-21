@@ -195,10 +195,26 @@ class StravaBulkArchiveReader:
         preflight = self._preflight or self.preflight()
         entries = self._entries or []
         with self._open_archive() as archive:
+            infos = self._validate_central_directory(archive)
             info_by_name = {
                 _normalize_member_name(info.filename): info
-                for info in archive.infolist()
+                for info in infos
             }
+            manifest_info = info_by_name.get(MANIFEST_NAME)
+            if manifest_info is None:
+                raise StravaBulkArchiveError(
+                    "The Strava archive changed after validation"
+                )
+            manifest_bytes = self._read_zip_member(archive, manifest_info)
+            reopened_fingerprint = _archive_fingerprint(
+                manifest_bytes,
+                entries,
+                info_by_name,
+            )
+            if reopened_fingerprint != preflight.archive_fingerprint:
+                raise StravaBulkArchiveError(
+                    "The Strava archive changed after validation"
+                )
             for completed, entry in enumerate(entries, start=1):
                 if cancelled is not None and cancelled():
                     return
@@ -270,6 +286,10 @@ class StravaBulkArchiveReader:
         for row_number, row in enumerate(reader, start=2):
             if len(entries) >= self.limits.max_activity_rows:
                 raise StravaBulkArchiveError("activities.csv contains too many activity rows")
+            if None in row:
+                raise StravaBulkArchiveError(
+                    "activities.csv contains a row with more values than headers"
+                )
             activity_id = (row.get(ACTIVITY_ID_FIELD) or "").strip()
             member_name = _manifest_member_name(row.get(FILENAME_FIELD))
             id_counts[activity_id] += 1

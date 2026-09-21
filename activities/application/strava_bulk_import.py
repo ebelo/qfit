@@ -274,7 +274,6 @@ class StravaBulkImportWorkflow:
             )
             self._record_parsed_result(
                 parsed,
-                activity_store,
                 batch,
                 counters,
                 diagnostics,
@@ -288,7 +287,7 @@ class StravaBulkImportWorkflow:
         return was_cancelled
 
     @staticmethod
-    def _record_parsed_result(parsed, activity_store, batch, counters, diagnostics):
+    def _record_parsed_result(parsed, batch, counters, diagnostics):
         status = parsed.status
         if status in counters:
             counters[status] += 1
@@ -301,11 +300,7 @@ class StravaBulkImportWorkflow:
             )
         if parsed.activity is None:
             return
-        existing = activity_store.load_activity_record(
-            parsed.activity.source,
-            parsed.activity.source_activity_id,
-        )
-        batch.append(reconcile_bulk_activity(parsed.activity, existing))
+        batch.append(parsed.activity)
 
     def _rebuild_layers(
         self,

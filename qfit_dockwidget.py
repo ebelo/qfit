@@ -929,6 +929,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         exec_method()
 
     def _set_bulk_import_running(self, running, label=None, *, cancellable=True):
+        self._bulk_import_ui_state = (running, label, cancellable)
         composition = getattr(self, "_local_first_dock_composition", None)
         content = getattr(composition, "sync_content", None)
         button = getattr(content, "bulk_button", None)
@@ -1995,6 +1996,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _set_status(self, text):
         self.statusLabel.setText(text)
         self._refresh_summary_status()
+        bulk_state = getattr(self, "_bulk_import_ui_state", None)
+        if bulk_state is not None and bulk_state[0]:
+            self._set_bulk_import_running(
+                bulk_state[0],
+                bulk_state[1],
+                cancellable=bulk_state[2],
+            )
 
     def _refresh_summary_status(self) -> None:
         label = getattr(self, "summaryStatusLabel", None)

@@ -345,6 +345,29 @@ class StravaBulkArchiveReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaBulkArchiveError, "too many activity rows"):
             reader.preflight()
 
+    def test_manifest_row_with_surplus_fields_is_rejected(self):
+        manifest = (
+            "Activity ID,Activity Date,Activity Name,Activity Type,Filename,Extra\n"
+            "1,2026-09-21,Synthetic,Run,,allowed,surplus\n"
+        )
+        with zipfile.ZipFile(self.archive_path, "w") as archive:
+            archive.writestr("activities.csv", manifest)
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "more values than headers"):
+            StravaBulkArchiveReader(str(self.archive_path)).preflight()
+
+    def test_archive_replacement_after_preflight_is_rejected(self):
+        reader = self._write_archive(
+            [_row("one", "")],
+            {},
+        )
+        reader.preflight()
+        with zipfile.ZipFile(self.archive_path, "w") as archive:
+            archive.writestr("activities.csv", _manifest([_row("two", "")]))
+
+        with self.assertRaisesRegex(StravaBulkArchiveError, "changed after validation"):
+            list(reader.iter_activity_results())
+
     def test_duplicate_normalized_zip_paths_are_rejected(self):
         with zipfile.ZipFile(self.archive_path, "w") as archive:
             archive.writestr("activities.csv", _manifest([_row(filename="")]))

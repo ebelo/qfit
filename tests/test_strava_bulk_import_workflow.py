@@ -1,4 +1,6 @@
+import tempfile
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 
 from tests import _path  # noqa: F401
@@ -14,6 +16,7 @@ from qfit.providers.infrastructure.strava_bulk_archive import (
     BulkArchivePreflight,
 )
 from qfit.sync_repository import SyncStats
+from qfit.sync_repository import SyncRepository
 
 
 def _activity(activity_id, *, points=None, details=None, **overrides):
@@ -179,6 +182,70 @@ class StravaBulkImportWorkflowTests(unittest.TestCase):
         report = result.private_diagnostic_report()
         self.assertIn("activity_id=1 status=failed reason=invalid_activity_file", report)
         self.assertNotIn("export.zip", report)
+
+    def test_detailed_reimport_repairs_corrupt_stored_payload(self):
+        activity = _activity(
+            "42",
+            points=[(46.5, 6.6), (46.6, 6.7)],
+            details={"stream_metrics": {"altitude": [450.0, 455.0]}},
+        )
+        result = BulkActivityImportResult(2, "42", "detailed_profile", activity)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repository = SyncRepository(str(Path(temp_dir) / "qfit.sqlite"))
+            repository.ensure_schema()
+            repository.upsert_activities([activity], compress_detail_payloads=True)
+            with repository._connect() as connection:
+                connection.execute(
+                    "UPDATE activity_detail_payloads SET payload_zlib = ?",
+                    (b"not-zlib",),
+                )
+                connection.commit()
+
+            class RepositoryWriter(_Writer):
+                def __init__(self):
+                    super().__init__(repository)
+
+                def upsert_activity_batch(self, store, activities, *, compress_detail_payloads):
+                    return store.upsert_activities(
+                        activities,
+                        sync_metadata={"provider": "strava", "suppress_sync_state": True},
+                        compress_detail_payloads=compress_detail_payloads,
+                        reconcile_existing=True,
+                    )
+
+                def rebuild_activity_layers(self, *, activity_store):
+                    self.rebuilt = True
+                    return {
+                        "activity_tracks": SimpleNamespace(
+                            featureCount=activity_store.load_activity_count
+                        )
+                    }
+
+            preflight = BulkArchivePreflight(
+                archive_fingerprint="abc",
+                activity_count=1,
+                referenced_file_count=1,
+                summary_only_count=0,
+                conflict_count=0,
+                missing_file_count=0,
+                unsupported_file_count=0,
+            )
+            reader = _Reader([result], preflight)
+            workflow = StravaBulkImportWorkflow(
+                reader_factory=lambda _path: reader,
+                writer_factory=lambda **_kwargs: RepositoryWriter(),
+            )
+
+            imported = workflow.run(
+                StravaBulkImportRequest("export.zip", "qfit.gpkg")
+            )
+
+            self.assertEqual(imported.updated, 1)
+            self.assertEqual(
+                repository.load_all_activities()[0].details_json["stream_metrics"]["altitude"],
+                [450.0, 455.0],
+            )
 
     def test_cancellation_commits_coherent_batch_and_skips_layer_rebuild(self):
         results = [
