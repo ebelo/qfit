@@ -13,7 +13,7 @@ class ConnectionStatusTests(unittest.TestCase):
                 client_secret="client-secret",
                 refresh_token="refresh-token",
             ),
-            "Strava connection: ready to fetch activities",
+            "Strava connection: ready to sync activities",
         )
 
     def test_requests_refresh_token_when_only_client_credentials_exist(self):
@@ -23,7 +23,7 @@ class ConnectionStatusTests(unittest.TestCase):
                 client_secret="client-secret",
                 refresh_token="",
             ),
-            "Strava connection: app credentials saved; add a refresh token in Configuration to fetch activities",
+            "Strava connection: app credentials saved; add a refresh token in Configuration to sync activities",
         )
 
     def test_requests_configuration_when_credentials_missing(self):

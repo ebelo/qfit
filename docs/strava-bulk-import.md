@@ -68,14 +68,19 @@ import again to resume safely; already imported activities become unchanged.
 The source ZIP is no longer needed after a completed import because exact point
 payloads and provenance are stored in the GeoPackage.
 
-## Daily sync and detail backfill after import
+## Daily sync and automatic detail hydration after import
 
 After the initial bulk import, **Sync activities** continues from the stored
 checkpoint with the normal recent overlap. qfit compares those activities with
-the canonical registry and updates only changed map rows. **Backfill missing
-detailed routes** uses the same incremental publication path, so adding precise
-geometry for a few activities does not reprocess every historical FIT, TCX, or
-GPX payload.
+the canonical registry and updates only changed map rows. For every recent
+activity returned by Strava, qfit requests its detailed route in sequence before
+storing the batch. Cached details are reused. A detail request deferred by the
+rate-limit guard or interrupted by a transient error remains pending and widens
+a later incremental query just far enough to retry that activity.
+
+This automatic hydration is deliberately limited to activities returned by
+normal API sync. It does not turn daily sync into a historical API crawl:
+historical ingestion remains the role of the user's Strava bulk export.
 
 The QGIS task shows separate reconciliation, staging, publication, and
 completion phases. An unchanged overlap skips derived publication entirely.

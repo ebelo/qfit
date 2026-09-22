@@ -20,7 +20,7 @@ class AtlasExportController:
         if atlas_layer.featureCount() == 0:
             raise AtlasExportValidationError(
                 "The atlas_pages layer has no features. "
-                "Fetch activities with geometry and store/load layers first."
+                "Sync activities with geometry and store/load layers first."
             )
 
     @staticmethod

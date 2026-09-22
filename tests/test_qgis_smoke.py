@@ -327,7 +327,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIn("saved in qfit → Configuration", dock.activitiesGroupBox.toolTip())
             self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
-            self.assertEqual(dock.refreshButton.text(), "Fetch activities")
+            self.assertEqual(dock.refreshButton.text(), "Sync activities")
             self.assertEqual(dock.loadButton.text(), "Store activities")
             self.assertEqual(dock.loadLayersButton.text(), "Load stored map layers")
             self.assertEqual(dock.clearDatabaseButton.text(), "Clear database…")
@@ -419,16 +419,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertEqual(dock.atlasTitleLineEdit.text(), "qfit Activity Atlas")
             self.assertEqual(dock.atlasSubtitleLineEdit.text(), "")
-            self.assertEqual(
-                dock.backfillMissingDetailedRoutesButton.parentWidget(),
-                dock._local_first_dock_composition.sync_content,
-            )
-            self.assertGreaterEqual(
-                dock._local_first_dock_composition.sync_content.outer_layout().indexOf(
-                    dock.backfillMissingDetailedRoutesButton,
-                ),
-                0,
-            )
+            self.assertFalse(hasattr(dock, "backfillMissingDetailedRoutesButton"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
             self.assertIsNone(temporal_helper)
         finally:
@@ -635,11 +626,17 @@ class QgisSmokeTests(unittest.TestCase):
             dock.sync_controller.build_fetch_task_request.assert_called_once()
             self.assertEqual(
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
-                "Missing routes only",
+                "Recent fetch only",
             )
             self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 200)
             self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 0)
-            self.assertFalse(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs[
+                    "max_detailed_activities"
+                ],
+                0,
+            )
             dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
@@ -710,68 +707,8 @@ class QgisSmokeTests(unittest.TestCase):
 
             running_task.cancel.assert_called_once_with()
             self.assertIsNone(dock._fetch_task)
-            self.assertEqual(dock.refreshButton.text(), "Fetch activities")
+            self.assertEqual(dock.refreshButton.text(), "Sync activities")
             self.assertEqual(dock.statusLabel.text(), "Fetch cancelled.")
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_backfill_missing_detailed_routes_clicked_uses_missing_strategy(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            fake_task = MagicMock(name="fetch_task")
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
-            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
-                task_manager.return_value.addTask = MagicMock()
-                dock.on_backfill_missing_detailed_routes_clicked()
-
-            dock.sync_controller.build_fetch_task_request.assert_called_once()
-            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
-            self.assertEqual(
-                dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
-                "Missing routes only",
-            )
-            self.assertIn("Backfilling missing detailed routes", dock.statusLabel.text())
-            task_manager.return_value.addTask.assert_called_once_with(fake_task)
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_backfill_missing_detailed_routes_uses_internal_cap(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            fake_task = MagicMock(name="fetch_task")
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
-            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
-                task_manager.return_value.addTask = MagicMock()
-                dock.on_backfill_missing_detailed_routes_clicked()
-
-            dock.sync_controller.build_fetch_task_request.assert_called_once()
-            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
-            self.assertEqual(
-                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
-                25,
-            )
-            task_manager.return_value.addTask.assert_called_once_with(fake_task)
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_backfill_missing_detailed_routes_ignores_click_while_fetch_running(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            dock._fetch_task = MagicMock(name="running_fetch_task")
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_fetch_task_request = MagicMock()
-
-            dock.on_backfill_missing_detailed_routes_clicked()
-
-            dock._save_settings.assert_not_called()
-            dock.sync_controller.build_fetch_task_request.assert_not_called()
         finally:
             dock.close()
             dock.deleteLater()
@@ -791,18 +728,7 @@ class QgisSmokeTests(unittest.TestCase):
             dock._show_error.assert_called_once_with("Strava import failed", "missing token")
             self.assertEqual(dock.statusLabel.text(), "Strava fetch failed")
             self.assertIsNone(dock._fetch_task)
-            self.assertEqual(dock.refreshButton.text(), "Fetch activities")
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_detailed_route_controls_use_short_route_wording(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            self.assertEqual(
-                dock.backfillMissingDetailedRoutesButton.text(),
-                "Backfill routes",
-            )
+            self.assertEqual(dock.refreshButton.text(), "Sync activities")
         finally:
             dock.close()
             dock.deleteLater()

@@ -48,7 +48,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
             install_control_move.call_args_list,
             [
                 call(dock, composition, "activity_preview"),
-                call(dock, composition, "backfill_routes"),
                 call(dock, composition, "map_filters"),
                 call(dock, composition, "atlas_pdf"),
                 call(dock, composition, "basemap"),
@@ -59,7 +58,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
             after_control_move.call_args_list,
             [
                 call(dock, "activity_preview", installed=True),
-                call(dock, "backfill_routes", installed=True),
                 call(dock, "map_filters", installed=True),
                 call(dock, "atlas_pdf", installed=True),
                 call(dock, "basemap", installed=True),

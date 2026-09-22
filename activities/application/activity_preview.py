@@ -14,7 +14,7 @@ from ..domain.activity_query import (
 from .activity_selection_state import ActivitySelectionState
 
 
-_FETCH_PREVIEW_EMPTY_TEXT = "Fetch activities to preview your latest synced activities."
+_FETCH_PREVIEW_EMPTY_TEXT = "Sync activities to preview your latest activities."
 
 
 @dataclass(frozen=True)

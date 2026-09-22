@@ -832,6 +832,64 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
                 DetailedRouteCoverage(),
             )
 
+    def test_pending_detail_retry_uses_oldest_api_failure_only(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        source_activity_id="newer-api",
+                        start_date="2026-05-03T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "error",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="older-api",
+                        start_date="2026-05-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "skipped_rate_limit",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="archive-failure",
+                        start_date="2020-01-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_bulk_export",
+                            "ingest_sources": ["strava_bulk_export"],
+                            "detailed_route_status": "error",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="empty-api",
+                        start_date="2026-04-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "empty",
+                        },
+                    ),
+                ]
+            )
+
+            self.assertEqual(
+                repo.load_pending_detailed_route_retry_start_date(),
+                "2026-05-01T06:00:00Z",
+            )
+
+    def test_pending_detail_retry_returns_none_for_missing_database(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "missing.sqlite"))
+
+            self.assertIsNone(
+                repo.load_pending_detailed_route_retry_start_date()
+            )
+
     def test_non_volatile_detail_change_triggers_update(self):
         """Changing a non-volatile detail key triggers an update."""
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from tests import _path  # noqa: F401
 from qfit.providers.infrastructure import strava_client as strava_client_module
@@ -320,6 +320,41 @@ class StravaClientTests(unittest.TestCase):
 
         self.assertEqual(activity.details_json["detailed_route_status"], "error")
 
+    def test_enrich_activities_marks_rate_limit_response_for_retry(self):
+        client = StravaClient()
+        activities = [
+            client.normalize_activity({"id": 42, "name": "Run"}),
+            client.normalize_activity({"id": 43, "name": "Ride"}),
+        ]
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                side_effect=StravaClientError("rate limited", is_rate_limit=True),
+            ),
+        ):
+            client.enrich_activities_with_streams(activities, max_activities=2)
+
+        self.assertEqual(
+            activities[0].details_json["detailed_route_status"],
+            "skipped_rate_limit",
+        )
+        self.assertEqual(
+            activities[0].details_json["stream_skipped_reason"],
+            "rate_limit_response",
+        )
+        self.assertEqual(
+            activities[1].details_json["detailed_route_status"],
+            "skipped_rate_limit",
+        )
+        self.assertEqual(client.last_stream_enrichment_stats["errors"], 0)
+        self.assertEqual(
+            client.last_stream_enrichment_stats["skipped_rate_limit"],
+            2,
+        )
+
     def test_enrich_activities_marks_empty_route_status(self):
         client = StravaClient()
         activity = client.normalize_activity({"id": 42, "name": "Run"})
@@ -333,6 +368,42 @@ class StravaClientTests(unittest.TestCase):
 
         self.assertEqual(activity.details_json["detailed_route_status"], "empty")
         self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 0)
+
+    def test_recent_enrichment_stops_before_next_request_when_cancelled(self):
+        client = StravaClient()
+        activities = [
+            client.normalize_activity({"id": index, "name": f"Run {index}"})
+            for index in (1, 2)
+        ]
+        cancellation_checks = iter((False, True))
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                return_value={"latlng": [[46.5, 6.6], [46.6, 6.7]]},
+            ) as fetch_mock,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams(
+                activities,
+                max_activities=0,
+                strategy="Recent fetch only",
+                cancelled=lambda: next(cancellation_checks),
+            )
+
+        fetch_mock.assert_called_once_with("1")
+        self.assertEqual(activities[0].geometry_source, "stream")
+        self.assertNotEqual(activities[1].geometry_source, "stream")
+
+    def test_normalized_activity_records_api_provenance(self):
+        client = StravaClient()
+
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        self.assertEqual(activity.details_json["ingest_source"], "strava_api")
+        self.assertEqual(activity.details_json["ingest_sources"], ["strava_api"])
 
     def test_cache_hit_empty_does_not_count_as_remaining_missing(self):
         client = StravaClient()
@@ -650,6 +721,47 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(len(activities), 3)
         self.assertIn("page=1&per_page=2", seen_urls[0])
         self.assertIn("page=1&per_page=2&before=1774771199", seen_urls[1])
+
+    def test_recent_sync_hydrates_each_returned_activity_after_summary_page(self):
+        client = StravaClient()
+        progress = []
+        payload = [
+            {"id": 1, "name": "Run 1"},
+            {"id": 2, "name": "Run 2"},
+        ]
+
+        with (
+            patch.object(client, "get_access_token", return_value="token"),
+            patch.object(
+                client,
+                "_fetch_activity_page",
+                return_value=(payload, 200),
+            ),
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                side_effect=(
+                    {"latlng": [[46.5, 6.6], [46.6, 6.7]]},
+                    {"latlng": [[47.0, 7.0], [47.1, 7.1]]},
+                ),
+            ) as fetch_stream,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            activities = client.fetch_activities(
+                use_detailed_streams=True,
+                max_detailed_activities=0,
+                detailed_route_strategy="Recent fetch only",
+                progress=lambda phase, completed, total: progress.append(
+                    (phase, completed, total)
+                ),
+            )
+
+        self.assertEqual(fetch_stream.call_args_list, [call("1"), call("2")])
+        self.assertTrue(all(activity.geometry_source == "stream" for activity in activities))
+        self.assertEqual(progress[0], ("summaries", 2, None))
+        self.assertEqual(progress[1:], [("details", 1, 2), ("details", 2, 2)])
+        self.assertEqual(client.last_stream_enrichment_stats["downloaded"], 2)
 
     def test_fetch_activities_full_sync_reduces_page_size_after_transient_failure(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")

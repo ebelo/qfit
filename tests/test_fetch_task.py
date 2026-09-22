@@ -7,7 +7,7 @@ subclassing FetchTask and stubbing out the QgsTask infrastructure
 
 import unittest
 import importlib
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 from tests import _path  # noqa: F401
 
@@ -130,6 +130,8 @@ class TestFetchTaskSuccess(unittest.TestCase):
             use_detailed_streams=False,
             max_detailed_activities=0,
             detailed_route_strategy="Missing routes only",
+            cancelled=ANY,
+            progress=ANY,
         )
 
     def test_records_fetch_context_on_provider(self):
@@ -137,6 +139,16 @@ class TestFetchTaskSuccess(unittest.TestCase):
         self.assertEqual(
             self.mock_provider.last_fetch_context,
             {"max_pages": 0, "before": None, "after": None},
+        )
+
+    def test_provider_progress_updates_task_message(self):
+        self.task._handle_provider_progress("summaries", 3, None)
+        self.assertEqual(self.task.latest_message, "Fetched 3 activity summaries")
+
+        self.task._handle_provider_progress("details", 2, 5)
+        self.assertEqual(
+            self.task.latest_message,
+            "Fetching detailed routes: 2 of 5",
         )
 
 
@@ -279,6 +291,8 @@ class TestFetchTaskBackwardCompatibility(unittest.TestCase):
             use_detailed_streams=False,
             max_detailed_activities=0,
             detailed_route_strategy="Missing routes only",
+            cancelled=ANY,
+            progress=ANY,
         )
 
 

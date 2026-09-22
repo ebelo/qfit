@@ -330,7 +330,7 @@ class WriteAndLoadValidationTests(unittest.TestCase):
                 atlas_min_extent_degrees=0.01,
                 atlas_target_aspect_ratio=1.5,
             )
-        self.assertIn("Fetch activities", str(ctx.exception))
+        self.assertIn("Sync activities", str(ctx.exception))
 
     def test_raises_when_no_output_path(self):
         with self.assertRaises(LoadWorkflowError) as ctx:

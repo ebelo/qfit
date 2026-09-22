@@ -20,7 +20,6 @@ ISSUE_805_REQUIRED_AREAS = (
 
 _CONTROL_MOVE_AREAS = {
     "activity_preview": "activity_visualization_options",
-    "backfill_routes": "data_storage_settings",
     "map_filters": "map_filters",
     "atlas_pdf": "atlas_export_controls",
     "basemap": "mapbox_background_map",

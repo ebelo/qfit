@@ -164,8 +164,8 @@ elements, and activities. Already committed batches remain valid. Cancellation:
 - is safely resumed by starting the same import again, because upserts are
   idempotent.
 
-The UI prevents conflicting database, fetch, backfill, store, load, and atlas
-actions while a bulk task owns the workflow.
+The UI prevents conflicting database, sync, store, load, and atlas actions while
+a bulk task owns the workflow.
 
 ## 5. Archive threat model and resource limits
 
@@ -451,10 +451,10 @@ summary-only archive instead of assuming no history exists.
 
 ### 10.1 Incremental top-up publication
 
-An incremental API fetch or detail backfill must not decode and rewrite the
-entire imported history. Canonical upserts therefore report stable changed
-keys, and `activity_derived_dirty` journals every registry mutation until its
-derived rows are durably published.
+An incremental API sync, including automatic detail hydration for its returned
+activities, must not decode and rewrite the entire imported history. Canonical
+upserts therefore report stable changed keys, and `activity_derived_dirty`
+journals every registry mutation until its derived rows are durably published.
 
 The common top-up path:
 

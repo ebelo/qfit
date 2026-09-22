@@ -916,6 +916,43 @@ class SyncRepository:
             total_count=int(row["total_count"] or 0),
         )
 
+    def load_pending_detailed_route_retry_start_date(self, provider="strava"):
+        """Return the oldest API-synced activity awaiting a detail retry."""
+
+        if not self._database_exists():
+            return None
+        try:
+            with self._connect() as connection:
+                rows = connection.execute(
+                    """
+                    SELECT start_date, details_json
+                    FROM activity_registry
+                    WHERE source = ?
+                      AND COALESCE(geometry_source, '') <> 'stream'
+                      AND start_date IS NOT NULL
+                    ORDER BY start_date ASC
+                    """,
+                    (provider,),
+                ).fetchall()
+        except sqlite3.OperationalError as exc:
+            if _is_missing_sync_schema_error(exc):
+                return None
+            raise
+
+        for row in rows:
+            details = self._decode_json(row["details_json"], {})
+            ingest_sources = set(details.get("ingest_sources") or [])
+            if details.get("ingest_source"):
+                ingest_sources.add(details["ingest_source"])
+            if "strava_api" not in ingest_sources:
+                continue
+            if details.get("detailed_route_status") in {
+                "error",
+                "skipped_rate_limit",
+            }:
+                return row["start_date"]
+        return None
+
     def has_completed_activity_sync(self, provider="strava") -> bool:
         state = self.load_activity_sync_state(provider=provider)
         return bool(state and state.has_completed_sync)

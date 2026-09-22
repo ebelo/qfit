@@ -237,7 +237,7 @@ class StoreActivitiesWorkflow:
     @staticmethod
     def _validate_request(request: StoreActivitiesRequest) -> None:
         if not request.activities:
-            raise LoadWorkflowError("Fetch activities from Strava first.")
+            raise LoadWorkflowError("Sync activities from Strava first.")
         if not request.output_path:
             raise LoadWorkflowError("Choose a GeoPackage output path first.")
 

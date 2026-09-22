@@ -13,7 +13,9 @@ from ...activities.application import (
 
 DEFAULT_FETCH_PER_PAGE = 200
 DEFAULT_FETCH_MAX_PAGES = 0
-DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES = 25
+# Recent synchronization is bounded by the persisted watermark. Process every
+# returned activity and let the response-header rate guard stop stream calls.
+DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES = 0
 
 
 @dataclass(frozen=True)

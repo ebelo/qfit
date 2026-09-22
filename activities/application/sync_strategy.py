@@ -38,6 +38,7 @@ def plan_activity_sync(
     incremental_overlap_seconds: int = DEFAULT_INCREMENTAL_OVERLAP_SECONDS,
     backfill_before_epoch: int | None = None,
     backfill_after_epoch: int | None = None,
+    pending_detail_start_date: str | None = None,
 ) -> ActivitySyncPlan:
     """Choose the fetch mode and provider bounds for an activity-sync run."""
 
@@ -48,6 +49,7 @@ def plan_activity_sync(
             after_epoch=_incremental_after_epoch(
                 sync_state,
                 overlap_seconds=incremental_overlap_seconds,
+                pending_detail_start_date=pending_detail_start_date,
             ),
             overlap_seconds=max(int(incremental_overlap_seconds), 0),
         )
@@ -70,13 +72,18 @@ def _incremental_after_epoch(
     sync_state: ActivitySyncState | None,
     *,
     overlap_seconds: int,
+    pending_detail_start_date: str | None = None,
 ) -> int | None:
     if sync_state is None or not sync_state.latest_activity_start_date:
         return None
     start_epoch = _parse_activity_start_epoch(sync_state.latest_activity_start_date)
     if start_epoch is None:
         return None
-    return max(start_epoch - max(int(overlap_seconds), 0), 0)
+    after_epoch = max(start_epoch - max(int(overlap_seconds), 0), 0)
+    pending_epoch = _parse_activity_start_epoch(pending_detail_start_date or "")
+    if pending_epoch is None:
+        return after_epoch
+    return min(after_epoch, max(pending_epoch - 1, 0))
 
 
 def _parse_activity_start_epoch(value: str) -> int | None:

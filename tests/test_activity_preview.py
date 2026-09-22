@@ -149,7 +149,7 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(result.fetched_activities, [])
         self.assertEqual(
             result.query_summary_text,
-            "Fetch activities to preview your latest synced activities.",
+            "Sync activities to preview your latest activities.",
         )
         self.assertEqual(result.preview_text, "")
 

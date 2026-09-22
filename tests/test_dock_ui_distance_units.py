@@ -39,11 +39,11 @@ class DockUiFieldGrammarTests(unittest.TestCase):
     def test_top_level_sections_use_task_labels_without_step_numbers(self):
         self.assertEqual(
             _property_text(_widget(self.root, "workflowLabel"), "text"),
-            "Sections: Fetch & store · Visualize · Analyze · Publish",
+            "Sections: Sync & store · Visualize · Analyze · Publish",
         )
 
         expected_titles = {
-            "activitiesGroupBox": "Fetch activities",
+            "activitiesGroupBox": "Sync activities",
             "outputGroupBox": "Store data",
             "styleGroupBox": "Visualize",
             "analysisWorkflowGroupBox": "Analyze",
@@ -99,8 +99,12 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             ["Simple lines", "By activity type", "Track points"],
         )
 
-    def test_detailed_route_actions_use_short_labels(self):
-        self.assertEqual(_property_text(_widget(self.root, "backfillMissingDetailedRoutesButton"), "text"), "Backfill routes")
+    def test_sync_action_uses_short_label(self):
+        self.assertEqual(
+            _property_text(_widget(self.root, "refreshButton"), "text"),
+            "Sync activities",
+        )
+        self.assertIsNone(self.root.find(".//widget[@name='backfillMissingDetailedRoutesButton']"))
 
     def test_atlas_pdf_labels_use_sentence_case(self):
         self.assertEqual(_property_text(_widget(self.root, "atlasPdfGroupBox"), "title"), "Generate atlas PDF")
