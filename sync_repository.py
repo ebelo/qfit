@@ -923,6 +923,11 @@ class SyncRepository:
             return None
         try:
             with self._connect() as connection:
+                # Pre-filter in SQL to the two retry statuses so the UI-thread
+                # lookup does not decode details_json for the whole history.
+                # Both spaced (json.dumps default) and compact serialization
+                # of the status value are matched; _decode_json still guards
+                # the final check.
                 rows = connection.execute(
                     """
                     SELECT start_date, details_json
@@ -930,6 +935,12 @@ class SyncRepository:
                     WHERE source = ?
                       AND COALESCE(geometry_source, '') <> 'stream'
                       AND start_date IS NOT NULL
+                      AND (
+                          details_json LIKE '%"detailed_route_status": "error"%'
+                          OR details_json LIKE '%"detailed_route_status":"error"%'
+                          OR details_json LIKE '%"detailed_route_status": "skipped_rate_limit"%'
+                          OR details_json LIKE '%"detailed_route_status":"skipped_rate_limit"%'
+                      )
                     ORDER BY start_date ASC
                     """,
                     (provider,),
