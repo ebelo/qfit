@@ -322,7 +322,15 @@ class SyncRepository:
         reconcile_existing=True,
     ):
         sync_metadata = sync_metadata or {}
-        suppress_sync_state = bool(sync_metadata.get("suppress_sync_state"))
+        suppress_sync_state = bool(
+            sync_metadata.get("suppress_sync_state")
+            # A fetch paused by the rate limit stored only part of the history;
+            # recording a completed-sync boundary here would strand every
+            # older page outside all later incremental windows. Keep the run
+            # resumable: the next sync re-plans an unbounded fetch until one
+            # completes without a rate-limit notice.
+            or sync_metadata.get("fetch_notice")
+        )
         now = datetime.now(UTC).isoformat()
         counts = {"inserted": 0, "updated": 0, "unchanged": 0}
         keys_by_outcome = {"inserted": [], "updated": [], "unchanged": []}
@@ -955,6 +963,13 @@ class SyncRepository:
             ingest_sources = set(details.get("ingest_sources") or [])
             if details.get("ingest_source"):
                 ingest_sources.add(details["ingest_source"])
+            if not ingest_sources:
+                # Rows written before provenance tracking could only come
+                # from the API path; the bulk importer always tags its rows
+                # with strava_bulk_export. Legacy API rows with a persisted
+                # retry status must stay eligible for the retry window now
+                # that the unbounded backfill action is gone.
+                ingest_sources = {"strava_api"}
             if "strava_api" not in ingest_sources:
                 continue
             if details.get("detailed_route_status") in {
