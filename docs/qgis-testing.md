@@ -70,9 +70,9 @@ After loading:
 Inside the dock:
 1. in **Connect**, enter `client_id` and `client_secret`
 2. use the built-in auth helper if you still need the refresh token
-3. in **Fetch activities**, set the date window, paging limits, and any filters you want to preview
-4. optionally enable detailed streams; qfit only reveals the detailed-track limit when that mode is on
-5. click **Fetch activities**
+3. in **Sync activities**, set the date window, paging limits, and any filters you want to preview
+4. choose an output GeoPackage and click **Sync activities**
+5. confirm qfit fetches each recent summary and automatically hydrates its detailed route while quota allows
 6. review the fetched-activity preview and query summary
 7. in **Store data**, choose an output `.gpkg` and optionally enable sampled `activity_points`
 8. click **Store and load layers**
@@ -97,7 +97,7 @@ The generated GeoPackage also contains internal sync tables:
 
 For the first real run with your own data:
 - use a small date range
-- enable detailed streams for a limited number of activities
+- sync a limited recent date range
 - write to a fresh `.gpkg`
 - confirm tracks and points appear in QGIS
 - then expand the date window once the first pass looks correct
@@ -113,8 +113,8 @@ Check:
 ## 8. Next likely manual checks
 
 Once qfit is loaded successfully, good manual checks are:
-- fetch summary-only activities
-- fetch detailed streams for a few activities
+- sync a few recent activities and confirm their detailed routes are requested automatically
+- repeat the sync and confirm cached details avoid redundant network requests
 - confirm `activity_tracks` geometries look right
 - confirm `activity_points` attributes contain time / distance / HR / power where available
 - test filtering, preview sorting, style presets, and temporal playback wiring

@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 
 from tests import _path  # noqa: F401
 from qfit.activities.application.sync_strategy import (
@@ -43,6 +44,25 @@ class ActivitySyncStrategyTests(unittest.TestCase):
 
         self.assertEqual(plan.after_epoch, 1777806000)
         self.assertEqual(plan.overlap_seconds, 3600)
+
+    def test_incremental_sync_expands_to_oldest_pending_api_detail_retry(self):
+        state = ActivitySyncState(
+            provider="strava",
+            last_success_status="ok",
+            updated_at="2026-05-03T20:00:00+00:00",
+            latest_activity_start_date="2026-05-03T12:00:00+00:00",
+        )
+        pending_start = "2026-04-20T10:00:00+00:00"
+
+        plan = plan_activity_sync(
+            state,
+            pending_detail_start_date=pending_start,
+        )
+
+        self.assertEqual(
+            plan.after_epoch,
+            int(datetime.fromisoformat(pending_start).timestamp()) - 1,
+        )
 
     def test_explicit_historical_backfill_preserves_requested_bounds(self):
         state = ActivitySyncState(

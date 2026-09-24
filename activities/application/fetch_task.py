@@ -57,7 +57,7 @@ class FetchTask(QgsTask):
         on_finished=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
     ):
-        super().__init__("Fetch activities", QgsTask.CanCancel)
+        super().__init__("Sync activities", QgsTask.CanCancel)
         self._provider = provider
         self._per_page = per_page
         self._max_pages = max_pages
@@ -69,6 +69,7 @@ class FetchTask(QgsTask):
         self._on_finished = on_finished
         self._activities = []
         self._error = None
+        self.latest_message = None
 
     # ------------------------------------------------------------------
     # QgsTask interface
@@ -93,6 +94,8 @@ class FetchTask(QgsTask):
                 use_detailed_streams=self._use_detailed_streams,
                 max_detailed_activities=self._max_detailed_activities,
                 detailed_route_strategy=self._detailed_route_strategy,
+                cancelled=self.isCanceled,
+                progress=self._handle_provider_progress,
             )
         except ProviderError as exc:
             self._error = str(exc)
@@ -103,6 +106,20 @@ class FetchTask(QgsTask):
             return False
 
         return not self.isCanceled()
+
+    def _handle_provider_progress(self, phase, completed, total):
+        """Map provider phases onto QGIS task progress and status text."""
+
+        if phase == "details":
+            total = max(int(total or 0), 1)
+            completed = min(max(int(completed or 0), 0), total)
+            self.latest_message = (
+                f"Fetching detailed routes: {completed} of {total}"
+            )
+            self.setProgress(35 + (completed / total) * 60)
+            return
+        self.latest_message = f"Fetched {max(int(completed or 0), 0)} activity summaries"
+        self.setProgress(30)
 
     def finished(self, result):
         """Called on the **main thread** after ``run()`` returns.

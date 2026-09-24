@@ -336,6 +336,7 @@ class SyncController:
             "stream_stats": provider.last_stream_enrichment_stats,
             "rate_limit": provider.last_rate_limit,
             "is_full_sync": is_full_sync,
+            "fetch_notice": getattr(provider, "last_fetch_notice", None),
             "today_str": today_str,
         }
 

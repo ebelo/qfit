@@ -105,7 +105,7 @@ from .ui.application.local_first_progress_facts import (
     current_local_first_visual_temporal_mode,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY, DETAILED_ROUTE_STRATEGY_MISSING
+from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_RECENT
 from .mapbox_config import MapboxConfigError
 from .visualization.application import (  # noqa: F401
     LayerRefs as LayerRefs,
@@ -560,7 +560,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if open_existing_button is not None:
             open_existing_button.clicked.connect(self.on_open_existing_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
-        self.backfillMissingDetailedRoutesButton.clicked.connect(self.on_backfill_missing_detailed_routes_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
         if getattr(self, "syncRoutesButton", None) is not None:
             self.syncRoutesButton.clicked.connect(self.on_sync_routes_clicked)
@@ -942,7 +941,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "browseButton",
             "openExistingButton",
             "refreshButton",
-            "backfillMissingDetailedRoutesButton",
             "loadButton",
             "syncRoutesButton",
             "loadLayersButton",
@@ -1003,22 +1001,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._start_fetch(
-            detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
-            status_text="Fetching activities from Strava…",
-        )
-
-    def on_backfill_missing_detailed_routes_clicked(self):
-        if self._bulk_work_active():
-            self._set_status("Wait for the Strava bulk import to finish before backfilling routes.")
-            return
-        if self._fetch_task is not None:
-            return
-
-        self._start_fetch(
             use_detailed_streams=True,
-            detailed_route_strategy=DETAILED_ROUTE_STRATEGY_MISSING,
-            status_text="Backfilling missing detailed routes from Strava…",
-            use_activity_sync_plan=False,
+            detailed_route_strategy=DETAILED_ROUTE_STRATEGY_RECENT,
+            status_text="Syncing activities and detailed routes from Strava…",
         )
 
     def _start_fetch(
@@ -1026,14 +1011,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         detailed_route_strategy,
         status_text,
         use_detailed_streams=None,
-        use_activity_sync_plan=True,
     ):
         self._save_settings()
-        sync_plan = (
-            self._current_activity_sync_plan()
-            if use_activity_sync_plan
-            else plan_activity_sync(None)
-        )
+        sync_plan = self._current_activity_sync_plan()
         try:
             credentials = self._strava_credentials()
             fetch_task = self.activity_workflow.build_fetch_task(
@@ -1057,25 +1037,44 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._runtime_store().begin_fetch(fetch_task)
         self._set_fetch_running(True)
         self._set_status(_fetch_status_for_sync_plan(status_text, sync_plan))
+        progress_signal = getattr(fetch_task, "progressChanged", None)
+        if progress_signal is not None and hasattr(progress_signal, "connect"):
+            progress_signal.connect(
+                lambda _value: self._refresh_fetch_progress(fetch_task)
+            )
         QgsApplication.taskManager().addTask(fetch_task)
+
+    def _refresh_fetch_progress(self, task):
+        message = getattr(task, "latest_message", None)
+        if message:
+            self._set_status(message)
 
     def _current_activity_sync_plan(self):
         output_path = self.outputPathLineEdit.text().strip()
         sync_state = None
+        pending_detail_start_date = None
         if output_path:
             try:
-                sync_state = SyncRepository(output_path).load_activity_sync_state(provider="strava")
+                repository = SyncRepository(output_path)
+                sync_state = repository.load_activity_sync_state(provider="strava")
+                pending_detail_start_date = (
+                    repository.load_pending_detailed_route_retry_start_date(
+                        provider="strava"
+                    )
+                )
             except (OSError, RuntimeError, sqlite3.Error):
                 logger.warning(
                     "Could not read GeoPackage activity sync state; using unbounded fetch plan",
                     exc_info=True,
                 )
-        return plan_activity_sync(sync_state)
+        return plan_activity_sync(
+            sync_state,
+            pending_detail_start_date=pending_detail_start_date,
+        )
 
     def _set_fetch_running(self, running):
         """Toggle UI state while a background fetch is in progress."""
-        self.refreshButton.setText("Cancel" if running else "Fetch activities")
-        self.backfillMissingDetailedRoutesButton.setEnabled(not running)
+        self.refreshButton.setText("Cancel" if running else "Sync activities")
 
     def _on_fetch_finished(self, activities, error, cancelled, provider):
         """Called on the main thread when the background fetch completes."""

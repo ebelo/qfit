@@ -1133,7 +1133,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.generateAtlasPdfButton = MagicMock()
 
         for key in (
-            "backfill_routes",
             "basemap",
             "storage",
             "atlas_pdf",
@@ -1151,11 +1150,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(
             dock.mapboxStyleOwnerLabel.setVisible.call_args_list,
-            [call(True)] * 3,
+            [call(True)] * 2,
         )
         self.assertEqual(
             dock.pointSamplingStrideLabel.setVisible.call_args_list,
-            [call(True)] * 3,
+            [call(True)] * 2,
         )
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
@@ -1243,9 +1242,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.browseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.refreshButton = SimpleNamespace(clicked=_FakeSignal())
-        dock.backfillMissingDetailedRoutesButton = SimpleNamespace(
-            clicked=_FakeSignal(),
-        )
         dock.loadButton = SimpleNamespace(clicked=_FakeSignal())
         dock.syncRoutesButton = SimpleNamespace(clicked=_FakeSignal())
         dock.loadLayersButton = SimpleNamespace(clicked=_FakeSignal())
@@ -1279,7 +1275,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "on_browse_clicked",
             "on_open_existing_clicked",
             "on_refresh_clicked",
-            "on_backfill_missing_detailed_routes_clicked",
             "on_load_clicked",
             "on_sync_routes_clicked",
             "on_load_layers_clicked",
@@ -1655,76 +1650,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(preview_group.shown)
         self.assertEqual(data_layout.added, [preview_group])
         self.assertTrue(dock._local_first_activity_preview_controls_installed)
-
-    def test_local_first_backfill_action_moves_visible_to_data_page(self):
-        class _SourceLayout:
-            def __init__(self):
-                self.removed = []
-
-            def removeWidget(self, widget):
-                self.removed.append(widget)
-
-        class _SourceParent:
-            def __init__(self, layout):
-                self._layout = layout
-
-            def layout(self):
-                return self._layout
-
-        class _BackfillButton:
-            def __init__(self, parent):
-                self._parent = parent
-                self.shown = False
-                self.visible_calls = []
-
-            def parentWidget(self):
-                return self._parent
-
-            def setParent(self, parent):
-                self._parent = parent
-
-            def show(self):
-                self.shown = True
-
-            def setVisible(self, visible):
-                self.visible_calls.append(visible)
-
-        dock = object.__new__(self.module.QfitDockWidget)
-        source_layout = _SourceLayout()
-        source_parent = _SourceParent(source_layout)
-        backfill_button = _BackfillButton(source_parent)
-        data_layout = _FakeLayout()
-        data_content = SimpleNamespace(outer_layout=lambda: data_layout)
-        composition = SimpleNamespace(sync_content=data_content)
-        dock.backfillMissingDetailedRoutesButton = backfill_button
-
-        installed = install_local_first_control_move(
-            dock,
-            composition,
-            "backfill_routes",
-        )
-        after_local_first_control_move_installed(
-            dock,
-            "backfill_routes",
-            installed=installed,
-        )
-        installed = install_local_first_control_move(
-            dock,
-            composition,
-            "backfill_routes",
-        )
-        after_local_first_control_move_installed(
-            dock,
-            "backfill_routes",
-            installed=installed,
-        )
-
-        self.assertEqual(source_layout.removed, [backfill_button])
-        self.assertIs(backfill_button.parentWidget(), data_content)
-        self.assertTrue(backfill_button.shown)
-        self.assertEqual(backfill_button.visible_calls, [])
-        self.assertEqual(data_layout.added, [backfill_button])
-        self.assertTrue(dock._local_first_backfill_controls_installed)
 
     def test_local_first_atlas_pdf_controls_move_to_atlas_page(self):
         class _SourceLayout:
@@ -2360,7 +2285,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         with patch.object(
             self.module,
             "build_strava_connection_status",
-            return_value="Strava connection: ready to fetch activities",
+            return_value="Strava connection: ready to sync activities",
         ) as build_status:
             self.module.QfitDockWidget._update_connection_status(dock)
 
@@ -2370,7 +2295,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             refresh_token="refresh-token",
         )
         dock.connectionStatusLabel.setText.assert_called_once_with(
-            "Strava connection: ready to fetch activities"
+            "Strava connection: ready to sync activities"
         )
 
     def test_update_cleared_activities_summary_delegates_to_layer_summary_helper(self):
@@ -2843,7 +2768,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             patch.object(
                 self.module,
                 "SyncRepository",
-                return_value=SimpleNamespace(load_activity_sync_state=MagicMock(return_value=sync_state)),
+                return_value=SimpleNamespace(
+                    load_activity_sync_state=MagicMock(return_value=sync_state),
+                    load_pending_detailed_route_retry_start_date=MagicMock(
+                        return_value=None
+                    ),
+                ),
             ) as repository_cls,
             patch.object(
                 self.module,
@@ -2880,18 +2810,28 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(plan.mode.value, "initial_import")
         self.assertIsNone(plan.after_epoch)
 
-    def test_backfill_missing_detailed_routes_skips_activity_sync_bounds(self):
+    def test_current_activity_sync_plan_retries_oldest_pending_api_detail(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._fetch_task = None
-        dock._start_fetch = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        sync_state = ActivitySyncState(
+            provider="strava",
+            last_success_status="ok",
+            updated_at="2026-05-03T20:00:00+00:00",
+            latest_activity_start_date="2026-05-03T12:00:00Z",
+        )
+        repository = SimpleNamespace(
+            load_activity_sync_state=MagicMock(return_value=sync_state),
+            load_pending_detailed_route_retry_start_date=MagicMock(
+                return_value="2026-04-20T10:00:00Z"
+            ),
+        )
 
-        self.module.QfitDockWidget.on_backfill_missing_detailed_routes_clicked(dock)
+        with patch.object(self.module, "SyncRepository", return_value=repository):
+            plan = self.module.QfitDockWidget._current_activity_sync_plan(dock)
 
-        dock._start_fetch.assert_called_once_with(
-            use_detailed_streams=True,
-            detailed_route_strategy=self.module.DETAILED_ROUTE_STRATEGY_MISSING,
-            status_text="Backfilling missing detailed routes from Strava…",
-            use_activity_sync_plan=False,
+        self.assertEqual(plan.after_epoch, 1776679199)
+        repository.load_pending_detailed_route_retry_start_date.assert_called_once_with(
+            provider="strava"
         )
 
     def test_on_fetch_finished_updates_runtime_state_on_success(self):
@@ -3195,7 +3135,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_completed = True
 
         def clear_preview(*_args, **_kwargs):
-            dock.querySummaryLabel.setText("Fetch activities to preview")
+            dock.querySummaryLabel.setText("Sync activities to preview")
             dock.activityPreviewPlainTextEdit.setPlainText("")
             return "Styled layers"
 
@@ -3480,7 +3420,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.generateAtlasPdfButton = _FakeButton("Generate atlas PDF")
         dock.loadButton = _FakeButton("Store activities")
         dock.loadLayersButton = _FakeButton("Load stored map layers")
-        dock.refreshButton = _FakeButton("Fetch activities")
+        dock.refreshButton = _FakeButton("Sync activities")
 
         self.module.QfitDockWidget._set_atlas_export_running(dock, True)
 

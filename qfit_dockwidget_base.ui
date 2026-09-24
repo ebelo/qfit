@@ -42,7 +42,7 @@
         <item>
          <widget class="QLabel" name="workflowLabel">
           <property name="text">
-           <string>Sections: Fetch &amp; store · Visualize · Analyze · Publish</string>
+           <string>Sections: Sync &amp; store · Visualize · Analyze · Publish</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -62,13 +62,13 @@
         <item>
          <widget class="QGroupBox" name="activitiesGroupBox">
           <property name="title">
-           <string>Fetch activities</string>
+           <string>Sync activities</string>
           </property>
           <layout class="QVBoxLayout" name="activitiesGroupLayout">
            <item>
             <widget class="QLabel" name="activitiesIntroLabel">
              <property name="text">
-              <string>Pull all your activities from Strava into a local GeoPackage. Filters are applied in the Visualize step — no re-fetch needed.</string>
+              <string>Sync recent Strava activities and their detailed routes into a local GeoPackage. Filters are applied in the Visualize step — no re-fetch needed.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -78,27 +78,20 @@
            <item>
            <widget class="QPushButton" name="refreshButton">
              <property name="text">
-              <string>Fetch activities</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="backfillMissingDetailedRoutesButton">
-             <property name="text">
-              <string>Backfill routes</string>
+              <string>Sync activities</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="previewGroupBox">
              <property name="title">
-              <string>Fetched activity preview</string>
+              <string>Synced activity preview</string>
              </property>
              <layout class="QVBoxLayout" name="previewLayout">
               <item>
                <widget class="QLabel" name="querySummaryLabel">
                 <property name="text">
-                 <string>Fetch activities to see a query summary.</string>
+                 <string>Sync activities to see a query summary.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -111,7 +104,7 @@
                  <bool>true</bool>
                 </property>
                 <property name="placeholderText">
-                 <string>Recent activities will appear here after a fetch.</string>
+                 <string>Recent activities will appear here after a sync.</string>
                 </property>
                </widget>
               </item>
@@ -200,7 +193,7 @@
              <item row="2" column="0" colspan="2">
               <widget class="QLabel" name="analysisHelpLabel">
                <property name="text">
-                <string>Lower sampling stride keeps more points. This is mainly useful when detailed Strava streams are enabled.</string>
+                <string>Lower sampling stride keeps more points from automatically hydrated detailed Strava routes.</string>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>
@@ -215,7 +208,7 @@
               <string>Store activities</string>
              </property>
              <property name="toolTip">
-              <string>Write fetched activities to the GeoPackage database without loading the layers into QGIS.</string>
+              <string>Write synced activities to the GeoPackage database without loading the layers into QGIS.</string>
              </property>
             </widget>
            </item>

@@ -20,7 +20,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             local_first_control_move_keys(),
             (
                 "activity_preview",
-                "backfill_routes",
                 "map_filters",
                 "atlas_pdf",
                 "basemap",
@@ -31,7 +30,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             [move.group_attr for move in LOCAL_FIRST_CONTROL_MOVES],
             [
                 "previewGroupBox",
-                "backfillMissingDetailedRoutesButton",
                 "filterGroupBox",
                 "atlasPdfGroupBox",
                 "backgroundGroupBox",
@@ -48,7 +46,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             destinations,
             {
                 "activity_preview": "sync_content",
-                "backfill_routes": "sync_content",
                 "map_filters": "map_content",
                 "atlas_pdf": "atlas_content",
                 "basemap": "settings_content",
@@ -68,7 +65,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                     "querySummaryLabel",
                     "activityPreviewPlainTextEdit",
                 ),
-                "backfill_routes": (),
                 "map_filters": (
                     "activityTypeComboBox",
                     "activitySearchLineEdit",
@@ -115,13 +111,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         )
         self.assertEqual(move.insert_before_attr, "action_row")
 
-        backfill = local_first_control_move_for_key("backfill_routes")
-        self.assertTrue(backfill.show_after_move)
-        self.assertEqual(
-            backfill.after_install_hook_key,
-            REFRESH_CONDITIONAL_VISIBILITY_HOOK,
-        )
-
         filters = local_first_control_move_for_key("map_filters")
         self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
         self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
@@ -137,7 +126,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             hooks,
             {
                 "activity_preview": None,
-                "backfill_routes": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "map_filters": None,
                 "atlas_pdf": HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
                 "basemap": REFRESH_CONDITIONAL_VISIBILITY_HOOK,

@@ -198,6 +198,8 @@ class StravaClient:
         use_detailed_streams=False,
         max_detailed_activities=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
+        cancelled=None,
+        progress=None,
     ):
         """Fetch activities from Strava, paginating until all results are returned.
 
@@ -216,8 +218,18 @@ class StravaClient:
         current_before = before
         current_per_page = max(1, int(per_page))
         self.last_fetch_notice = None
+        recent_stream_stats = self._empty_stream_enrichment_stats()
+        remaining_detail_limit = (
+            int(max_detailed_activities)
+            if max_detailed_activities is not None
+            and int(max_detailed_activities) > 0
+            else None
+        )
         page = 1
+        detail_paused = False
         while not max_pages or page <= max_pages:
+            if cancelled is not None and cancelled():
+                break
             payload, current_per_page = self._fetch_activity_page(
                 token=token,
                 page=page,
@@ -228,6 +240,49 @@ class StravaClient:
             )
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
+            if progress is not None:
+                progress("summaries", len(activities), None)
+            if (
+                use_detailed_streams
+                and detailed_route_strategy == DETAILED_ROUTE_STRATEGY_RECENT
+                and batch
+            ):
+                if detail_paused:
+                    # Summary pagination continues after a rate-limit
+                    # deferral; older pages must stay eligible for the
+                    # detailed-route retry window, so mark their activities
+                    # as deferred instead of silently leaving them unmarked.
+                    self._mark_rate_limit_deferred(
+                        batch,
+                        recent_stream_stats,
+                        reason="rate_limit_guard",
+                    )
+                elif remaining_detail_limit != 0:
+                    page_limit = remaining_detail_limit or 0
+                    self.enrich_activities_with_streams(
+                        batch,
+                        max_activities=page_limit,
+                        strategy=DETAILED_ROUTE_STRATEGY_RECENT,
+                        cancelled=cancelled,
+                        progress=progress,
+                    )
+                    self._merge_stream_enrichment_stats(
+                        recent_stream_stats,
+                        self.last_stream_enrichment_stats,
+                    )
+                    if self.last_stream_enrichment_stats.get("skipped_rate_limit", 0):
+                        # Detail hydration hit the rate limit: pause further
+                        # detail requests for this run, but keep paginating
+                        # activity summaries so older pages are not stranded
+                        # outside every later incremental window.
+                        self.last_fetch_notice = self._rate_limit_pause_notice()
+                        detail_paused = True
+                    elif remaining_detail_limit is not None:
+                        remaining_detail_limit = max(
+                            remaining_detail_limit
+                            - self.last_stream_enrichment_stats.get("requested", 0),
+                            0,
+                        )
             if len(payload) < current_per_page:
                 break
             if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
@@ -237,24 +292,30 @@ class StravaClient:
             self._sleep_between_activity_pages()
             page += 1
 
-        if use_detailed_streams and activities:
+        if (
+            use_detailed_streams
+            and detailed_route_strategy == DETAILED_ROUTE_STRATEGY_RECENT
+        ):
+            recent_stream_stats["remaining_missing"] = sum(
+                1
+                for activity in activities
+                if self._activity_needs_detailed_route(activity)
+            )
+            self.last_stream_enrichment_stats = recent_stream_stats
+        elif (
+            use_detailed_streams
+            and activities
+            and not (cancelled is not None and cancelled())
+        ):
             self.enrich_activities_with_streams(
                 activities,
                 max_activities=max_detailed_activities,
                 strategy=detailed_route_strategy,
+                cancelled=cancelled,
+                progress=progress,
             )
         else:
-            self.last_stream_enrichment_stats = {
-                "requested": 0,
-                "already_detailed": 0,
-                "missing_before": 0,
-                "cached": 0,
-                "downloaded": 0,
-                "skipped_rate_limit": 0,
-                "errors": 0,
-                "empty": 0,
-                "remaining_missing": 0,
-            }
+            self.last_stream_enrichment_stats = self._empty_stream_enrichment_stats()
 
         return activities
 
@@ -420,21 +481,17 @@ class StravaClient:
         activities,
         max_activities=None,
         strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
+        cancelled=None,
+        progress=None,
     ):
-        stats = {
-            "requested": 0,
-            "already_detailed": 0,
-            "missing_before": 0,
-            "cached": 0,
-            "downloaded": 0,
-            "skipped_rate_limit": 0,
-            "errors": 0,
-            "empty": 0,
-            "remaining_missing": 0,
-        }
+        stats = self._empty_stream_enrichment_stats()
 
         if strategy == DETAILED_ROUTE_STRATEGY_RECENT:
-            stats["already_detailed"] = sum(1 for activity in activities if self._activity_has_detailed_route(activity))
+            stats["already_detailed"] = sum(
+                1
+                for activity in activities
+                if self._activity_has_detailed_route(activity)
+            )
             for activity in activities:
                 if self._activity_has_detailed_route(activity):
                     self._set_detailed_route_status(activity, "downloaded")
@@ -444,8 +501,12 @@ class StravaClient:
             limit = self._stream_request_limit(activities, max_activities)
             stats["requested"] = limit
 
-            for activity in activities[:limit]:
+            selected = activities[:limit]
+            for index, activity in enumerate(selected, start=1):
+                if cancelled is not None and cancelled():
+                    break
                 if self._activity_has_detailed_route(activity):
+                    self._report_stream_progress(progress, index, len(selected))
                     continue
 
                 cached_bundle = self._load_cached_stream_bundle(activity)
@@ -458,9 +519,26 @@ class StravaClient:
                         activity.details_json["stream_cache"] = "hit-empty"
                         self._set_detailed_route_status(activity, "empty")
                         stats["empty"] += 1
+                    self._report_stream_progress(progress, index, len(selected))
                     continue
 
-                self._enrich_single_activity_with_streams(activity, stats)
+                should_continue = self._enrich_single_activity_with_streams(
+                    activity,
+                    stats,
+                )
+                self._report_stream_progress(progress, index, len(selected))
+                if not should_continue:
+                    self._mark_rate_limit_deferred(
+                        selected[index:],
+                        stats,
+                        reason="rate_limit_guard",
+                    )
+                    self._report_stream_progress(
+                        progress,
+                        len(selected),
+                        len(selected),
+                    )
+                    break
 
             stats["remaining_missing"] = sum(
                 1 for activity in activities if self._activity_needs_detailed_route(activity)
@@ -493,14 +571,63 @@ class StravaClient:
         limit = self._stream_request_limit(candidates, max_activities, apply_rate_limit_budget=True)
         stats["requested"] = limit
 
-        for activity in candidates[:limit]:
-            self._enrich_single_activity_with_streams(activity, stats)
+        selected = candidates[:limit]
+        for index, activity in enumerate(selected, start=1):
+            if cancelled is not None and cancelled():
+                break
+            should_continue = self._enrich_single_activity_with_streams(
+                activity,
+                stats,
+            )
+            self._report_stream_progress(progress, index, len(selected))
+            if not should_continue:
+                self._mark_rate_limit_deferred(
+                    selected[index:],
+                    stats,
+                    reason="rate_limit_guard",
+                )
+                self._report_stream_progress(progress, len(selected), len(selected))
+                break
 
         stats["remaining_missing"] = sum(
             1 for activity in activities if self._activity_needs_detailed_route(activity)
         )
         self.last_stream_enrichment_stats = stats
         return activities
+
+    @staticmethod
+    def _empty_stream_enrichment_stats():
+        return {
+            "requested": 0,
+            "already_detailed": 0,
+            "missing_before": 0,
+            "cached": 0,
+            "downloaded": 0,
+            "skipped_rate_limit": 0,
+            "errors": 0,
+            "empty": 0,
+            "remaining_missing": 0,
+        }
+
+    @staticmethod
+    def _merge_stream_enrichment_stats(total, current):
+        for key in total:
+            if key == "remaining_missing":
+                continue
+            total[key] += int((current or {}).get(key, 0) or 0)
+
+    @staticmethod
+    def _report_stream_progress(progress, completed, total):
+        if progress is not None:
+            progress("details", completed, total)
+
+    def _mark_rate_limit_deferred(self, activities, stats, *, reason):
+        for activity in activities:
+            if not self._activity_needs_detailed_route(activity):
+                continue
+            activity.details_json["stream_skipped_reason"] = reason
+            self._set_detailed_route_status(activity, "skipped_rate_limit")
+            stats["skipped_rate_limit"] += 1
 
     def _stream_request_limit(self, activities, max_activities, *, apply_rate_limit_budget=False):
         if max_activities is None or max_activities <= 0:
@@ -537,15 +664,21 @@ class StravaClient:
             activity.details_json["stream_skipped_reason"] = "rate_limit_guard"
             self._set_detailed_route_status(activity, "skipped_rate_limit")
             stats["skipped_rate_limit"] += 1
-            return
+            return False
 
         try:
             stream_bundle = self.fetch_activity_stream_bundle(activity.source_activity_id)
         except StravaClientError as exc:
-            activity.details_json["stream_error"] = str(exc)
-            self._set_detailed_route_status(activity, "error")
-            stats["errors"] += 1
-            return
+            if exc.is_rate_limit:
+                activity.details_json["stream_skipped_reason"] = "rate_limit_response"
+                self._set_detailed_route_status(activity, "skipped_rate_limit")
+                stats["skipped_rate_limit"] += 1
+                return False
+            else:
+                activity.details_json["stream_error"] = str(exc)
+                self._set_detailed_route_status(activity, "error")
+                stats["errors"] += 1
+                return True
 
         self._save_cached_stream_bundle(activity, stream_bundle)
         if self._apply_stream_bundle_to_activity(activity, stream_bundle):
@@ -556,6 +689,7 @@ class StravaClient:
             activity.details_json["stream_cache"] = "miss-empty"
             self._set_detailed_route_status(activity, "empty")
             stats["empty"] += 1
+        return True
 
     @staticmethod
     def _activity_has_detailed_route(activity):
@@ -615,6 +749,9 @@ class StravaClient:
         end_lat, end_lon = self._extract_latlon(payload.get("end_latlng"))
         summary_polyline = (payload.get("map") or {}).get("summary_polyline")
         geometry_source = self._default_geometry_source(summary_polyline, start_lat, start_lon, end_lat, end_lon)
+        details_json = self._extract_details_json(payload)
+        details_json["ingest_source"] = "strava_api"
+        details_json["ingest_sources"] = ["strava_api"]
         return Activity(
             source="strava",
             source_activity_id=str(payload.get("id")),
@@ -643,7 +780,7 @@ class StravaClient:
             end_lon=end_lon,
             summary_polyline=summary_polyline,
             geometry_source=geometry_source,
-            details_json=self._extract_details_json(payload),
+            details_json=details_json,
         )
 
     def normalize_route(self, payload):

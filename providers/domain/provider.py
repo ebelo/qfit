@@ -40,5 +40,7 @@ class ActivityProvider(Protocol):
         use_detailed_streams: bool = False,
         max_detailed_activities: Optional[int] = None,
         detailed_route_strategy: str = DEFAULT_DETAILED_ROUTE_STRATEGY,
+        cancelled=None,
+        progress=None,
     ) -> List[Activity]:
         ...

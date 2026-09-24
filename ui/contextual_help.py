@@ -19,14 +19,6 @@ class HelpEntry:
 
 DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
-        anchor_name="backfillMissingDetailedRoutesButton",
-        target_text="Backfill routes",
-        tooltip=(
-            "Downloads detailed Strava routes for stored activities that are still missing them, then rewrites the "
-            "GeoPackage with the enriched geometry and sampled points."
-        ),
-    ),
-    HelpEntry(
         anchor_name="backgroundMapCheckBox",
         target_text="Enable Mapbox basemap",
         tooltip=(
@@ -128,10 +120,10 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="refreshButton",
-        target_text="Fetch activities",
+        target_text="Sync activities",
         tooltip=(
-            "Pulls all activities from Strava using qfit's default full-sync behavior without "
-            "writing anything to QGIS yet. Date filters apply only to the preview and loaded layers."
+            "Fetches recent Strava activities, adds detailed routes while quota allows, and stores changed rows "
+            "incrementally. Date filters apply only to the preview and loaded layers."
         ),
     ),
     HelpEntry(

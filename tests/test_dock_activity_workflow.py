@@ -44,7 +44,7 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
         self.assertEqual(kwargs["per_page"], 200)
         self.assertEqual(kwargs["max_pages"], 0)
         self.assertFalse(kwargs["use_detailed_streams"])
-        self.assertEqual(kwargs["max_detailed_activities"], 25)
+        self.assertEqual(kwargs["max_detailed_activities"], 0)
         self.assertIsNone(kwargs["before"])
         self.assertIsNone(kwargs["after"])
         self.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
@@ -71,7 +71,7 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
         self.assertEqual(kwargs["per_page"], 200)
         self.assertEqual(kwargs["max_pages"], 0)
         self.assertTrue(kwargs["use_detailed_streams"])
-        self.assertEqual(kwargs["max_detailed_activities"], 25)
+        self.assertEqual(kwargs["max_detailed_activities"], 0)
         self.assertEqual(kwargs["before"], 200)
         self.assertEqual(kwargs["after"], 100)
 

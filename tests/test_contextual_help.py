@@ -332,7 +332,6 @@ class ContextualHelpTests(unittest.TestCase):
         entries = {entry.anchor_name: entry for entry in build_dock_help_entries()}
 
         for anchor_name in [
-            "backfillMissingDetailedRoutesButton",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
             "backgroundPresetComboBox",
@@ -346,8 +345,7 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
-        self.assertEqual(entries["backfillMissingDetailedRoutesButton"].target_text, "Backfill routes")
-        self.assertIn("still missing", entries["backfillMissingDetailedRoutesButton"].tooltip)
+        self.assertNotIn("backfillMissingDetailedRoutesButton", entries)
         self.assertEqual(entries["backgroundMapCheckBox"].target_text, "Enable Mapbox basemap")
         self.assertEqual(
             entries["writeActivityPointsCheckBox"].target_text,
@@ -367,7 +365,8 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertLessEqual(len(entries["backgroundPresetComboBox"].helper_text), 80)
         self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")
         self.assertEqual(entries["atlasSubtitleLineEdit"].label_text, "Atlas subtitle")
-        self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")
+        self.assertEqual(entries["refreshButton"].target_text, "Sync activities")
+        self.assertIn("detailed routes", entries["refreshButton"].tooltip)
         self.assertEqual(entries["applyFiltersButton"].target_text, "Apply filters")
         self.assertEqual(entries["clearDatabaseButton"].target_text, "Clear database…")
         self.assertIn("after confirmation", entries["clearDatabaseButton"].tooltip)

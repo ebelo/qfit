@@ -322,7 +322,15 @@ class SyncRepository:
         reconcile_existing=True,
     ):
         sync_metadata = sync_metadata or {}
-        suppress_sync_state = bool(sync_metadata.get("suppress_sync_state"))
+        suppress_sync_state = bool(
+            sync_metadata.get("suppress_sync_state")
+            # A fetch paused by the rate limit stored only part of the history;
+            # recording a completed-sync boundary here would strand every
+            # older page outside all later incremental windows. Keep the run
+            # resumable: the next sync re-plans an unbounded fetch until one
+            # completes without a rate-limit notice.
+            or sync_metadata.get("fetch_notice")
+        )
         now = datetime.now(UTC).isoformat()
         counts = {"inserted": 0, "updated": 0, "unchanged": 0}
         keys_by_outcome = {"inserted": [], "updated": [], "unchanged": []}
@@ -915,6 +923,61 @@ class SyncRepository:
             detailed_count=int(row["detailed_count"] or 0),
             total_count=int(row["total_count"] or 0),
         )
+
+    def load_pending_detailed_route_retry_start_date(self, provider="strava"):
+        """Return the oldest API-synced activity awaiting a detail retry."""
+
+        if not self._database_exists():
+            return None
+        try:
+            with self._connect() as connection:
+                # Pre-filter in SQL to the two retry statuses so the UI-thread
+                # lookup does not decode details_json for the whole history.
+                # Both spaced (json.dumps default) and compact serialization
+                # of the status value are matched; _decode_json still guards
+                # the final check.
+                rows = connection.execute(
+                    """
+                    SELECT start_date, details_json
+                    FROM activity_registry
+                    WHERE source = ?
+                      AND COALESCE(geometry_source, '') <> 'stream'
+                      AND start_date IS NOT NULL
+                      AND (
+                          details_json LIKE '%"detailed_route_status": "error"%'
+                          OR details_json LIKE '%"detailed_route_status":"error"%'
+                          OR details_json LIKE '%"detailed_route_status": "skipped_rate_limit"%'
+                          OR details_json LIKE '%"detailed_route_status":"skipped_rate_limit"%'
+                      )
+                    ORDER BY start_date ASC
+                    """,
+                    (provider,),
+                ).fetchall()
+        except sqlite3.OperationalError as exc:
+            if _is_missing_sync_schema_error(exc):
+                return None
+            raise
+
+        for row in rows:
+            details = self._decode_json(row["details_json"], {})
+            ingest_sources = set(details.get("ingest_sources") or [])
+            if details.get("ingest_source"):
+                ingest_sources.add(details["ingest_source"])
+            if not ingest_sources:
+                # Rows written before provenance tracking could only come
+                # from the API path; the bulk importer always tags its rows
+                # with strava_bulk_export. Legacy API rows with a persisted
+                # retry status must stay eligible for the retry window now
+                # that the unbounded backfill action is gone.
+                ingest_sources = {"strava_api"}
+            if "strava_api" not in ingest_sources:
+                continue
+            if details.get("detailed_route_status") in {
+                "error",
+                "skipped_rate_limit",
+            }:
+                return row["start_date"]
+        return None
 
     def has_completed_activity_sync(self, provider="strava") -> bool:
         state = self.load_activity_sync_state(provider=provider)

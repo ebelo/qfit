@@ -53,6 +53,8 @@ class StravaProvider:
         use_detailed_streams=False,
         max_detailed_activities=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
+        cancelled=None,
+        progress=None,
     ):
         """Fetch activities from Strava.
 
@@ -68,6 +70,8 @@ class StravaProvider:
                 use_detailed_streams=use_detailed_streams,
                 max_detailed_activities=max_detailed_activities,
                 detailed_route_strategy=detailed_route_strategy,
+                cancelled=cancelled,
+                progress=progress,
             )
         except StravaClientError as exc:
             raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc

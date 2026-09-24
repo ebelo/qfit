@@ -80,14 +80,6 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         title="Fetched activity preview",
     ),
     LocalFirstControlMove(
-        key="backfill_routes",
-        content_attr="sync_content",
-        group_attr="backfillMissingDetailedRoutesButton",
-        installed_attr="_local_first_backfill_controls_installed",
-        installed_target_attr="_local_first_backfill_controls_installed_target",
-        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
-    ),
-    LocalFirstControlMove(
         key="map_filters",
         content_attr="map_content",
         group_attr="filterGroupBox",

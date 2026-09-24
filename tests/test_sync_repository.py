@@ -466,6 +466,31 @@ class SyncRepositoryTests(unittest.TestCase):
             rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
             self.assertEqual(rows, [])
 
+    def test_rate_limit_paused_sync_does_not_claim_completed_sync(self):
+        """A fetch paused by the rate limit must stay resumable (PR #1491 Codex P1).
+
+        Storing a completed-sync boundary after a partial, rate-limit-paused
+        import would strand older pages outside every later incremental
+        window, because planning would switch to incremental mode based on
+        the newest activity of the partial prefix.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities(
+                [self._activity()],
+                sync_metadata={
+                    "provider": "strava",
+                    "is_full_sync": False,
+                    "fetch_notice": "Stopped early to avoid hitting the Strava rate limit.",
+                },
+            )
+
+            rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
+            self.assertEqual(rows, [])
+            self.assertFalse(repo.has_completed_activity_sync(provider="strava"))
+
     def test_partial_bulk_batches_skip_repeated_orphan_payload_scan(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
@@ -830,6 +855,96 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             self.assertEqual(
                 repo.load_detailed_route_coverage(provider="strava"),
                 DetailedRouteCoverage(),
+            )
+
+    def test_pending_detail_retry_uses_oldest_api_failure_only(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        source_activity_id="newer-api",
+                        start_date="2026-05-03T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "error",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="older-api",
+                        start_date="2026-05-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "skipped_rate_limit",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="archive-failure",
+                        start_date="2020-01-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_bulk_export",
+                            "ingest_sources": ["strava_bulk_export"],
+                            "detailed_route_status": "error",
+                        },
+                    ),
+                    self._activity(
+                        source_activity_id="empty-api",
+                        start_date="2026-04-01T06:00:00Z",
+                        details_json={
+                            "ingest_source": "strava_api",
+                            "ingest_sources": ["strava_api"],
+                            "detailed_route_status": "empty",
+                        },
+                    ),
+                ]
+            )
+
+            self.assertEqual(
+                repo.load_pending_detailed_route_retry_start_date(),
+                "2026-05-01T06:00:00Z",
+            )
+
+    def test_pending_detail_retry_returns_none_for_missing_database(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "missing.sqlite"))
+
+            self.assertIsNone(
+                repo.load_pending_detailed_route_retry_start_date()
+            )
+
+    def test_pending_detail_retry_includes_legacy_rows_without_provenance(self):
+        """Legacy API rows without provenance tags stay retryable (PR #1491 Codex P2).
+
+        Rows written before provenance tracking could only come from the API
+        path; with the unbounded backfill action removed they must remain
+        eligible for the retry window, while provenance-less rows without a
+        retry status are ignored.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities(
+                [
+                    self._activity(
+                        source_activity_id="legacy-retry",
+                        start_date="2025-06-01T06:00:00Z",
+                        details_json={"detailed_route_status": "skipped_rate_limit"},
+                    ),
+                    self._activity(
+                        source_activity_id="legacy-clean",
+                        start_date="2025-07-01T06:00:00Z",
+                        details_json={"device_name": "Edge"},
+                    ),
+                ]
+            )
+
+            self.assertEqual(
+                repo.load_pending_detailed_route_retry_start_date(),
+                "2025-06-01T06:00:00Z",
             )
 
     def test_non_volatile_detail_change_triggers_update(self):
