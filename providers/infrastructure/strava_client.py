@@ -226,6 +226,7 @@ class StravaClient:
             else None
         )
         page = 1
+        detail_paused = False
         while not max_pages or page <= max_pages:
             if cancelled is not None and cancelled():
                 break
@@ -245,29 +246,43 @@ class StravaClient:
                 use_detailed_streams
                 and detailed_route_strategy == DETAILED_ROUTE_STRATEGY_RECENT
                 and batch
-                and remaining_detail_limit != 0
             ):
-                page_limit = remaining_detail_limit or 0
-                self.enrich_activities_with_streams(
-                    batch,
-                    max_activities=page_limit,
-                    strategy=DETAILED_ROUTE_STRATEGY_RECENT,
-                    cancelled=cancelled,
-                    progress=progress,
-                )
-                self._merge_stream_enrichment_stats(
-                    recent_stream_stats,
-                    self.last_stream_enrichment_stats,
-                )
-                if self.last_stream_enrichment_stats.get("skipped_rate_limit", 0):
-                    self.last_fetch_notice = self._rate_limit_pause_notice()
-                    break
-                if remaining_detail_limit is not None:
-                    remaining_detail_limit = max(
-                        remaining_detail_limit
-                        - self.last_stream_enrichment_stats.get("requested", 0),
-                        0,
+                if detail_paused:
+                    # Summary pagination continues after a rate-limit
+                    # deferral; older pages must stay eligible for the
+                    # detailed-route retry window, so mark their activities
+                    # as deferred instead of silently leaving them unmarked.
+                    self._mark_rate_limit_deferred(
+                        batch,
+                        recent_stream_stats,
+                        reason="rate_limit_guard",
                     )
+                elif remaining_detail_limit != 0:
+                    page_limit = remaining_detail_limit or 0
+                    self.enrich_activities_with_streams(
+                        batch,
+                        max_activities=page_limit,
+                        strategy=DETAILED_ROUTE_STRATEGY_RECENT,
+                        cancelled=cancelled,
+                        progress=progress,
+                    )
+                    self._merge_stream_enrichment_stats(
+                        recent_stream_stats,
+                        self.last_stream_enrichment_stats,
+                    )
+                    if self.last_stream_enrichment_stats.get("skipped_rate_limit", 0):
+                        # Detail hydration hit the rate limit: pause further
+                        # detail requests for this run, but keep paginating
+                        # activity summaries so older pages are not stranded
+                        # outside every later incremental window.
+                        self.last_fetch_notice = self._rate_limit_pause_notice()
+                        detail_paused = True
+                    elif remaining_detail_limit is not None:
+                        remaining_detail_limit = max(
+                            remaining_detail_limit
+                            - self.last_stream_enrichment_stats.get("requested", 0),
+                            0,
+                        )
             if len(payload) < current_per_page:
                 break
             if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
