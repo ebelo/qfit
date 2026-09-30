@@ -1247,6 +1247,45 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(fallback["publication_mode"], "full_rebuild")
             self.assertIn("append-only", fallback["publication_fallback_reason"])
 
+    def test_incremental_atlas_rename_matches_full_rebuild(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            incremental_path = str(Path(temp_dir) / "qfit-incremental-rename.gpkg")
+            expected_path = str(Path(temp_dir) / "qfit-full-rename.gpkg")
+            writer_kwargs = {
+                "write_activity_points": True,
+                "point_stride": 1,
+                "atlas_margin_percent": 10,
+                "atlas_min_extent_degrees": 0.01,
+                "atlas_target_aspect_ratio": 1.5,
+            }
+            activities = self._sample_activities()
+            renamed = dict(activities[1])
+            renamed["name"] = "Renamed Lunch Run"
+
+            incremental_writer = GeoPackageWriter(
+                incremental_path,
+                **writer_kwargs,
+            )
+            incremental_writer.write_activities(
+                activities,
+                sync_metadata={"provider": "strava"},
+            )
+            result = incremental_writer.write_activities(
+                [renamed],
+                sync_metadata={"provider": "strava"},
+            )
+
+            GeoPackageWriter(expected_path, **writer_kwargs).write_activities(
+                [activities[0], renamed],
+                sync_metadata={"provider": "strava"},
+            )
+
+            self.assertEqual(result["publication_mode"], "incremental")
+            self.assertEqual(
+                self._derived_database_snapshot(incremental_path),
+                self._derived_database_snapshot(expected_path),
+            )
+
     def test_failed_incremental_publication_rolls_back_and_retries_dirty_keys(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = str(Path(temp_dir) / "qfit-incremental-retry.gpkg")
