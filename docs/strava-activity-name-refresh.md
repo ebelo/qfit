@@ -21,6 +21,8 @@ rate limits. Neither option downloads detailed streams.
 Only existing activity names and corresponding stored map/atlas labels change.
 Tracks, recorded measurements, sampled points, compressed detail payloads,
 activity identities, and the incremental-sync checkpoint remain unchanged.
+Existing atlas page numbers and ordering are preserved; a title-derived sort key
+is refreshed only when it does not move the page across a neighbor.
 No new activities are imported and no activities are deleted. Loaded layers
 from the selected GeoPackage are refreshed after success.
 

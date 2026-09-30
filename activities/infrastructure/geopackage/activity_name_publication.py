@@ -18,7 +18,7 @@ def publish_activity_name(connection, record):
     identity = (record["source"], record["source_activity_id"])
     title = (record["name"] or "Untitled activity").strip()
     labels = {
-        "page_sort_key": atlas_sort_key(record),
+        "page_sort_key": _stable_page_sort_key(connection, identity, atlas_sort_key(record)),
         "page_title": title,
         "page_name": build_page_name(record),
         "page_toc_label": build_page_toc_label(record),
@@ -26,6 +26,31 @@ def publish_activity_name(connection, record):
     _publish_activity_tables(connection, record, identity, title, labels)
     _publish_atlas_tables(connection, identity, labels)
 
+
+
+def _stable_page_sort_key(connection, identity, candidate):
+    """Keep current numbered page order when a title edit would cross a neighbor."""
+    columns = _columns(connection, "activity_atlas_pages")
+    if not {"source", "source_activity_id", "page_number", "page_sort_key"}.issubset(columns):
+        return candidate
+    page = connection.execute(
+        "SELECT page_number, page_sort_key FROM activity_atlas_pages "
+        "WHERE source = ? AND source_activity_id = ?", identity,
+    ).fetchone()
+    if page is None:
+        return candidate
+    previous = connection.execute(
+        "SELECT page_sort_key FROM activity_atlas_pages WHERE page_number < ? "
+        "ORDER BY page_number DESC LIMIT 1", (page[0],),
+    ).fetchone()
+    following = connection.execute(
+        "SELECT page_sort_key FROM activity_atlas_pages WHERE page_number > ? "
+        "ORDER BY page_number LIMIT 1", (page[0],),
+    ).fetchone()
+    if ((previous and previous[0] is not None and candidate <= previous[0])
+            or (following and following[0] is not None and candidate >= following[0])):
+        return page[1]
+    return candidate
 
 def _publish_activity_tables(connection, record, identity, title, labels):
     for table in _ACTIVITY_TABLES:

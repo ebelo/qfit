@@ -164,6 +164,38 @@ class ActivityNameRefreshTests(unittest.TestCase):
         provider.fetch_activities.assert_not_called()
 
 
+    def test_rename_crossing_alphabetic_neighbor_preserves_numbered_atlas_order(self):
+        from qfit.atlas.publish_atlas import atlas_sort_key
+        repo, path = self.stored
+        first = repo.load_activity_record("strava", "42")
+        first["name"] = "Alpha ride"
+        second = dict(first, source_activity_id="43", name="Beta ride")
+        old_key, neighbor_key = atlas_sort_key(first), atlas_sort_key(second)
+        with sqlite3.connect(path) as connection:
+            connection.execute(
+                "UPDATE activity_atlas_pages SET page_number=1, page_sort_key=? WHERE source_activity_id='42'",
+                (old_key,),
+            )
+            connection.execute(
+                "INSERT INTO activity_atlas_pages VALUES ('strava','43','Beta ride',?,2,'beta','beta','beta')",
+                (neighbor_key,),
+            )
+            connection.execute("UPDATE atlas_toc_entries SET page_number=1,page_sort_key=?", (old_key,))
+            connection.execute("INSERT INTO atlas_toc_entries VALUES (2,'Beta ride','2. Beta ride',?)", (neighbor_key,))
+        repo.refresh_activity_names({"42": "Zulu ride"})
+        with sqlite3.connect(path) as connection:
+            ordered = connection.execute(
+                "SELECT page_number, page_title FROM atlas_toc_entries ORDER BY page_sort_key"
+            ).fetchall()
+        self.assertEqual(ordered, [(1, "Zulu ride"), (2, "Beta ride")])
+        self.assertEqual(snapshot(path, "activity_atlas_pages")[0][3], old_key)
+        # Renaming a later page across its preceding neighbor must also keep numbering order.
+        with sqlite3.connect(path) as connection:
+            connection.execute("UPDATE activity_atlas_pages SET source_activity_id='42' WHERE page_number=2")
+            connection.execute("UPDATE activity_atlas_pages SET source_activity_id='41' WHERE page_number=1")
+        repo.refresh_activity_names({"42": "Aardvark ride"})
+        self.assertEqual(snapshot(path, "activity_atlas_pages")[1][3], neighbor_key)
+
     def test_parse_ids(self):
         for text, expected in (("", ()), (" 42,042, 43 ", ("42", "43"))):
             with self.subTest(text=text):
