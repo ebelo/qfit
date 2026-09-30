@@ -200,12 +200,10 @@ def _plan_changed_pages(records, changed_keys, existing_pages, atlas_page_settin
         plan for key, plan in existing_pages.items() if key not in changed_key_set
     ]
     max_page_number = max((plan.page_number for plan in existing_pages.values()), default=0)
-    max_sort_key = max((plan.page_sort_key for plan in existing_pages.values()), default=None)
     final_changed, new_plans = _partition_changed_pages(
         changed_keys,
         existing_pages,
         raw_plan_by_key,
-        max_sort_key,
     )
     final_changed.extend(_number_appended_pages(new_plans, max_page_number))
 
@@ -246,10 +244,10 @@ def _partition_changed_pages(
     changed_keys,
     existing_pages,
     raw_plan_by_key,
-    max_sort_key,
 ):
     retained = []
     appended = []
+    replacement_sort_keys = {}
     for key in changed_keys:
         previous = existing_pages.get(key)
         current = raw_plan_by_key.get(key)
@@ -258,16 +256,44 @@ def _partition_changed_pages(
                 raise IncrementalPublicationNotEligible(
                     "an existing atlas page would disappear"
                 )
-            if current.page_sort_key != previous.page_sort_key:
-                raise IncrementalPublicationNotEligible("an atlas sort key changed")
             retained.append(replace(current, page_number=previous.page_number))
+            replacement_sort_keys[key] = current.page_sort_key
         elif current is not None:
-            if max_sort_key is not None and current.page_sort_key <= max_sort_key:
-                raise IncrementalPublicationNotEligible(
-                    "a new atlas page is not append-only"
-                )
             appended.append(current)
+
+    _validate_retained_page_order(existing_pages, replacement_sort_keys)
+    existing_sort_keys = [
+        replacement_sort_keys.get(key, plan.page_sort_key)
+        for key, plan in existing_pages.items()
+    ]
+    max_sort_key = max(existing_sort_keys, default=None)
+    if max_sort_key is not None and any(
+        plan.page_sort_key <= max_sort_key for plan in appended
+    ):
+        raise IncrementalPublicationNotEligible(
+            "a new atlas page is not append-only"
+        )
     return retained, appended
+
+
+def _validate_retained_page_order(existing_pages, replacement_sort_keys):
+    """Allow sort-key edits only when every existing page keeps its position."""
+
+    if not replacement_sort_keys:
+        return
+    previous_order = sorted(
+        existing_pages,
+        key=lambda key: existing_pages[key].page_number,
+    )
+    updated_order = sorted(
+        existing_pages,
+        key=lambda key: replacement_sort_keys.get(
+            key,
+            existing_pages[key].page_sort_key,
+        ),
+    )
+    if updated_order != previous_order:
+        raise IncrementalPublicationNotEligible("an atlas sort key changed page order")
 
 
 def _number_appended_pages(plans, max_page_number):

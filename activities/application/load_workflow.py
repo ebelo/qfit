@@ -65,6 +65,7 @@ class StoreActivitiesResult:
     point_count: int = 0
     atlas_count: int = 0
     publication_mode: str = ""
+    publication_fallback_reason: str = ""
 
 
 @dataclass
@@ -103,6 +104,8 @@ class LoadResult:
     start_count: int = 0
     point_count: int = 0
     atlas_count: int = 0
+    publication_mode: str = ""
+    publication_fallback_reason: str = ""
 
 
 @dataclass
@@ -127,12 +130,20 @@ def _default_geopackage_writer_factory(**kwargs):
     return GeoPackageWriter(**kwargs)
 
 
-def _build_store_database_status(result: StoreActivitiesResult) -> str:
+def _publication_status(result: StoreActivitiesResult) -> str:
     publication_note = {
         "incremental": "Changed map rows were published incrementally.",
         "unchanged": "Derived map layers were already current.",
         "full_rebuild": "Derived map layers were rebuilt.",
     }.get(result.publication_mode, "Derived map layers were updated.")
+    if result.publication_mode == "full_rebuild" and result.publication_fallback_reason:
+        publication_note = "Derived map layers were rebuilt because {reason}.".format(
+            reason=result.publication_fallback_reason.rstrip("."),
+        )
+    return publication_note
+
+
+def _build_store_database_status(result: StoreActivitiesResult) -> str:
     return (
         "Synced {fetched} fetched activities into GeoPackage: "
         "inserted {inserted}, updated {updated}, unchanged {unchanged}, "
@@ -145,7 +156,7 @@ def _build_store_database_status(result: StoreActivitiesResult) -> str:
         unchanged=result.sync.unchanged if result.sync else 0,
         total=result.total_stored,
         path=result.output_path,
-        publication_note=publication_note,
+        publication_note=_publication_status(result),
     )
 
 
@@ -154,7 +165,8 @@ def _build_write_and_load_status(result: StoreActivitiesResult) -> str:
         "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, "
         "updated {updated}, unchanged {unchanged}, stored total {total}. "
         "Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, "
-        "and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables."
+        "and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables. "
+        "{publication_note}"
     ).format(
         fetched=result.fetched_count,
         inserted=result.sync.inserted if result.sync else 0,
@@ -165,6 +177,7 @@ def _build_write_and_load_status(result: StoreActivitiesResult) -> str:
         start_count=result.start_count,
         point_count=result.point_count,
         atlas_count=result.atlas_count,
+        publication_note=_publication_status(result),
     )
 
 
@@ -273,6 +286,10 @@ class StoreActivitiesWorkflow:
             point_count=write_result.get("point_count", 0),
             atlas_count=write_result.get("atlas_count", 0),
             publication_mode=write_result.get("publication_mode", ""),
+            publication_fallback_reason=write_result.get(
+                "publication_fallback_reason",
+                "",
+            ),
         )
         result.status = _build_store_database_status(result)
         return result
@@ -502,6 +519,8 @@ class LoadWorkflowService:
             start_count=result.start_count,
             point_count=result.point_count,
             atlas_count=result.atlas_count,
+            publication_mode=result.publication_mode,
+            publication_fallback_reason=result.publication_fallback_reason,
         )
 
     @staticmethod
@@ -538,6 +557,8 @@ class LoadWorkflowService:
             start_count=store_result.start_count,
             point_count=store_result.point_count,
             atlas_count=store_result.atlas_count,
+            publication_mode=store_result.publication_mode,
+            publication_fallback_reason=store_result.publication_fallback_reason,
         )
 
     def write_database(

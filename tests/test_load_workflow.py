@@ -70,6 +70,34 @@ class StoreActivitiesWorkflowTests(unittest.TestCase):
         self.assertEqual(result.total_stored, 7)
         self.assertIn("Use Load stored map layers in Visualize", result.status)
 
+    def test_full_rebuild_reason_is_preserved_in_result_and_status(self):
+        writer = MagicMock()
+        writer.write_activities.return_value = {
+            "path": "/tmp/out.gpkg",
+            "fetched_count": 1,
+            "sync": SyncStats(total_count=3033, inserted=0, updated=1, unchanged=0),
+            "publication_mode": "full_rebuild",
+            "publication_fallback_reason": "an atlas sort key changed page order",
+        }
+        workflow = StoreActivitiesWorkflow(writer_factory=lambda **_kwargs: writer)
+
+        result = workflow.write_database_request(
+            workflow.build_write_request(
+                activities=["changed"],
+                output_path="/tmp/out.gpkg",
+            )
+        )
+
+        self.assertEqual(result.publication_mode, "full_rebuild")
+        self.assertEqual(
+            result.publication_fallback_reason,
+            "an atlas sort key changed page order",
+        )
+        self.assertIn(
+            "Derived map layers were rebuilt because an atlas sort key changed page order.",
+            result.status,
+        )
+
 
 class LoadDatasetWorkflowTests(unittest.TestCase):
     def test_load_existing_request_returns_focused_load_result(self):
@@ -535,6 +563,8 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
             "point_count": 0,
             "atlas_count": 2,
             "sync": SyncStats(total_count=8, inserted=2, updated=0, unchanged=0),
+            "publication_mode": "full_rebuild",
+            "publication_fallback_reason": "derived publication settings changed",
         }
         mock_gpkg = self._make_writer_mock(write_result)
 
@@ -554,6 +584,15 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
         self.assertEqual(result.output_path, "/tmp/out.gpkg")
         self.assertEqual(result.total_stored, 8)
         self.assertIsNone(result.activities_layer)
+        self.assertEqual(result.publication_mode, "full_rebuild")
+        self.assertEqual(
+            result.publication_fallback_reason,
+            "derived publication settings changed",
+        )
+        self.assertIn(
+            "Derived map layers were rebuilt because derived publication settings changed.",
+            result.status,
+        )
         self.assertIn("Use Load stored map layers in Visualize", result.status)
 
 

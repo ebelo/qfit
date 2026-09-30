@@ -393,28 +393,67 @@ class IncrementalPublicationPureTests(unittest.TestCase):
         self.assertEqual(page_summary.activity_count, 3)
         self.assertEqual(table_summary.activity_count, 3)
 
+    def test_plan_changed_pages_accepts_sort_key_edit_that_keeps_page_order(self):
+        existing = {
+            ("strava", "1"): _Plan(
+                source_activity_id="1",
+                page_number=1,
+                page_sort_key="2026-01|ride|strava|1",
+                start_date="2026-01-01",
+            ),
+            ("strava", "2"): _Plan(
+                source_activity_id="2",
+                page_number=2,
+                page_sort_key="2026-02|ride|strava|2",
+                start_date="2026-02-01",
+            ),
+            ("strava", "3"): _Plan(
+                source_activity_id="3",
+                page_number=3,
+                page_sort_key="2026-03|ride|strava|3",
+                start_date="2026-03-01",
+            ),
+        }
+        self.module.build_atlas_page_plans.return_value = [
+            _Plan(page_sort_key="2026-02|renamed|strava|2")
+        ]
+
+        plans, sort_keys, _page_summary, _table_summary = (
+            self.module._plan_changed_pages(
+                [{}],
+                (("strava", "2"),),
+                existing,
+                None,
+            )
+        )
+
+        self.assertEqual(plans[0].page_number, 2)
+        self.assertEqual(plans[0].page_sort_key, "2026-02|renamed|strava|2")
+        self.assertIn("2026-02|ride|strava|2", sort_keys)
+        self.assertIn("2026-02|renamed|strava|2", sort_keys)
+
     def test_plan_changed_pages_rejects_disappearance_reorder_and_backfill(self):
-        previous = SimpleNamespace(
-            source="strava",
+        previous = _Plan(
             source_activity_id="2",
             page_number=2,
             page_sort_key="2026-02|ride|strava|2",
             start_date="2026-02-01",
-            page_date="2026-02-01",
-            distance_m=1.0,
-            moving_time_s=2,
-            total_elevation_gain_m=3.0,
-            activity_type="Ride",
         )
-        existing = {("strava", "2"): previous}
+        following = _Plan(
+            source_activity_id="3",
+            page_number=3,
+            page_sort_key="2026-03|ride|strava|3",
+            start_date="2026-03-01",
+        )
+        existing = {("strava", "2"): previous, ("strava", "3"): following}
         self.module.build_atlas_page_plans.return_value = []
         with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "disappear"):
             self.module._plan_changed_pages([{}], (("strava", "2"),), existing, None)
 
         self.module.build_atlas_page_plans.return_value = [
-            _Plan(page_sort_key="2026-02|renamed|strava|2")
+            _Plan(page_sort_key="2026-04|renamed|strava|2")
         ]
-        with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "sort key"):
+        with self.assertRaisesRegex(self.module.IncrementalPublicationNotEligible, "page order"):
             self.module._plan_changed_pages([{}], (("strava", "2"),), existing, None)
 
         self.module.build_atlas_page_plans.return_value = [
