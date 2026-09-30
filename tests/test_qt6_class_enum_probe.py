@@ -22,6 +22,7 @@ def _import_qt():
         from qgis.PyQt.QtCore import Qt, QStandardPaths
         from qgis.PyQt.QtGui import QImage
         from qgis.PyQt.QtWidgets import (
+            QBoxLayout,
             QDockWidget,
             QFormLayout,
             QFrame,
@@ -34,6 +35,7 @@ def _import_qt():
             from PyQt5.QtCore import Qt, QStandardPaths
             from PyQt5.QtGui import QImage
             from PyQt5.QtWidgets import (
+                QBoxLayout,
                 QDockWidget,
                 QFormLayout,
                 QFrame,
@@ -46,6 +48,7 @@ def _import_qt():
                 from PyQt6.QtCore import Qt, QStandardPaths
                 from PyQt6.QtGui import QImage
                 from PyQt6.QtWidgets import (
+                    QBoxLayout,
                     QDockWidget,
                     QFormLayout,
                     QFrame,
@@ -58,6 +61,7 @@ def _import_qt():
     return (
         Qt,
         QStandardPaths,
+        QBoxLayout,
         QDockWidget,
         QFormLayout,
         QFrame,
@@ -71,6 +75,7 @@ def _import_qt():
 (
     Qt,
     QStandardPaths,
+    QBoxLayout,
     QDockWidget,
     QFormLayout,
     QFrame,
@@ -84,6 +89,8 @@ def _import_qt():
 # Each entry: (class, enum_name, member_name)
 # Update this list when adding new class-scope Qt enum references.
 CLASS_SCOPE_ENUMS = [
+    (QBoxLayout, "Direction", "LeftToRight"),
+    (QBoxLayout, "Direction", "TopToBottom"),
     (QDockWidget, "DockWidgetFeature", "DockWidgetClosable"),
     (QDockWidget, "DockWidgetFeature", "DockWidgetMovable"),
     (QDockWidget, "DockWidgetFeature", "DockWidgetFloatable"),

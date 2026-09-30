@@ -67,6 +67,12 @@ QT_SIZE_POLICY_PREFERRED = qt_class_enum_value(
     QSizePolicy, "Policy", "Preferred"
 )
 QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
+QT_BOX_LAYOUT_LEFT_TO_RIGHT = qt_class_enum_value(
+    QBoxLayout, "Direction", "LeftToRight"
+)
+QT_BOX_LAYOUT_TOP_TO_BOTTOM = qt_class_enum_value(
+    QBoxLayout, "Direction", "TopToBottom"
+)
 
 
 class StepPage(QWidget):
@@ -199,7 +205,9 @@ class StepPage(QWidget):
         self.setProperty("responsiveMode", mode)
         if hasattr(self._nav_layout, "setDirection"):
             self._nav_layout.setDirection(
-                QBoxLayout.TopToBottom if narrow else QBoxLayout.LeftToRight
+                QT_BOX_LAYOUT_TOP_TO_BOTTOM
+                if narrow
+                else QT_BOX_LAYOUT_LEFT_TO_RIGHT
             )
         self._nav_layout.setSpacing(6 if narrow else 8)
         self._layout.setContentsMargins(

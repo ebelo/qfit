@@ -166,7 +166,10 @@ class StepPageTest(unittest.TestCase):
         page.set_responsive_width(320)
 
         self.assertEqual(page.property("responsiveMode"), "narrow")
-        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.TopToBottom)
+        self.assertEqual(
+            page._nav_layout.direction,
+            self.step_page.QT_BOX_LAYOUT_TOP_TO_BOTTOM,
+        )
         self.assertEqual(page.outer_layout().contents_margins, (8, 10, 8, 10))
         self.assertTrue(page.title_label.word_wrap)
         self.assertTrue(page.subtitle_label.word_wrap)
@@ -179,7 +182,10 @@ class StepPageTest(unittest.TestCase):
         page.set_responsive_width(600)
 
         self.assertEqual(page.property("responsiveMode"), "wide")
-        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.LeftToRight)
+        self.assertEqual(
+            page._nav_layout.direction,
+            self.step_page.QT_BOX_LAYOUT_LEFT_TO_RIGHT,
+        )
         self.assertFalse(page.title_label.word_wrap)
         self.assertEqual(page.back_button.text(), "Précédent")
         self.assertEqual(page.back_button.toolTip(), "")
@@ -192,7 +198,10 @@ class StepPageTest(unittest.TestCase):
         page.resizeEvent(_FakeResizeEvent(320))
 
         self.assertEqual(page.property("responsiveMode"), "narrow")
-        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.TopToBottom)
+        self.assertEqual(
+            page._nav_layout.direction,
+            self.step_page.QT_BOX_LAYOUT_TOP_TO_BOTTOM,
+        )
 
     def test_extra_button_alignment_can_target_left_nav_cluster(self):
         page = self.step_page.StepPage(1, 5, "Connexion", "Configure qfit.")
