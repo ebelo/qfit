@@ -370,6 +370,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._local_first_live_shell = shell
         self._local_first_live_path_installed = True
+        self._refresh_local_first_dock_from_runtime()
 
     def _hide_legacy_scroll_dock_content(self) -> None:
         """Hide the replaced long-scroll dock widgets without deleting them."""

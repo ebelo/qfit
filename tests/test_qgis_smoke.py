@@ -279,6 +279,28 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_live_dock_initializes_database_name_action_from_saved_settings(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = self._write_sample_gpkg_without_points(temp_dir)
+            settings = SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+            for key in ("client_id", "client_secret", "refresh_token"):
+                settings.set(key, "configured-test-value")
+            settings.set("output_path", str(output_path))
+            dependencies = replace(
+                build_dockwidget_dependencies(self.iface), settings=settings,
+            )
+            dock = QfitDockWidget(self.iface, dependencies=dependencies)
+            try:
+                # No later runtime refresh or output-path edit should be needed.
+                self.assertTrue(dock.refreshActivityNamesAction.isEnabled())
+                self.assertEqual(dock.refreshActivityNamesAction.text(), "Refresh activity names…")
+            finally:
+                dock.close()
+                dock.deleteLater()
+
     def test_live_dock_exposes_name_refresh_cancellation(self):
         from qfit.activities.application.activity_name_refresh_task import ActivityNameRefreshTask
         dock = QfitDockWidget(self.iface)
