@@ -31,11 +31,11 @@ def make_stored(tmp_path):
             INSERT INTO activity_tracks VALUES ('strava', '42', 'Old ride', x'1234');
             CREATE TABLE activity_points(source TEXT, source_activity_id TEXT, name TEXT, watts REAL);
             INSERT INTO activity_points VALUES ('strava', '42', 'Old ride', 100);
-            CREATE TABLE activity_atlas_pages(source TEXT, source_activity_id TEXT, name TEXT,
+            CREATE TABLE activity_atlas_pages(source TEXT, source_activity_id TEXT, name TEXT, page_sort_key TEXT,
                 page_number INTEGER, page_name TEXT, page_title TEXT, page_toc_label TEXT);
-            INSERT INTO activity_atlas_pages VALUES ('strava','42','Old ride',7,'old','old','old');
-            CREATE TABLE atlas_toc_entries(page_number INTEGER, page_title TEXT, toc_entry_label TEXT);
-            INSERT INTO atlas_toc_entries VALUES (7,'old','old');
+            INSERT INTO activity_atlas_pages VALUES ('strava','42','Old ride','old-key',7,'old','old','old');
+            CREATE TABLE atlas_toc_entries(page_number INTEGER, page_title TEXT, toc_entry_label TEXT, page_sort_key TEXT);
+            INSERT INTO atlas_toc_entries VALUES (7,'old','old','old-key');
         ''')
     return repo, path
 
@@ -65,6 +65,10 @@ class ActivityNameRefreshTests(unittest.TestCase):
         assert {key: value for key, value in before.items() if key not in ("name", "summary_hash")} == {
             key: value for key, value in after.items() if key not in ("name", "summary_hash")}
         assert after["name"] == "Renamed ride"
+        from qfit.atlas.publish_atlas import atlas_sort_key
+        assert snapshot(path, "activity_atlas_pages")[0][3] == atlas_sort_key(after)
+        assert snapshot(path, "atlas_toc_entries")[0][3] == atlas_sort_key(after)
+        assert snapshot(path, "atlas_toc_entries")[0][0] == 7
         assert snapshot(path, "activity_detail_payloads") == payload
         assert snapshot(path, "sync_state") == state
         assert snapshot(path, "activity_tracks")[0][2:] == ("Renamed ride", b'\x12\x34')
@@ -80,8 +84,9 @@ class ActivityNameRefreshTests(unittest.TestCase):
         stored = self.stored
         repo, path = stored
         before = snapshot(path, "activity_registry")
+        cancellation = Mock(side_effect=[False, True])
         with self.assertRaises(InterruptedError):
-            repo.refresh_activity_names({"42": "New"}, cancelled=Mock(side_effect=[False, True]))
+            repo.refresh_activity_names({"42": "New"}, cancelled=cancellation)
         assert snapshot(path, "activity_registry") == before
         assert snapshot(path, "activity_tracks")[0][2] == "Old ride"
 

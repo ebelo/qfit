@@ -2252,7 +2252,7 @@ class QgisSmokeTests(unittest.TestCase):
                 with sqlite3.connect(output_path) as connection:
                     columns = [row[1] for row in connection.execute(f'PRAGMA table_info("{table}")')]
                     unchanged = [column for column in columns if column not in {
-                        "name", "page_name", "page_title", "page_toc_label", "toc_entry_label"}]
+                        "name", "page_name", "page_title", "page_toc_label", "toc_entry_label", "page_sort_key"}]
                     selection = ",".join(f'"{column}"' for column in unchanged)
                     return connection.execute(f'SELECT {selection} FROM "{table}" ORDER BY rowid').fetchall()
             tables = ("activity_tracks", "activity_starts", "activity_points", "activity_atlas_pages",
