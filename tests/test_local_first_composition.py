@@ -117,6 +117,16 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.map_content.filter_controls_layout().spacing, 8)
         self.assertEqual(composition.map_content.style_controls_layout().spacing, 8)
 
+    def test_connects_refresh_names_action(self):
+        composition = self.module.build_local_first_dock_composition()
+        calls = []
+        self.module.connect_local_first_action_callbacks(
+            composition,
+            self.module.DockWorkflowActionCallbacks(refresh_activity_names=lambda: calls.append("names")),
+        )
+        composition.sync_content.refreshNamesRequested.emit()
+        self.assertEqual(calls, ["names"])
+
     def test_connects_existing_page_action_callbacks(self):
         composition = self.module.build_local_first_dock_composition(
             atlas_title="Spring Atlas",

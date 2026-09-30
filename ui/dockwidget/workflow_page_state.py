@@ -27,6 +27,7 @@ class DockWorkflowActionCallbacks:
 
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
+    refresh_activity_names: Callable[[], None] | None = None
     import_bulk_archive: Callable[[], None] | None = None
     store_activities: Callable[[], None] | None = None
     sync_saved_routes: Callable[[], None] | None = None
@@ -185,6 +186,9 @@ def _sync_state_from_facts(facts: WorkflowProgressFacts) -> SyncPageState:
         primary_action_blocked_tooltip=sync_blocked_tooltip,
         local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
         local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
+        names_action_enabled=(facts.connection_configured and facts.activities_stored
+                              and not facts.sync_in_progress and not facts.route_sync_in_progress
+                              and not facts.atlas_export_in_progress),
         routes_action_label=routes_action_label,
         routes_action_enabled=(
             facts.route_sync_in_progress

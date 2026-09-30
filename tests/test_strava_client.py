@@ -9,6 +9,22 @@ requests = strava_client_module.requests
 
 
 class StravaClientTests(unittest.TestCase):
+    def test_fetch_activity_name_uses_activity_endpoint_without_streams(self):
+        client = StravaClient()
+        with patch.object(client, "get_access_token", return_value="test-token"), \
+                patch.object(client, "_request_json", return_value={"id": 42, "name": "Renamed"}) as request:
+            self.assertEqual(client.fetch_activity_name("42"), "Renamed")
+        self.assertEqual(request.call_args.args[0], "https://www.strava.com/api/v3/activities/42")
+
+    def test_fetch_activity_name_rejects_invalid_response(self):
+        client = StravaClient()
+        for payload in ([], {"id": 43, "name": "wrong"}, {"id": 42, "name": None}):
+            with self.subTest(payload=payload), \
+                    patch.object(client, "get_access_token", return_value="test-token"), \
+                    patch.object(client, "_request_json", return_value=payload):
+                with self.assertRaises(StravaClientError):
+                    client.fetch_activity_name("42")
+
     def test_build_authorize_url_uses_defaults(self):
         client = StravaClient(client_id="123")
         url = client.build_authorize_url()

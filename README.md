@@ -83,6 +83,12 @@ qfit uses a GeoPackage as both local sync store and QGIS data source.
 5. Apply visualization or analysis workflows.
 6. Optionally generate atlas-ready publish data and export a PDF atlas.
 
+### Refresh names of older Strava activities
+
+Use **Data → Refresh activity names…** to update renamed activities by Strava ID
+or across all history without replacing tracks or measurements. See the
+[name-refresh guide](docs/strava-activity-name-refresh.md) for details.
+
 ### Strava credentials
 
 You need:

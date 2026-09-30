@@ -2724,6 +2724,41 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error.assert_called_once()
         dock._set_status.assert_called_once_with("Load route layers failed")
 
+    def test_name_refresh_cancel_keeps_task_reserved_until_finished(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        task = MagicMock(is_name_refresh=True)
+        dock._fetch_task = task
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        self.module.QfitDockWidget.on_refresh_clicked(dock)
+        task.cancel.assert_called_once()
+        self.assertIs(dock._fetch_task, task)
+        dock._set_fetch_running.assert_not_called()
+
+    def test_name_refresh_updates_in_memory_names_and_reloads_matching_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        activity = SimpleNamespace(source="strava", source_activity_id="42", name="Old")
+        dock._runtime_store().finish_fetch(activities=[activity], metadata={})
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        dock._mark_atlas_export_stale = MagicMock()
+        matching = MagicMock()
+        matching.source.return_value = "/tmp/selected.gpkg|layername=activity_tracks"
+        other = MagicMock()
+        other.source.return_value = "/tmp/other.gpkg|layername=activity_tracks"
+        with patch.object(self.module, "QgsProject") as project:
+            project.instance.return_value.mapLayers.return_value = {"a": matching, "b": other}
+            dock._on_activity_names_refreshed(
+                "/tmp/selected.gpkg",
+                {"updated": 1, "unchanged": 0, "not_stored": 0, "names": {"42": "New"}},
+                None, False,
+            )
+        self.assertEqual(activity.name, "New")
+        matching.reload.assert_called_once()
+        matching.triggerRepaint.assert_called_once()
+        other.reload.assert_not_called()
+        dock._mark_atlas_export_stale.assert_called_once()
+
     def test_on_refresh_clicked_cancels_existing_fetch_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
         running_task = MagicMock()

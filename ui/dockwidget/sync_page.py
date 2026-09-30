@@ -54,6 +54,7 @@ class SyncPageState:
     bulk_action_label: str = "Import Strava export…"
     bulk_action_enabled: bool = True
     bulk_action_blocked_tooltip: str = "Wait for the current bulk import to finish."
+    names_action_enabled: bool = False
     routes_action_label: str = "Sync saved routes"
     routes_action_enabled: bool = True
     routes_action_blocked_tooltip: str = (
@@ -65,6 +66,7 @@ class SyncPageContent(QWidget):
     """Reusable second-page content for the wizard synchronization step."""
 
     syncRequested = pyqtSignal()
+    refreshNamesRequested = pyqtSignal()
     importBulkRequested = pyqtSignal()
     storeRequested = pyqtSignal()
     loadActivitiesRequested = pyqtSignal()
@@ -112,10 +114,16 @@ class SyncPageContent(QWidget):
             action_name="import_strava_bulk_export",
         )
         self.bulk_button.clicked.connect(self.importBulkRequested.emit)
+        self.names_button = QToolButton(self)
+        self.names_button.setObjectName("qfitRefreshActivityNamesButton")
+        self.names_button.setText("Refresh activity names…")
+        style_secondary_action_button(self.names_button, action_name="sync_activities")
+        self.names_button.clicked.connect(self.refreshNamesRequested.emit)
         self.action_row = build_workflow_action_row(
             self.load_button,
             self.routes_button,
             self.bulk_button,
+            self.names_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
@@ -151,6 +159,11 @@ class SyncPageContent(QWidget):
             self.routes_button,
             enabled=state.routes_action_enabled,
             tooltip=state.routes_action_blocked_tooltip,
+        )
+        set_workflow_action_availability(
+            self.names_button,
+            enabled=state.names_action_enabled,
+            tooltip="Configure Strava and select an existing GeoPackage; wait for active syncs to finish.",
         )
         self.bulk_button.setText(state.bulk_action_label)
         set_workflow_action_availability(
