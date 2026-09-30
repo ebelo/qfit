@@ -134,7 +134,6 @@ def connect_local_first_action_callbacks(
         callbacks.configure_connection,
     )
     connect_optional_signal(composition.sync_content, "syncRequested", callbacks.sync_activities)
-    connect_optional_signal(composition.sync_content, "refreshNamesRequested", callbacks.refresh_activity_names)
     connect_optional_signal(
         composition.sync_content,
         "importBulkRequested",

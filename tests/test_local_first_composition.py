@@ -117,34 +117,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.map_content.filter_controls_layout().spacing, 8)
         self.assertEqual(composition.map_content.style_controls_layout().spacing, 8)
 
-    def test_active_name_refresh_exposes_live_cancel_action(self):
-        composition = self.module.build_local_first_dock_composition(
-            progress_facts=LocalFirstProgressFacts(
-                connection_configured=True, activities_stored=True, sync_in_progress=True,
-                name_refresh_in_progress=True,
-            ),
-        )
-        self.assertTrue(composition.sync_content.names_button.isEnabled())
-        self.assertEqual(composition.sync_content.names_button.text(), "Cancel name refresh")
-        self.assertFalse(composition.sync_content.sync_button.isEnabled())
-        calls = []
-        self.module.connect_local_first_action_callbacks(
-            composition,
-            self.module.DockWorkflowActionCallbacks(refresh_activity_names=lambda: calls.append("cancel")),
-        )
-        composition.sync_content.names_button.clicked.emit()
-        self.assertEqual(calls, ["cancel"])
-
-    def test_connects_refresh_names_action(self):
-        composition = self.module.build_local_first_dock_composition()
-        calls = []
-        self.module.connect_local_first_action_callbacks(
-            composition,
-            self.module.DockWorkflowActionCallbacks(refresh_activity_names=lambda: calls.append("names")),
-        )
-        composition.sync_content.refreshNamesRequested.emit()
-        self.assertEqual(calls, ["names"])
-
     def test_connects_existing_page_action_callbacks(self):
         composition = self.module.build_local_first_dock_composition(
             atlas_title="Spring Atlas",

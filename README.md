@@ -85,7 +85,7 @@ qfit uses a GeoPackage as both local sync store and QGIS data source.
 
 ### Refresh names of older Strava activities
 
-Use **Data → Refresh activity names…** to update renamed activities by Strava ID
+Use **Settings → Data storage → Database actions → Refresh activity names…** to update renamed activities by Strava ID
 or across all history without replacing tracks or measurements. See the
 [name-refresh guide](docs/strava-activity-name-refresh.md) for details.
 
