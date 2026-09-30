@@ -278,6 +278,30 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_narrow_dock_keeps_all_local_first_navigation_items_visible(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.resize(420, 900)
+            dock.show()
+            self.qgs.processEvents()
+
+            shell = dock._local_first_live_shell
+            items = shell.navigation_items()
+            self.assertEqual(
+                [item.text() for item in items],
+                ["Data", "Map", "Analysis", "Atlas", "Settings"],
+            )
+            self.assertTrue(all(item.isVisible() for item in items))
+            self.assertTrue(all(item.label().isVisible() for item in items))
+            self.assertTrue(all(item.geometry().height() > 0 for item in items))
+            self.assertEqual(
+                shell.page_count(),
+                5,
+            )
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_dock_widget_contextual_help_smoke(self):
         dependencies = replace(
             build_dockwidget_dependencies(self.iface),

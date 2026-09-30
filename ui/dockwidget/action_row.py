@@ -44,6 +44,12 @@ QT_SIZE_POLICY_IGNORED = qt_class_enum_value(
     QSizePolicy, "Policy", "Ignored"
 )
 QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
+QT_BOX_LAYOUT_LEFT_TO_RIGHT = qt_class_enum_value(
+    QBoxLayout, "Direction", "LeftToRight"
+)
+QT_BOX_LAYOUT_TOP_TO_BOTTOM = qt_class_enum_value(
+    QBoxLayout, "Direction", "TopToBottom"
+)
 
 
 class WorkflowActionRow(QWidget):
@@ -75,7 +81,9 @@ class WorkflowActionRow(QWidget):
         self.setProperty("responsiveMode", mode)
         if hasattr(self._layout, "setDirection"):
             self._layout.setDirection(
-                QBoxLayout.TopToBottom if narrow else QBoxLayout.LeftToRight
+                QT_BOX_LAYOUT_TOP_TO_BOTTOM
+                if narrow
+                else QT_BOX_LAYOUT_LEFT_TO_RIGHT
             )
         self._layout.setSpacing(6 if narrow else 8)
 
