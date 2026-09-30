@@ -30,16 +30,6 @@ class SyncPageContentTest(unittest.TestCase):
     def setUpClass(cls):
         cls.sync_page, cls.wizard_page = _load_sync_modules()
 
-    def test_refresh_names_availability_and_signal(self):
-        content = self.sync_page.SyncPageContent()
-        self.assertFalse(content.names_button.isEnabled())
-        content.set_state(self.sync_page.SyncPageState(names_action_enabled=True))
-        self.assertTrue(content.names_button.isEnabled())
-        calls = []
-        content.refreshNamesRequested.connect(lambda: calls.append("names"))
-        content.names_button.clicked.emit()
-        self.assertEqual(calls, ["names"])
-
     def test_builds_default_second_page_content(self):
         content = self.sync_page.SyncPageContent()
 
@@ -113,6 +103,7 @@ class SyncPageContentTest(unittest.TestCase):
             "import_strava_bulk_export",
         )
         self.assertTrue(content.bulk_button.isEnabled())
+        self.assertFalse(hasattr(content, "names_button"))
         self.assertFalse(hasattr(content, "clear_button"))
         self.assertFalse(hasattr(content, "clear_action_row"))
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
@@ -122,7 +113,6 @@ class SyncPageContentTest(unittest.TestCase):
                 content.load_button,
                 content.routes_button,
                 content.bulk_button,
-                content.names_button,
                 content.sync_button,
             ],
         )

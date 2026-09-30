@@ -321,7 +321,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     )
                 ),
                 sync_activities=self.on_refresh_clicked,
-                refresh_activity_names=self.on_refresh_activity_names_clicked,
                 import_bulk_archive=self.on_import_strava_bulk_export_clicked,
                 store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
@@ -391,10 +390,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             refresh_local_first_dock_composition,
         )
 
+        from .ui.application.local_first_backing_controls import refresh_database_name_action
+
+        facts = build_current_local_first_progress_facts(self)
         self._local_first_dock_composition = refresh_local_first_dock_composition(
             composition,
-            progress_facts=build_current_local_first_progress_facts(self),
+            progress_facts=facts,
         )
+        refresh_database_name_action(self, facts)
         return self._local_first_dock_composition
 
     def _refresh_live_dock_navigation_from_runtime(self) -> None:

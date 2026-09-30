@@ -145,6 +145,13 @@ def _move_clear_database_to_actions_menu(dock) -> None:
     menu = QMenu(getattr(dock, "outputGroupBox", None))
     if hasattr(menu, "setObjectName"):
         menu.setObjectName("databaseActionsMenu")
+    names_action = menu.addAction("Refresh activity names…")
+    names_action.setToolTip(
+        "Refresh stored Strava activity names without replacing tracks or measurements."
+    )
+    names_action.setEnabled(False)
+    names_action.triggered.connect(dock.on_refresh_activity_names_clicked)
+    menu.addSeparator()
     clear_action = menu.addAction("Clear database…")
     clear_action.setToolTip(
         "Delete qfit's stored activities and derived layers after confirmation."
@@ -172,7 +179,22 @@ def _move_clear_database_to_actions_menu(dock) -> None:
     dock.databaseActionsMenu = menu
     dock.databaseActionsButton = menu_button
     dock.clearDatabaseAction = clear_action
+    dock.refreshActivityNamesAction = names_action
 
+
+
+def refresh_database_name_action(dock, facts) -> None:
+    """Keep database maintenance and cancellation available in the storage menu."""
+    action = getattr(dock, "refreshActivityNamesAction", None)
+    if action is None:
+        return
+    action.setText("Cancel name refresh" if facts.name_refresh_in_progress else "Refresh activity names…")
+    enabled = facts.name_refresh_in_progress or (
+        facts.connection_configured and facts.activities_stored
+        and not facts.sync_in_progress and not facts.route_sync_in_progress
+        and not facts.atlas_export_in_progress
+    )
+    action.setEnabled(enabled)
 
 def _move_help_label_to_tooltip(label, *widgets) -> None:
     if label is None:

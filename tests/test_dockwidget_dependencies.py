@@ -350,6 +350,28 @@ class _FakeGroupBox:
 
 
 class LocalFirstBackingControlsTests(unittest.TestCase):
+    def test_database_name_action_prerequisites_busy_state_and_cancellation(self):
+        from qfit.ui.application.local_first_backing_controls import refresh_database_name_action
+        from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
+        dock = type("Dock", (), {})()
+        dock.refreshActivityNamesAction = MagicMock()
+        cases = (
+            (WorkflowProgressFacts(), False, "Refresh activity names…"),
+            (WorkflowProgressFacts(connection_configured=True), False, "Refresh activity names…"),
+            (WorkflowProgressFacts(connection_configured=True, activities_stored=True), True, "Refresh activity names…"),
+            (WorkflowProgressFacts(connection_configured=True, activities_stored=True, sync_in_progress=True), False, "Refresh activity names…"),
+            (WorkflowProgressFacts(connection_configured=True, activities_stored=True, route_sync_in_progress=True), False, "Refresh activity names…"),
+            (WorkflowProgressFacts(connection_configured=True, activities_stored=True, atlas_export_in_progress=True), False, "Refresh activity names…"),
+            (WorkflowProgressFacts(sync_in_progress=True, name_refresh_in_progress=True), True, "Cancel name refresh"),
+        )
+        for facts, enabled, label in cases:
+            with self.subTest(facts=facts):
+                refresh_database_name_action(dock, facts)
+                dock.refreshActivityNamesAction.setEnabled.assert_called_with(enabled)
+                dock.refreshActivityNamesAction.setText.assert_called_with(label)
+        del dock.refreshActivityNamesAction
+        refresh_database_name_action(dock, WorkflowProgressFacts())
+
     def _make_section_dock(self):
         dock = type("Dock", (), {})()
         dock.activitiesGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
@@ -380,6 +402,7 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         dock.mapboxAccessTokenLineEdit = _FakeWidget()
         dock.loadLayersButton = _FakeWidget()
         dock.clearDatabaseButton = _FakeWidget()
+        dock.on_refresh_activity_names_clicked = MagicMock()
         dock.summaryStatusLabel = _FakeWidget()
         dock.countLabel = _FakeWidget()
         dock.statusLabel = _FakeWidget()
@@ -406,6 +429,9 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
             def setToolTip(self, text):
                 self.tooltip = text
 
+            def setEnabled(self, enabled):
+                self.enabled = enabled
+
         class _FakeMenu(_FakeWidget):
             def __init__(self, parent=None):
                 super().__init__(parent)
@@ -415,6 +441,9 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
                 action = _FakeAction(text)
                 self.actions.append(action)
                 return action
+
+            def addSeparator(self):
+                self.actions.append(_FakeAction("separator"))
 
         class _FakeToolButton(_FakeWidget):
             def __init__(self, _parent=None):
@@ -459,9 +488,13 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         self.assertIn(dock.clearDatabaseButton, dock.outputGroupLayout.removed_widgets)
         self.assertIn(dock.databaseActionsButton, dock.outputGroupLayout.added_widgets)
         self.assertEqual(dock.databaseActionsButton.text, "Database actions")
-        self.assertEqual(dock.databaseActionsMenu.actions[0].text, "Clear database…")
+        self.assertEqual(dock.databaseActionsMenu.actions[0].text, "Refresh activity names…")
+        self.assertIs(dock.databaseActionsMenu.actions[0].triggered.callback, dock.on_refresh_activity_names_clicked)
+        self.assertFalse(dock.refreshActivityNamesAction.enabled)
+        self.assertEqual(dock.databaseActionsMenu.actions[1].text, "separator")
+        self.assertEqual(dock.databaseActionsMenu.actions[2].text, "Clear database…")
         self.assertIs(
-            dock.databaseActionsMenu.actions[0].triggered.callback.__self__,
+            dock.databaseActionsMenu.actions[2].triggered.callback.__self__,
             dock.clearDatabaseButton,
         )
         self.assertEqual(dock.summaryStatusLabel.parent(), dock.dockWidgetContents)
