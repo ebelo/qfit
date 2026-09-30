@@ -11,7 +11,8 @@ To update those names without re-importing routes:
 4. Enter the numeric Strava activity IDs separated by commas, for example
    `123456789, 987654321`. An ID is the number in the activity's Strava URL.
    Leave the field empty to refresh all historical activity summaries.
-5. Wait for the background task to finish. The status reports updated names,
+5. Wait for the background task to finish, or click **Cancel name refresh**
+   on the Data page to request cancellation. The status reports updated names,
    unchanged names, and activities not stored locally (ignored).
 
 For a few renamed activities, selecting IDs uses fewer API requests. A full

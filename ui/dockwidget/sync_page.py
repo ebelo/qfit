@@ -54,6 +54,7 @@ class SyncPageState:
     bulk_action_label: str = "Import Strava export…"
     bulk_action_enabled: bool = True
     bulk_action_blocked_tooltip: str = "Wait for the current bulk import to finish."
+    names_action_label: str = "Refresh activity names…"
     names_action_enabled: bool = False
     routes_action_label: str = "Sync saved routes"
     routes_action_enabled: bool = True
@@ -160,6 +161,7 @@ class SyncPageContent(QWidget):
             enabled=state.routes_action_enabled,
             tooltip=state.routes_action_blocked_tooltip,
         )
+        self.names_button.setText(state.names_action_label)
         set_workflow_action_availability(
             self.names_button,
             enabled=state.names_action_enabled,

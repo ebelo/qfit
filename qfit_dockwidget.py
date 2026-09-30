@@ -994,6 +994,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 task.cancel()
 
     def on_refresh_activity_names_clicked(self):
+        if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+            self._fetch_task.cancel()
+            self._set_status("Cancelling activity name refresh…")
+            return
         from .activities.application.activity_name_refresh import parse_activity_ids
         from .activities.application.activity_name_refresh_task import ActivityNameRefreshTask
 

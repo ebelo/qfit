@@ -279,6 +279,28 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_live_dock_exposes_name_refresh_cancellation(self):
+        from qfit.activities.application.activity_name_refresh_task import ActivityNameRefreshTask
+        dock = QfitDockWidget(self.iface)
+        task = ActivityNameRefreshTask(object(), "unused.gpkg")
+        try:
+            dock._runtime_store().begin_fetch(task)
+            dock._refresh_local_first_dock_from_runtime()
+            dock.resize(420, 900)
+            dock.show()
+            self.qgs.processEvents()
+            button = dock._local_first_dock_composition.sync_content.names_button
+            self.assertTrue(button.isVisible())
+            self.assertTrue(button.isEnabled())
+            self.assertEqual(button.text(), "Cancel name refresh")
+            button.click()
+            self.assertTrue(task.isCanceled())
+            self.assertIs(dock._fetch_task, task)
+        finally:
+            dock._runtime_store().clear_fetch()
+            dock.close()
+            dock.deleteLater()
+
     def test_narrow_dock_keeps_all_local_first_navigation_items_visible(self):
         dock = QfitDockWidget(self.iface)
         try:

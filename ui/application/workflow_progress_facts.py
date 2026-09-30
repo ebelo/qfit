@@ -23,6 +23,7 @@ class WorkflowProgressFacts:
     analysis_generated: bool = False
     atlas_exported: bool = False
     sync_in_progress: bool = False
+    name_refresh_in_progress: bool = False
     route_sync_in_progress: bool = False
     atlas_export_in_progress: bool = False
     preferred_current_key: str | None = None
@@ -73,6 +74,7 @@ def build_workflow_progress_facts_from_runtime_state(
         analysis_generated=state.analysis_layer is not None,
         atlas_exported=atlas_exported,
         sync_in_progress=_has_sync_task(state),
+        name_refresh_in_progress=getattr(state.fetch_task, "is_name_refresh", False) is True,
         route_sync_in_progress=state.route_sync_task is not None,
         atlas_export_in_progress=state.atlas_export_task is not None,
         preferred_current_key=preferred_current_key,

@@ -88,6 +88,7 @@ def completed_prefix_facts(facts: WorkflowProgressFacts) -> WorkflowProgressFact
         analysis_generated="analysis" in completed,
         atlas_exported="atlas" in completed,
         sync_in_progress=facts.sync_in_progress,
+        name_refresh_in_progress=facts.name_refresh_in_progress,
         route_sync_in_progress=facts.route_sync_in_progress,
         atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=facts.preferred_current_key,
@@ -186,9 +187,13 @@ def _sync_state_from_facts(facts: WorkflowProgressFacts) -> SyncPageState:
         primary_action_blocked_tooltip=sync_blocked_tooltip,
         local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
         local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
-        names_action_enabled=(facts.connection_configured and facts.activities_stored
-                              and not facts.sync_in_progress and not facts.route_sync_in_progress
-                              and not facts.atlas_export_in_progress),
+        names_action_label=("Cancel name refresh" if facts.name_refresh_in_progress
+                            else default.names_action_label),
+        names_action_enabled=(facts.name_refresh_in_progress or (
+            facts.connection_configured and facts.activities_stored
+            and not facts.sync_in_progress and not facts.route_sync_in_progress
+            and not facts.atlas_export_in_progress
+        )),
         routes_action_label=routes_action_label,
         routes_action_enabled=(
             facts.route_sync_in_progress

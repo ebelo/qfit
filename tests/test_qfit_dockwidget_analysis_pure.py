@@ -2793,6 +2793,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_status = MagicMock()
         self.module.QfitDockWidget.on_refresh_clicked(dock)
         task.cancel.assert_called_once()
+        task.cancel.reset_mock()
+        dock.on_refresh_activity_names_clicked()
+        task.cancel.assert_called_once()
         self.assertIs(dock._fetch_task, task)
         dock._set_fetch_running.assert_not_called()
 
