@@ -2724,6 +2724,105 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error.assert_called_once()
         dock._set_status.assert_called_once_with("Load route layers failed")
 
+    def test_start_name_refresh_queues_selected_ids(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._bulk_work_active = MagicMock(return_value=False)
+        dock._non_bulk_data_task_active = MagicMock(return_value=False)
+        dock.outputPathLineEdit = MagicMock()
+        dock._strava_credentials = MagicMock(return_value=SimpleNamespace(
+            client_id="id", client_secret="secret", refresh_token="refresh"))
+        dock.cache = object()
+        dock.sync_controller = MagicMock()
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        stub = ModuleType("qfit.activities.application.activity_name_refresh_task")
+        stub.ActivityNameRefreshTask = MagicMock()
+        with tempfile.NamedTemporaryFile() as output:
+            dock.outputPathLineEdit.text.return_value = output.name
+            with patch.dict(sys.modules, {stub.__name__: stub}), \
+                    patch.object(self.module, "QInputDialog") as dialog, \
+                    patch.object(self.module, "QgsApplication") as application:
+                dialog.getText.return_value = ("42,43", True)
+                dock.on_refresh_activity_names_clicked()
+                stub.ActivityNameRefreshTask.assert_called_once()
+                self.assertEqual(stub.ActivityNameRefreshTask.call_args.args[1:], (output.name, ("42", "43")))
+                task = stub.ActivityNameRefreshTask.return_value
+                self.assertIs(dock._fetch_task, task)
+                application.taskManager.return_value.addTask.assert_called_once_with(task)
+
+    def test_name_refresh_rejects_busy_missing_invalid_and_cancelled_selection(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._bulk_work_active = MagicMock(return_value=True)
+        dock._non_bulk_data_task_active = MagicMock(return_value=False)
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        stub = ModuleType("qfit.activities.application.activity_name_refresh_task")
+        stub.ActivityNameRefreshTask = MagicMock()
+        with patch.dict(sys.modules, {stub.__name__: stub}):
+            dock.on_refresh_activity_names_clicked()
+            dock._set_status.assert_called_once()
+            dock._bulk_work_active.return_value = False
+            dock.outputPathLineEdit = MagicMock()
+            dock.outputPathLineEdit.text.return_value = "/missing.gpkg"
+            dock.on_refresh_activity_names_clicked()
+            dock._show_error.assert_called_once()
+            with tempfile.NamedTemporaryFile() as output, patch.object(self.module, "QInputDialog") as dialog:
+                dock.outputPathLineEdit.text.return_value = output.name
+                dialog.getText.return_value = ("", False)
+                dock.on_refresh_activity_names_clicked()
+                dialog.getText.return_value = ("bad id", True)
+                dock.on_refresh_activity_names_clicked()
+                self.assertEqual(dock._show_error.call_count, 2)
+            stub.ActivityNameRefreshTask.assert_not_called()
+
+    def test_name_refresh_completion_handles_failure_and_cancel(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock._on_activity_names_refreshed("store.gpkg", None, "locked", False)
+        dock._show_error.assert_called_once_with("Activity name refresh failed", "locked")
+        dock._on_activity_names_refreshed("store.gpkg", None, None, True)
+        self.assertIn("cancelled", dock._set_status.call_args.args[0])
+
+    def test_name_refresh_cancel_keeps_task_reserved_until_finished(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        task = MagicMock(is_name_refresh=True)
+        dock._fetch_task = task
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        self.module.QfitDockWidget.on_refresh_clicked(dock)
+        task.cancel.assert_called_once()
+        task.cancel.reset_mock()
+        dock.on_refresh_activity_names_clicked()
+        task.cancel.assert_called_once()
+        self.assertIs(dock._fetch_task, task)
+        dock._set_fetch_running.assert_not_called()
+
+    def test_name_refresh_updates_in_memory_names_and_reloads_matching_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        activity = SimpleNamespace(source="strava", source_activity_id="42", name="Old")
+        dock._runtime_store().finish_fetch(activities=[activity], metadata={})
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        dock._mark_atlas_export_stale = MagicMock()
+        matching = MagicMock()
+        matching.source.return_value = "/tmp/selected.gpkg|layername=activity_tracks"
+        other = MagicMock()
+        other.source.return_value = "/tmp/other.gpkg|layername=activity_tracks"
+        with patch.object(self.module, "QgsProject") as project:
+            project.instance.return_value.mapLayers.return_value = {"a": matching, "b": other}
+            dock._on_activity_names_refreshed(
+                "/tmp/selected.gpkg",
+                {"updated": 1, "unchanged": 0, "not_stored": 0, "names": {"42": "New"}},
+                None, False,
+            )
+        self.assertEqual(activity.name, "New")
+        matching.reload.assert_called_once()
+        matching.triggerRepaint.assert_called_once()
+        other.reload.assert_not_called()
+        dock._mark_atlas_export_stale.assert_called_once()
+
     def test_on_refresh_clicked_cancels_existing_fetch_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
         running_task = MagicMock()

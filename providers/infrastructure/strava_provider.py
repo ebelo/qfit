@@ -76,6 +76,13 @@ class StravaProvider:
         except StravaClientError as exc:
             raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
 
+    def fetch_activity_name(self, activity_id):
+        """Fetch one current activity name without detailed streams."""
+        try:
+            return self._client.fetch_activity_name(activity_id)
+        except StravaClientError as exc:
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
+
     def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
         """Fetch saved routes from Strava.
 

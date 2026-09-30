@@ -623,6 +623,51 @@ class SyncRepository:
         )
         return removed_keys
 
+    def refresh_activity_names(self, names, *, cancelled=None):
+        """Atomically refresh existing Strava names without touching sync/data state."""
+        from .activities.infrastructure.geopackage.activity_name_publication import (
+            publish_activity_name, register_name_publication_functions,
+        )
+
+        if not self._database_exists():
+            raise ValueError("Select an existing qfit GeoPackage first.")
+        updated = unchanged = missing = 0
+        refreshed_names = {}
+        with self._connect() as connection:
+            register_name_publication_functions(connection)
+            connection.execute("BEGIN IMMEDIATE")
+            for activity_id, name in names.items():
+                if cancelled is not None and cancelled():
+                    raise InterruptedError("Activity name refresh cancelled")
+                if not isinstance(name, str):
+                    raise ValueError("Strava returned an invalid activity name.")
+                key = ("strava", str(activity_id))
+                row = connection.execute(
+                    "SELECT * FROM activity_registry WHERE source = ? AND source_activity_id = ?",
+                    key,
+                ).fetchone()
+                if row is None:
+                    missing += 1
+                    continue
+                refreshed_names[str(activity_id)] = name
+                if row["name"] == name:
+                    unchanged += 1
+                    continue
+                payloads = self._load_detail_payloads(connection, keys=[key])
+                record = self._row_to_record(row, payloads=payloads)
+                record["name"] = name
+                connection.execute(
+                    "UPDATE activity_registry SET name = ?, summary_hash = ? "
+                    "WHERE source = ? AND source_activity_id = ?",
+                    (name, self._compute_summary_hash(record), *key),
+                )
+                publish_activity_name(connection, record)
+                updated += 1
+            if cancelled is not None and cancelled():
+                raise InterruptedError("Activity name refresh cancelled")
+        return {"updated": updated, "unchanged": unchanged, "not_stored": missing,
+                "names": refreshed_names}
+
     def load_all_activity_records(self):
         with self._connect() as connection:
             cursor = connection.cursor()

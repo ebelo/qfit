@@ -279,6 +279,28 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_live_dock_exposes_name_refresh_cancellation(self):
+        from qfit.activities.application.activity_name_refresh_task import ActivityNameRefreshTask
+        dock = QfitDockWidget(self.iface)
+        task = ActivityNameRefreshTask(object(), "unused.gpkg")
+        try:
+            dock._runtime_store().begin_fetch(task)
+            dock._refresh_local_first_dock_from_runtime()
+            dock.resize(420, 900)
+            dock.show()
+            self.qgs.processEvents()
+            button = dock._local_first_dock_composition.sync_content.names_button
+            self.assertTrue(button.isVisible())
+            self.assertTrue(button.isEnabled())
+            self.assertEqual(button.text(), "Cancel name refresh")
+            button.click()
+            self.assertTrue(task.isCanceled())
+            self.assertIs(dock._fetch_task, task)
+        finally:
+            dock._runtime_store().clear_fetch()
+            dock.close()
+            dock.deleteLater()
+
     def test_narrow_dock_keeps_all_local_first_navigation_items_visible(self):
         dock = QfitDockWidget(self.iface)
         try:
@@ -2236,6 +2258,39 @@ class QgisSmokeTests(unittest.TestCase):
             write_activity_points=True,
             point_stride=2,
         )
+
+    def test_name_refresh_preserves_real_gpkg_geometries_and_samples(self):
+        import sqlite3
+        from qfit.sync_repository import SyncRepository
+        from qfit.activities.application.activity_name_refresh_task import ActivityNameRefreshTask
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = self._write_sample_gpkg_with_options(
+                temp_dir, filename="name-refresh.gpkg", write_activity_points=True, point_stride=2,
+            )
+            repo = SyncRepository(output_path)
+            activity = repo.load_all_activity_records()[0]
+            def snapshot(table):
+                with sqlite3.connect(output_path) as connection:
+                    columns = [row[1] for row in connection.execute(f'PRAGMA table_info("{table}")')]
+                    unchanged = [column for column in columns if column not in {
+                        "name", "page_name", "page_title", "page_toc_label", "toc_entry_label", "page_sort_key"}]
+                    selection = ",".join(f'"{column}"' for column in unchanged)
+                    return connection.execute(f'SELECT {selection} FROM "{table}" ORDER BY rowid').fetchall()
+            tables = ("activity_tracks", "activity_starts", "activity_points", "activity_atlas_pages",
+                      "atlas_profile_samples", "atlas_toc_entries", "atlas_page_detail_items", "sync_state")
+            before = {table: snapshot(table) for table in tables}
+            result = repo.refresh_activity_names({activity["source_activity_id"]: "Historical renamed ride"})
+            self.assertEqual(result["updated"], 1)
+            self.assertEqual(before, {table: snapshot(table) for table in tables})
+            with sqlite3.connect(output_path) as connection:
+                name = connection.execute(
+                    "SELECT name FROM activity_tracks WHERE source = ? AND source_activity_id = ?",
+                    (activity["source"], activity["source_activity_id"]),
+                ).fetchone()[0]
+            self.assertEqual(name, "Historical renamed ride")
+            from qgis.core import QgsTask
+            self.assertTrue(issubclass(ActivityNameRefreshTask, QgsTask))
 
     def _write_sample_gpkg_without_points(self, temp_dir):
         return self._write_sample_gpkg_with_options(

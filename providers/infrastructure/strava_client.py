@@ -94,6 +94,7 @@ class StravaClient:
     TOKEN_URL = "https://www.strava.com/oauth/token"
     ATHLETE_URL = "https://www.strava.com/api/v3/athlete"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
+    ACTIVITY_URL = "https://www.strava.com/api/v3/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     ROUTES_URL_TEMPLATE = "https://www.strava.com/api/v3/athletes/{athlete_id}/routes"
     ROUTE_DETAIL_URL_TEMPLATE = "https://www.strava.com/api/v3/routes/{route_id}"
@@ -318,6 +319,20 @@ class StravaClient:
             self.last_stream_enrichment_stats = self._empty_stream_enrichment_stats()
 
         return activities
+
+    def fetch_activity_name(self, activity_id):
+        """Fetch current metadata for one activity, without requesting streams."""
+        token = self.get_access_token()
+        payload = self._request_json(
+            f"{self.ACTIVITY_URL}/{activity_id}",
+            headers=self._build_request_headers(token=token),
+            operation="Refreshing Strava activity name",
+        )
+        if not isinstance(payload, dict) or not isinstance(payload.get("name"), str):
+            raise StravaClientError("Strava returned invalid activity metadata")
+        if str(payload.get("id")) != str(activity_id):
+            raise StravaClientError("Strava returned an unexpected activity identity")
+        return payload["name"]
 
     def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
         """Fetch the authenticated athlete's saved Strava routes.

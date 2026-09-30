@@ -7,11 +7,15 @@ from datetime import date
 
 logger = logging.getLogger(__name__)
 
+_ACTIVITY_NAME_REFRESH_TITLE = "Refresh activity names"
+_ACTIVITY_NAME_REFRESH_WAIT = "Wait for the activity name refresh to finish."
+
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, Qt, QTimer
 from qgis.PyQt.QtWidgets import (
     QFileDialog,
+    QInputDialog,
     QDockWidget,
     QMessageBox,
 )
@@ -317,6 +321,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     )
                 ),
                 sync_activities=self.on_refresh_clicked,
+                refresh_activity_names=self.on_refresh_activity_names_clicked,
                 import_bulk_archive=self.on_import_strava_bulk_export_clicked,
                 store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
@@ -988,6 +993,80 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if task is not None:
                 task.cancel()
 
+    def on_refresh_activity_names_clicked(self):
+        if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+            self._fetch_task.cancel()
+            self._set_status("Cancelling activity name refresh…")
+            return
+        from .activities.application.activity_name_refresh import parse_activity_ids
+        from .activities.application.activity_name_refresh_task import ActivityNameRefreshTask
+
+        if self._bulk_work_active() or self._non_bulk_data_task_active():
+            self._set_status("Wait for active data tasks to finish before refreshing names.")
+            return
+        output_path = self.outputPathLineEdit.text().strip()
+        if not os.path.isfile(output_path):
+            self._show_error(_ACTIVITY_NAME_REFRESH_TITLE, "Select an existing qfit GeoPackage first.")
+            return
+        text, accepted = QInputDialog.getText(
+            self, _ACTIVITY_NAME_REFRESH_TITLE,
+            "Strava activity IDs, separated by commas. Leave empty for all history.\n"
+            "Only stored names are updated; tracks and measurements are preserved.\n"
+            "Historical refresh uses Strava API requests and may hit rate limits.",
+        )
+        if not accepted:
+            return
+        try:
+            activity_ids = parse_activity_ids(text)
+            credentials = self._strava_credentials()
+            provider = self.sync_controller.build_strava_provider(
+                self.sync_controller.build_provider_request(
+                    client_id=credentials.client_id,
+                    client_secret=credentials.client_secret,
+                    refresh_token=credentials.refresh_token,
+                    cache=self.cache,
+                )
+            )
+        except (ValueError, ProviderError) as exc:
+            self._show_error(_ACTIVITY_NAME_REFRESH_TITLE, str(exc))
+            return
+        task = ActivityNameRefreshTask(
+            provider, output_path, activity_ids,
+            on_finished=lambda result, error, cancelled: self._on_activity_names_refreshed(
+                output_path, result, error, cancelled,
+            ),
+        )
+        self._runtime_store().begin_fetch(task)
+        self._set_fetch_running(True)
+        task.progressChanged.connect(lambda _value: self._refresh_fetch_progress(task))
+        self._set_status("Refreshing Strava activity names…")
+        QgsApplication.taskManager().addTask(task)
+
+    def _on_activity_names_refreshed(self, output_path, result, error, cancelled):
+        self._runtime_store().clear_fetch()
+        self._set_fetch_running(False)
+        if error:
+            self._show_error("Activity name refresh failed", error)
+            self._set_status("Activity name refresh failed; no names changed.")
+            return
+        if cancelled:
+            self._set_status("Activity name refresh cancelled; no names changed.")
+            return
+        if result["updated"]:
+            self._mark_atlas_export_stale()
+        refreshed_names = result.get("names", {})
+        for activity in self.runtime_state.activities or []:
+            if activity.source == "strava" and str(activity.source_activity_id) in refreshed_names:
+                activity.name = refreshed_names[str(activity.source_activity_id)]
+        for layer in QgsProject.instance().mapLayers().values():
+            if os.path.normcase(layer.source().split("|")[0]) == os.path.normcase(output_path):
+                layer.reload()
+                layer.triggerRepaint()
+        self._set_status(
+            "Activity names refreshed: {updated} updated, {unchanged} unchanged, "
+            "{not_stored} not stored locally (ignored).".format(**result)
+        )
+
     def on_refresh_clicked(self):
         if self._bulk_work_active():
             self._set_status("Wait for the Strava bulk import to finish before fetching activities.")
@@ -995,6 +1074,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         # If a fetch is already running, cancel it.
         if self._fetch_task is not None:
             self._fetch_task.cancel()
+            if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+                self._set_status("Cancelling activity name refresh…")
+                return
             self._runtime_store().clear_fetch()
             self._set_fetch_running(False)
             self._set_status("Fetch cancelled.")
@@ -1127,6 +1209,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._start_store_activities(status_text="Store started...")
 
     def _start_store_activities(self, *, status_text):
+        if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+            self._set_status(_ACTIVITY_NAME_REFRESH_WAIT)
+            return
         if self._bulk_work_active():
             self._set_status("Wait for the Strava bulk import to finish before storing activities.")
             return None
@@ -1212,6 +1297,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_sync_routes_clicked(self):
         """Fetch saved Strava routes, persist them, and load route layers."""
+        if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+            self._set_status(_ACTIVITY_NAME_REFRESH_WAIT)
+            return
 
         if self._bulk_work_active():
             self._set_status("Wait for the Strava bulk import to finish before syncing routes.")
@@ -1879,6 +1967,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._refresh_summary_status()
 
     def on_generate_atlas_pdf_clicked(self):
+        if getattr(getattr(self, "_fetch_task", None), "is_name_refresh", False) is True:
+            self._set_status(_ACTIVITY_NAME_REFRESH_WAIT)
+            return
         if self._bulk_work_active():
             self._set_status("Wait for the Strava bulk import to finish before exporting the atlas.")
             return

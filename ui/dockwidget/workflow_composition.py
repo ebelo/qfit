@@ -417,6 +417,7 @@ def _connect_action_callbacks(
         callbacks.configure_connection,
     )
     _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
+    _connect_optional_signal(sync_content, "refreshNamesRequested", callbacks.refresh_activity_names)
     _connect_optional_signal(sync_content, "storeRequested", callbacks.store_activities)
     _connect_optional_signal(
         sync_content,
