@@ -76,6 +76,7 @@ try:
     from qfit.activities.domain.models import Activity
     from qfit.qfit_config_dialog import QfitConfigDialog
     from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
+    from qfit.ui.dockwidget.action_row import QT_BOX_LAYOUT_TOP_TO_BOTTOM
     from qfit.ui.application.local_first_control_visibility import (
         update_local_first_mapbox_custom_style_visibility,
         update_local_first_point_sampling_visibility,
@@ -294,9 +295,14 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(all(item.isVisible() for item in items))
             self.assertTrue(all(item.label().isVisible() for item in items))
             self.assertTrue(all(item.geometry().height() > 0 for item in items))
+            self.assertEqual(shell.page_count(), 5)
+
+            action_row = dock._local_first_dock_composition.sync_content.action_row
+            action_row.set_responsive_width(320)
+            self.assertEqual(action_row.property("responsiveMode"), "narrow")
             self.assertEqual(
-                shell.page_count(),
-                5,
+                action_row.outer_layout().direction(),
+                QT_BOX_LAYOUT_TOP_TO_BOTTOM,
             )
         finally:
             dock.close()
