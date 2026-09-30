@@ -45,6 +45,13 @@ These are packaging targets, not separate products. New qfit feature work should
 
 Install the ZIP that matches your QGIS major version. Do not install both packages into the same QGIS profile at the same time because both expose the same plugin name, `qfit`.
 
+### QGIS interface readability on Windows
+
+If QGIS 4 inherits Windows dark mode and the qfit dock is hard to read, see
+[QGIS 4 light mode on Windows](docs/qgis4-windows-light-mode.md). The guide
+explains how to keep Windows dark while launching QGIS in light mode, with a
+workaround verified on QGIS 4.2.3.
+
 ### Main outputs
 
 qfit uses a GeoPackage as both local sync store and QGIS data source.
