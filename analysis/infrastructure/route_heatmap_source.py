@@ -104,7 +104,10 @@ def projected_crs(bounds):
     lat = (bounds[2] + bounds[3]) / 2
     regional = bounds[1] - bounds[0] <= 12 and bounds[3] - bounds[2] <= 12 and -80 <= lat <= 80
     zone = min(60, max(1, int((lon + 180) // 6) + 1))
-    epsg = (32600 if lat >= 0 else 32700) + zone if regional else 3857
+    epsg = 3857
+    if regional:
+        hemisphere = 32600 if lat >= 0 else 32700
+        epsg = hemisphere + zone
     crs = osr.SpatialReference()
     crs.ImportFromEPSG(epsg)
     crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)

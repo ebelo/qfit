@@ -12,6 +12,7 @@ from ..domain.route_density import activity_cells, check_cancelled, tile_cell
 from .route_heatmap_source import projected_crs, projected_parts, snapshot_tracks
 
 MAX_TILES = 4096
+HEATMAP_VRT_NAME = "heatmap.vrt"
 
 
 def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value: None):
@@ -34,7 +35,7 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
         if not paths:
             return None
         from osgeo import gdal
-        vrt = gdal.BuildVRT(str(artifact_dir / "heatmap.vrt"), [str(p) for p in paths], srcNodata=0, VRTNodata=0)
+        vrt = gdal.BuildVRT(str(artifact_dir / HEATMAP_VRT_NAME), [str(p) for p in paths], srcNodata=0, VRTNodata=0)
         if vrt is None:
             raise ValueError("Could not build the heatmap mosaic")
         vrt.FlushCache()
@@ -60,7 +61,7 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
                 raise
             return concurrent
         progress(100)
-        return RouteHeatmapArtifact(str(destination / "heatmap.vrt"), key, count, authid, maximum)
+        return RouteHeatmapArtifact(str(destination / HEATMAP_VRT_NAME), key, count, authid, maximum)
 
 
 def _cached_artifact(directory, key):
@@ -69,14 +70,14 @@ def _cached_artifact(directory, key):
         if manifest["cache_key"] != key:
             return None
         files = manifest["files"]
-        if not isinstance(files, dict) or "heatmap.vrt" not in files or not any(name.endswith(".tif") for name in files):
+        if not isinstance(files, dict) or HEATMAP_VRT_NAME not in files or not any(name.endswith(".tif") for name in files):
             return None
         if manifest["activity_count"] <= 0 or not math.isfinite(manifest["maximum"]) or manifest["maximum"] <= 0:
             return None
         for filename, digest in files.items():
             if Path(filename).name != filename or hashlib.sha256((directory / filename).read_bytes()).hexdigest() != digest:
                 return None
-        return RouteHeatmapArtifact(str(directory / "heatmap.vrt"), key, manifest["activity_count"],
+        return RouteHeatmapArtifact(str(directory / HEATMAP_VRT_NAME), key, manifest["activity_count"],
                                     manifest["crs"], manifest["maximum"], True)
     except (OSError, ValueError, KeyError, TypeError):
         return None

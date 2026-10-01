@@ -27,6 +27,11 @@ from qfit.analysis.infrastructure.route_heatmap_raster import build_route_heatma
 from qfit.analysis.infrastructure.route_heatmap_layer import create_route_heatmap_layer
 
 
+def _colored_pixels(image):
+    return sum(image.pixelColor(x, y) != QColor('#f3f4f6')
+               for y in range(image.height()) for x in range(image.width()))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path, required=True)
@@ -87,8 +92,7 @@ def main():
                 name = f'{args.runtime}-{camera}-{label}-{repeat}.png'
                 if image.isNull() or not image.save(str(args.output / name)):
                     raise RuntimeError('Synthetic capture failed')
-                colored = sum(image.pixelColor(x,y) != QColor('#f3f4f6')
-                              for y in range(image.height()) for x in range(image.width()))
+                colored = _colored_pixels(image)
                 if colored < 50:
                     raise RuntimeError(f'Capture has no route content: {name}')
                 captures.append({'file': name, 'camera': camera, 'role': label, 'repeat': repeat,

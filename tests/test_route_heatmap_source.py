@@ -154,8 +154,9 @@ class RouteHeatmapSourceTests(unittest.TestCase):
             self.assertEqual(projected_crs(bounds)[1], expected)
         multi = _Geometry(kind=5, children=[self.geometry, self.geometry])
         self.assertEqual(_line_parts(multi), [self.geometry.points, self.geometry.points])
+        invalid_geometry = _Geometry(kind=1)
         with self.assertRaises(ValueError):
-            _line_parts(_Geometry(kind=1))
+            _line_parts(invalid_geometry)
         snapshot, _, crs, _, _ = snapshot_tracks(self.request, self.root, lambda: False)
         self.geometry.failure = True
         with patch.object(self.ogr, 'CreateGeometryFromWkb', return_value=self.geometry), self.assertRaisesRegex(ValueError, 'project'):

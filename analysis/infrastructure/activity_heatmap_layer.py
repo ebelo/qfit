@@ -7,6 +7,8 @@ ACTIVITY_HEATMAP_LAYER_NAME = "qfit activity heatmap"
 
 
 def build_activity_heatmap_layer(activities_layer=None, points_layer=None):
+    # Preserve the legacy keyword API without allowing sample density to bias visits.
+    del points_layer
     from pathlib import Path
     if activities_layer is None or not activities_layer.isValid():
         return None, 0

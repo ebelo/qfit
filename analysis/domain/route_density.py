@@ -28,6 +28,14 @@ def check_cancelled(cancelled):
         raise HeatmapCancelled()
 
 
+def _axis_traversal(origin, displacement, cell):
+    if not displacement:
+        return 0, inf, inf
+    step = 1 if displacement > 0 else -1
+    boundary = cell + 1 if displacement > 0 else cell
+    return step, abs(1 / displacement), (boundary - origin) / displacement
+
+
 def segment_cells(start, end, cell_size):
     """Walk a segment on an origin-anchored grid, independent of vertex spacing."""
     x0, y0 = start[0] / cell_size, start[1] / cell_size
@@ -37,10 +45,8 @@ def segment_cells(start, end, cell_size):
     col, row = floor(x0), floor(y0)
     end_col, end_row = floor(x1), floor(y1)
     dx, dy = x1 - x0, y1 - y0
-    step_x, step_y = (1 if dx > 0 else -1), (1 if dy > 0 else -1)
-    delta_x, delta_y = (abs(1 / dx) if dx else inf), (abs(1 / dy) if dy else inf)
-    next_x = ((col + 1 - x0) / dx if dx > 0 else (col - x0) / dx) if dx else inf
-    next_y = ((row + 1 - y0) / dy if dy > 0 else (row - y0) / dy) if dy else inf
+    step_x, delta_x, next_x = _axis_traversal(x0, dx, col)
+    step_y, delta_y, next_y = _axis_traversal(y0, dy, row)
     yield col, row
     while (col, row) != (end_col, end_row):
         if col == end_col:

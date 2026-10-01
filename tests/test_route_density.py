@@ -27,12 +27,14 @@ class RouteDensityTests(unittest.TestCase):
         self.assertEqual(activity_cells([[], [(1, 1)]], RouteDensityParameters()), set())
 
     def test_safe_budgets_cancel_and_invalid_coordinates(self):
+        parameters = RouteDensityParameters()
         with self.assertRaises(HeatmapCancelled):
-            activity_cells([[(1, 1), (50000, 2)]], RouteDensityParameters(), lambda: True)
+            activity_cells([[(1, 1), (50000, 2)]], parameters, lambda: True)
         with self.assertRaises(ValueError):
-            activity_cells([[(0, 0), (100, 10)]], RouteDensityParameters(), max_cells=3)
+            activity_cells([[(0, 0), (100, 10)]], parameters, max_cells=3)
+        invalid_cells = segment_cells((float("nan"), 0), (2, 3), 10)
         with self.assertRaises(ValueError):
-            list(segment_cells((float("nan"), 0), (2, 3), 10))
+            list(invalid_cells)
         for kwargs in ({"cell_size": 0}, {"sigma": -1}, {"sigma": 99999}, {"tile_size": 2}, {"cell_size": float("inf")}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 RouteDensityParameters(**kwargs)
