@@ -845,14 +845,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "The export and resulting GeoPackage contain sensitive personal "
             "location and health data. Import in bounded batches now?"
         )
+        yes_button = qt_class_enum_value(QMessageBox, "StandardButton", "Yes")
+        no_button = qt_class_enum_value(QMessageBox, "StandardButton", "No")
         reply = QMessageBox.question(
             self,
             "Import Strava bulk export",
             confirmation,
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            yes_button | no_button,
+            no_button,
         )
-        if reply != QMessageBox.Yes:
+        if reply != yes_button:
             self._bulk_archive_path = None
             self._set_bulk_import_running(False)
             self._set_status("Strava bulk import not started")
@@ -933,7 +935,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         message_box.setWindowTitle("Strava bulk import complete")
         message_box.setText(summary)
         message_box.setDetailedText(result.private_diagnostic_report())
-        message_box.setStandardButtons(QMessageBox.Ok)
+        message_box.setStandardButtons(
+            qt_class_enum_value(QMessageBox, "StandardButton", "Ok")
+        )
         exec_method = getattr(message_box, "exec", None) or message_box.exec_
         exec_method()
 
@@ -1552,14 +1556,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error(*build_missing_output_path_error())
             return
 
+        yes_button = qt_class_enum_value(QMessageBox, "StandardButton", "Yes")
+        no_button = qt_class_enum_value(QMessageBox, "StandardButton", "No")
         reply = QMessageBox.question(
             self,
             build_clear_database_confirmation_title(),
             build_clear_database_confirmation_body(output_path),
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            yes_button | no_button,
+            no_button,
         )
-        if reply != QMessageBox.Yes:
+        if reply != yes_button:
             return
 
         workflow = self._clear_database_workflow_service()

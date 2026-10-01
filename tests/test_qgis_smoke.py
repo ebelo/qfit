@@ -7,6 +7,7 @@ import textwrap
 import unittest
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
@@ -42,9 +43,9 @@ try:
         QgsRectangle,
         QgsVectorLayer,
     )
-    from qgis.PyQt.QtCore import QDate, Qt
+    from qgis.PyQt.QtCore import QDate, Qt, QTimer
     from qgis.PyQt.QtGui import QImage
-    from qgis.PyQt.QtWidgets import QFormLayout
+    from qgis.PyQt.QtWidgets import QApplication, QFormLayout, QMessageBox
 
     from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
@@ -254,6 +255,165 @@ class QgisSmokeTests(unittest.TestCase):
         finally:
             dock.close()
             dock.deleteLater()
+
+    def _run_with_message_box_response(self, callback, response):
+        """Click a real modal button; stop both timers even if the callback fails."""
+        seen = []
+        errors = []
+        responder = QTimer()
+        watchdog = QTimer()
+        watchdog.setSingleShot(True)
+
+        def respond():
+            box = QApplication.activeModalWidget()
+            if not isinstance(box, QMessageBox):
+                return
+            responder.stop()
+            try:
+                seen.append({
+                    "title": box.windowTitle(), "text": box.text(),
+                    "details": box.detailedText(), "buttons": box.standardButtons(),
+                    "default": box.standardButton(box.defaultButton()),
+                })
+                button = box.button(response)
+                if button is None:
+                    raise AssertionError("Expected response button is missing")
+                button.click()
+            except Exception as exc:
+                errors.append(str(exc))
+                box.reject()
+
+        def timeout():
+            errors.append("Modal dialog did not complete within the test deadline")
+            responder.stop()
+            box = QApplication.activeModalWidget()
+            if isinstance(box, QMessageBox):
+                box.reject()
+
+        responder.timeout.connect(respond)
+        watchdog.timeout.connect(timeout)
+        responder.start(10)
+        watchdog.start(3000)
+        try:
+            callback()
+        finally:
+            responder.stop()
+            watchdog.stop()
+        self.assertEqual(errors, [])
+        self.assertEqual(len(seen), 1)
+        return seen[0]
+
+    @staticmethod
+    def _dialog_test_preflight():
+        from qfit.providers.infrastructure.strava_bulk_archive import BulkArchivePreflight
+        return BulkArchivePreflight(
+            archive_fingerprint="synthetic-fingerprint", activity_count=1,
+            referenced_file_count=1, summary_only_count=0, conflict_count=0,
+            missing_file_count=0, unsupported_file_count=0,
+            referenced_expanded_bytes=1024, format_counts={"gpx": 1},
+        )
+
+    def test_bulk_import_confirmation_real_dialog_yes_and_no(self):
+        yes = qt_class_enum_value(QMessageBox, "StandardButton", "Yes")
+        no = qt_class_enum_value(QMessageBox, "StandardButton", "No")
+        for response in (no, yes):
+            with self.subTest(response=response), tempfile.TemporaryDirectory() as temp_dir:
+                dock = QfitDockWidget(self.iface)
+                output_path = str(Path(temp_dir) / "not-created.gpkg")
+                archive_path = str(Path(temp_dir) / "not-opened.zip")
+                workflow = MagicMock()
+                dock._bulk_archive_path = archive_path
+                try:
+                    with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as manager:
+                        dialog = self._run_with_message_box_response(
+                            lambda: dock._handle_bulk_preflight_finished(
+                                workflow, output_path, self._dialog_test_preflight(), None, False,
+                            ), response,
+                        )
+                    self.assertEqual(dialog["buttons"], yes | no)
+                    self.assertEqual(dialog["default"], no)
+                    self.assertEqual(dialog["title"], "Import Strava bulk export")
+                    self.assertIn("Activities: 1", dialog["text"])
+                    workflow.run.assert_not_called()
+                    self.assertFalse(Path(output_path).exists())
+                    if response == yes:
+                        task = dock._bulk_import_task
+                        manager.return_value.addTask.assert_called_once_with(task)
+                        self.assertEqual(task._request.archive_path, archive_path)
+                        self.assertEqual(task._request.output_path, output_path)
+                        self.assertEqual(task._request.expected_archive_fingerprint, "synthetic-fingerprint")
+                        self.assertEqual(dock._bulk_destination_path, output_path)
+                    else:
+                        manager.return_value.addTask.assert_not_called()
+                        self.assertIsNone(dock._bulk_archive_path)
+                        self.assertIsNone(dock._bulk_import_task)
+                finally:
+                    dock._bulk_import_task = None
+                    dock.close()
+                    dock.deleteLater()
+
+    def test_clear_database_confirmation_real_dialog_yes_and_no(self):
+        yes = qt_class_enum_value(QMessageBox, "StandardButton", "Yes")
+        no = qt_class_enum_value(QMessageBox, "StandardButton", "No")
+        for response in (no, yes):
+            with self.subTest(response=response), tempfile.TemporaryDirectory() as temp_dir:
+                output_path = self._write_sample_gpkg_without_points(temp_dir)
+                before = Path(output_path).read_bytes()
+                dock = QfitDockWidget(self.iface)
+                workflow = MagicMock()
+                workflow.clear_database_request.return_value = SimpleNamespace(status="Database cleared")
+                try:
+                    dock.outputPathLineEdit.setText(str(output_path))
+                    with patch.object(dock, "_clear_database_workflow_service", return_value=workflow) as service:
+                        dialog = self._run_with_message_box_response(
+                            dock.on_clear_database_clicked, response,
+                        )
+                    self.assertEqual(dialog["buttons"], yes | no)
+                    self.assertEqual(dialog["default"], no)
+                    self.assertEqual(Path(output_path).read_bytes(), before)
+                    if response == yes:
+                        service.assert_called_once_with()
+                        self.assertEqual(workflow.build_clear_database_request.call_args.kwargs["output_path"], str(output_path))
+                        workflow.clear_database_request.assert_called_once_with(
+                            workflow.build_clear_database_request.return_value,
+                        )
+                    else:
+                        service.assert_not_called()
+                        workflow.clear_database_request.assert_not_called()
+                finally:
+                    dock.close()
+                    dock.deleteLater()
+
+    def test_bulk_import_completion_real_dialog_preserves_stored_result(self):
+        from qfit.activities.application.strava_bulk_import import StravaBulkImportResult
+        ok = qt_class_enum_value(QMessageBox, "StandardButton", "Ok")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = self._write_sample_gpkg_without_points(temp_dir)
+            before = Path(output_path).read_bytes()
+            dock = QfitDockWidget(self.iface)
+            result = StravaBulkImportResult(
+                preflight=self._dialog_test_preflight(), inserted=1, total_stored=1,
+            )
+            dock._bulk_destination_path = str(output_path)
+            dock._bulk_import_task = object()
+            dock._bulk_archive_path = "synthetic.zip"
+            try:
+                dialog = self._run_with_message_box_response(
+                    lambda: dock._handle_bulk_import_finished(result, None, False), ok,
+                )
+                self.assertEqual(dialog["title"], "Strava bulk import complete")
+                self.assertEqual(dialog["buttons"], ok)
+                self.assertIn("Imported 1 activities: 1 inserted", dialog["text"])
+                self.assertEqual(dialog["details"], result.private_diagnostic_report())
+                self.assertEqual(dock.output_path, str(output_path))
+                self.assertEqual(dock.runtime_state.stored_activity_count, 1)
+                self.assertIsNone(dock._bulk_import_task)
+                self.assertIsNone(dock._bulk_archive_path)
+                self.assertIsNone(dock._bulk_destination_path)
+                self.assertEqual(Path(output_path).read_bytes(), before)
+            finally:
+                dock.close()
+                dock.deleteLater()
 
     def test_dock_widget_defaults_to_local_first_live_path(self):
         dock = QfitDockWidget(self.iface)

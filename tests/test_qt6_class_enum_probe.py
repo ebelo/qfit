@@ -29,6 +29,7 @@ def _import_qt():
             QSizePolicy,
             QToolButton,
             QDialogButtonBox,
+            QMessageBox,
         )
     except Exception:
         try:
@@ -42,6 +43,7 @@ def _import_qt():
                 QSizePolicy,
                 QToolButton,
                 QDialogButtonBox,
+                QMessageBox,
             )
         except Exception:
             try:
@@ -55,6 +57,7 @@ def _import_qt():
                     QSizePolicy,
                     QToolButton,
                     QDialogButtonBox,
+                    QMessageBox,
                 )
             except Exception:
                 raise unittest.SkipTest("No Qt binding available")
@@ -69,6 +72,7 @@ def _import_qt():
         QSizePolicy,
         QToolButton,
         QDialogButtonBox,
+        QMessageBox,
     )
 
 
@@ -83,12 +87,16 @@ def _import_qt():
     QSizePolicy,
     QToolButton,
     QDialogButtonBox,
+    QMessageBox,
 ) = _import_qt()
 
 # Every class-scope Qt enum used at class-body or function-call level in qfit source.
 # Each entry: (class, enum_name, member_name)
 # Update this list when adding new class-scope Qt enum references.
 CLASS_SCOPE_ENUMS = [
+    (QMessageBox, "StandardButton", "Yes"),
+    (QMessageBox, "StandardButton", "No"),
+    (QMessageBox, "StandardButton", "Ok"),
     (QBoxLayout, "Direction", "LeftToRight"),
     (QBoxLayout, "Direction", "TopToBottom"),
     (QDockWidget, "DockWidgetFeature", "DockWidgetClosable"),
