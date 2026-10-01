@@ -13,6 +13,6 @@ def build_activity_heatmap_empty_status() -> str:
 
 
 def build_activity_heatmap_success_status(sample_count: int) -> str:
-    return "Showing activity heatmap from {count} sampled route points".format(
+    return "Showing static red activity heatmap from {count} activities".format(
         count=sample_count
     )

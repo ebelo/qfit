@@ -207,7 +207,6 @@ Geometry type:
 
 Primary purpose:
 - point-based analysis and visualization from detailed track streams
-- heatmaps using sampled detailed geometry rather than just activity starts
 - temporal playback in QGIS using sampled local or UTC timestamps
 
 ### Current fields

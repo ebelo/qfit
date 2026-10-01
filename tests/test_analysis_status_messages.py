@@ -31,7 +31,7 @@ class TestAnalysisStatusMessages(unittest.TestCase):
     def test_build_activity_heatmap_success_status(self):
         self.assertEqual(
             build_activity_heatmap_success_status(42),
-            "Showing activity heatmap from 42 sampled route points",
+            "Showing static red activity heatmap from 42 activities",
         )
 
 

@@ -12,6 +12,7 @@ permissions:
 env:
   REAL_QGIS_TESTS: >-
     tests/test_qgis_smoke.py
+    tests/test_route_heatmap_qgis.py
     tests/test_qt6_class_enum_probe.py
     tests/test_background_map_service.py
     tests/test_gpkg_io.py
@@ -40,7 +41,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install test dependencies
-        run: python -m pip install --upgrade pytest pyyaml pypdf fitdecode==0.11.0
+        run: python -m pip install --upgrade pytest pyyaml pypdf fitdecode==0.11.0 numpy==1.26.4
 
       - name: Run unit tests
         run: python -m pytest tests/ -x -q --tb=short

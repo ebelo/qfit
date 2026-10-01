@@ -51,7 +51,7 @@ class TestAnalysisResultBuilder(unittest.TestCase):
 
         self.assertEqual(
             result.status,
-            "Showing activity heatmap from 42 sampled route points",
+            "Showing static red activity heatmap from 42 activities",
         )
         self.assertIs(result.layer, layer)
 

@@ -22,6 +22,7 @@ shift || true
 if [[ "$#" -eq 0 ]]; then
   set -- \
     tests/test_qgis_smoke.py \
+    tests/test_route_heatmap_qgis.py \
     tests/test_qt6_class_enum_probe.py \
     tests/test_background_map_service.py \
     tests/test_gpkg_io.py \
