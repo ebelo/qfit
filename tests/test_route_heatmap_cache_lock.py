@@ -35,20 +35,20 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
             return result.stdout.strip().splitlines()[-1]
         with publication_lock(path, lambda: False):
             self.assertEqual(probe(), 'False')
+            contended = publication_lock(path, lambda: False, timeout=0)
             with self.assertRaises(TimeoutError):
-                with publication_lock(path, lambda: False, timeout=0):
-                    self.fail('Contended lock was acquired')
+                contended.__enter__()
+            cancelled = publication_lock(path, lambda: True)
             with self.assertRaises(HeatmapCancelled):
-                with publication_lock(path, lambda: True):
-                    self.fail('Cancelled publication was acquired')
+                cancelled.__enter__()
         self.assertEqual(probe(), 'True')
         self.assertTrue(path.exists())
         with patch('qfit.analysis.infrastructure.route_heatmap_cache_lock._try_lock', return_value=False), patch(
             'qfit.analysis.infrastructure.route_heatmap_cache_lock.time.sleep', Mock(),
         ), patch('qfit.analysis.infrastructure.route_heatmap_cache_lock.time.monotonic', side_effect=(0, 0, 1)):
+            waiting = publication_lock(path, lambda: False, timeout=.5)
             with self.assertRaises(TimeoutError):
-                with publication_lock(path, lambda: False, timeout=.5):
-                    self.fail('Unreleased lock was acquired')
+                waiting.__enter__()
 
     def test_windows_backend_busy_success_unlock_and_real_io_errors(self):
         backend = SimpleNamespace(locking=Mock(), LK_NBLCK=1, LK_UNLCK=2)
