@@ -1,5 +1,6 @@
 """Read-only, WAL-aware snapshot of selected GeoPackage tracks for a worker."""
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from ..application.route_heatmap import add_track_fingerprint, heatmap_fingerprint
@@ -24,7 +25,7 @@ def snapshot_tracks(request, directory, cancelled):
     check_cancelled(cancelled)
     source_uri = Path(request.source_path).resolve().as_uri() + "?mode=ro"
     snapshot = directory / "tracks.sqlite"
-    with sqlite3.connect(source_uri, uri=True) as source, sqlite3.connect(snapshot) as target:
+    with closing(sqlite3.connect(source_uri, uri=True)) as source, closing(sqlite3.connect(snapshot)) as target, source, target:
         source.execute("BEGIN")
         meta = source.execute(
             "SELECT column_name, srs_id FROM gpkg_geometry_columns WHERE table_name = 'activity_tracks'"
@@ -115,7 +116,7 @@ def projected_parts(snapshot, source_crs, target_crs, cancelled):
     from osgeo import ogr, osr
 
     transform = osr.CoordinateTransformation(source_crs, target_crs)
-    with sqlite3.connect(snapshot) as connection:
+    with closing(sqlite3.connect(snapshot)) as connection:
         rows = connection.execute("SELECT source, activity_id, wkb FROM tracks ORDER BY source, activity_id")
         for identity, group in groupby(rows, key=lambda row: row[:2]):
             parts = []

@@ -164,3 +164,21 @@ class RouteHeatmapSourceTests(unittest.TestCase):
         Path(str(self.source) + '-wal').write_bytes(b'wal write')
         self.assertNotEqual(source_revision(self.source), revision)
         self.assertEqual(source_revision(self.root / 'missing'), (0, 0, 0, 0))
+
+    def test_snapshot_and_projection_close_all_sqlite_handles(self):
+        real_connect = sqlite3.connect
+        opened = []
+        class TrackedConnection(sqlite3.Connection):
+            was_closed = False
+            def close(self):
+                self.was_closed = True
+                super().close()
+        def connect(*args, **kwargs):
+            connection = real_connect(*args, **kwargs, factory=TrackedConnection)
+            opened.append(connection)
+            return connection
+        with patch("qfit.analysis.infrastructure.route_heatmap_source.sqlite3.connect", side_effect=connect):
+            snapshot, _, crs, _, _ = snapshot_tracks(self.request, self.root, lambda: False)
+            self.assertTrue(all(connection.was_closed for connection in opened))
+            list(projected_parts(snapshot, crs, crs, lambda: False))
+            self.assertTrue(all(connection.was_closed for connection in opened))
