@@ -128,7 +128,7 @@ class RouteHeatmapEngineTests(unittest.TestCase):
             self.assertEqual(dataset.transform[1:3], (10, 0))
             self.assertEqual(dataset.transform[5], -10)
             self.assertAlmostEqual(float(dataset.band.pixels.max()), float(dataset.overviews[0].pixels.max()))
-        with patch("qfit.analysis.infrastructure.route_heatmap_raster.MAX_TILES", 0), self.assertRaises(ValueError):
+        with patch.dict("sys.modules", {"osgeo": SimpleNamespace(gdal=self.backend)}), patch("qfit.analysis.infrastructure.route_heatmap_raster.MAX_TILES", 0), self.assertRaises(ValueError):
             _write_tiles(tiles, self.parameters, directory, self.crs, lambda: False, lambda _: None)
 
     def test_atomic_cache_reuse_repair_and_cancellation(self):
