@@ -67,6 +67,16 @@ The probe runs in all environments. On Qt 5 it resolves flat members; on
 Qt 6 it resolves nested members. If neither shape is available, the probe
 fails.
 
+## Real modal dialog callbacks
+
+The real-QGIS smoke suite exercises bulk-import confirmation/completion and
+clear-database callbacks with native QMessageBox widgets. Confirmation tests
+cover both Yes and No and assert the default is No. Timers click the expected
+button and a watchdog bounds modal execution; timers stop even on callback
+failure. Task submission and deletion are intercepted, and temporary GeoPackages
+are checked unchanged. Pure mocked-dialog tests do not replace this coverage.
+The enum probe also includes QMessageBox StandardButton Yes, No and Ok.
+
 ## Running Docker tests locally
 
 ```bash
