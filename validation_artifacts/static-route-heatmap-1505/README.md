@@ -28,3 +28,11 @@ Scoped criteria: C25 route usage (not sample/time density); C23 fixed normalizat
 with display resampling; C24 tile seams tested separately; C28 PNG/QGIS3+4;
 C29 repeated controls and cache timings. C26 complex basemap interaction, C27
 accessibility simulation, Windows deployment and PDF output remain unassessed.
+
+## Final-head verification
+
+Fresh captures on `280dc41` after traversal/CRS/constant refactoring reproduce all
+24 published PNGs byte-for-byte. See `verification-280dc41-qgis3.json` and
+`verification-280dc41-qgis4.json`. No rendering regression or placement noise is
+inferred: exact bytes were compared. Final fresh cold builds: 1.13–1.26 s; warm
+cache: 0.039–0.051 s, within ordinary repeated-run variation for this fixture.
