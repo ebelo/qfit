@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ..application.route_heatmap import RouteHeatmapArtifact
 from ..domain.route_density import activity_cells, check_cancelled, tile_cell
+from .route_heatmap_cache_lock import publication_lock
 from .route_heatmap_source import projected_crs, projected_parts, snapshot_tracks
 
 MAX_TILES = 4096
@@ -44,29 +45,37 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
         manifest = {"cache_key": key, "activity_count": count, "crs": authid,
                     "maximum": maximum, "parameters": asdict(request.parameters), "files": files,
                     "tile_count": len(paths), "maximum_visits": visits}
-        (artifact_dir / "manifest.json").write_text(json.dumps(manifest, sort_keys=True))
+        manifest_bytes = json.dumps(manifest, sort_keys=True).encode()
+        (artifact_dir / "manifest.json").write_bytes(manifest_bytes)
+        (artifact_dir / "manifest.sha256").write_text(hashlib.sha256(manifest_bytes).hexdigest())
         check_cancelled(cancelled)
         destination = cache / key
-        if destination.exists():
-            concurrent = _cached_artifact(destination, key)
-            if concurrent is not None:
-                return concurrent
-            shutil.rmtree(destination)
-        try:
-            artifact_dir.rename(destination)
-        except OSError:
-            # Another worker may have published this same immutable selection.
-            concurrent = _cached_artifact(destination, key)
-            if concurrent is None:
-                raise
+        concurrent = _publish_artifact(artifact_dir, destination, key, cancelled)
+        if concurrent is not None:
             return concurrent
         progress(100)
         return RouteHeatmapArtifact(str(destination / HEATMAP_VRT_NAME), key, count, authid, maximum)
 
 
+def _publish_artifact(artifact_dir, destination, key, cancelled):
+    with publication_lock(destination.parent / (key + ".lock"), cancelled):
+        # Recheck under the cross-process lock, including repairs. A second
+        # worker must never remove a replacement already published by the first.
+        concurrent = _cached_artifact(destination, key)
+        if concurrent is not None:
+            return concurrent
+        if destination.exists():
+            shutil.rmtree(destination)
+        artifact_dir.rename(destination)
+    return None
+
+
 def _cached_artifact(directory, key):
     try:
-        manifest = json.loads((directory / "manifest.json").read_text())
+        manifest_bytes = (directory / "manifest.json").read_bytes()
+        if hashlib.sha256(manifest_bytes).hexdigest() != (directory / "manifest.sha256").read_text():
+            return None
+        manifest = json.loads(manifest_bytes)
         if manifest["cache_key"] != key:
             return None
         files = manifest["files"]

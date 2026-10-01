@@ -158,6 +158,7 @@ class RouteHeatmapEngineTests(unittest.TestCase):
         original = json.loads(manifest.read_text())
         original["cache_key"] = "wrong"
         manifest.write_text(json.dumps(original))
+        (directory / "manifest.sha256").write_text(hashlib.sha256(manifest.read_bytes()).hexdigest())
         self.assertIsNone(_cached_artifact(directory, key))
 
     def test_empty_input_and_failed_backend_do_not_publish(self):
@@ -175,6 +176,7 @@ class RouteHeatmapEngineTests(unittest.TestCase):
                                        ({"heatmap.vrt": "bad", "tile.tif": "bad"}, 1, 0)):
             (directory / "manifest.json").write_text(json.dumps({"cache_key": "key", "files": files,
                                                                 "activity_count": count, "maximum": maximum}))
+            (directory / "manifest.sha256").write_text(hashlib.sha256((directory / "manifest.json").read_bytes()).hexdigest())
             self.assertIsNone(_cached_artifact(directory, "key"))
         tiles, _ = self._counts()
         for method, message in (("WriteArray", "raster"), ("BuildOverviews", "raster")):

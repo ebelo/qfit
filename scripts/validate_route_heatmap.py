@@ -32,6 +32,16 @@ def _colored_pixels(image):
                for y in range(image.height()) for x in range(image.width()))
 
 
+def _synthetic_routes():
+    routes = []
+    for index in range(30):
+        routes.append([(7.30 + step * .003,
+                        46.22 + .008 * math.sin(step / 5) +
+                        (max(0, step - 20) * .00012 * (index % 6)))
+                       for step in range(55)])
+    return routes
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path, required=True)
@@ -43,12 +53,7 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     # Artificial curved routes: shared corridor, several branches and a few
     # isolated rides. All points below are generated, not copied from a user.
-    routes = []
-    for index in range(30):
-        routes.append([(7.30 + step * .003,
-                        46.22 + .008 * math.sin(step / 5) +
-                        (max(0, step - 20) * .00012 * (index % 6)))
-                       for step in range(55)])
+    routes = _synthetic_routes()
     source = write_route_heatmap_fixture(args.output / 'synthetic.gpkg', routes)
     tracks = QgsVectorLayer(source + '|layername=activity_tracks', 'Synthetic tracks', 'ogr')
     spec = importlib.util.spec_from_file_location('qfit.analysis.infrastructure._baseline_heatmap', args.baseline)

@@ -23,7 +23,10 @@ route availability), not selected QGIS features or the visible map extent.
 - Identical selected identities/geometries reuse the disk cache. Renaming an
   activity alone does not change its density cache key (a name search may change
   the matching selection). A cache hit still reads selected tracks and verifies
-  cached file hashes; it is not a zero-I/O operation.
+  cached file hashes and a separate manifest checksum; it is not a zero-I/O
+  operation. Publication/repair is serialized per cache key across QGIS sessions.
+  Tiny lock files remain in the cache; the operating system releases locks when
+  a worker/process exits. Waiting for publication is cancellable and time-limited.
 
 ## Performance and limits
 
