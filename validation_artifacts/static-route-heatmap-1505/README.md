@@ -36,3 +36,8 @@ Fresh captures on `280dc41` after traversal/CRS/constant refactoring reproduce a
 `verification-280dc41-qgis4.json`. No rendering regression or placement noise is
 inferred: exact bytes were compared. Final fresh cold builds: 1.13–1.26 s; warm
 cache: 0.039–0.051 s, within ordinary repeated-run variation for this fixture.
+
+Final cache metadata/publication-lock changes in `660622e` also reproduce all 24
+published PNGs byte-for-byte. See the `verification-660622e-*.json` records.
+The subsequent `9d7aacd` follow-up is test-only; production analysis/capture
+source is unchanged. Metadata checksums and locks do not alter raster values.
