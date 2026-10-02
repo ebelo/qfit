@@ -9,7 +9,7 @@ Final reviewed head: `04a7e87ab3d9ae0e1886965aa3cb6b9f1e550b7f` (only additional
 ## Matched visual controls
 
 QGIS 3.44.11 / QGIS 4.2.0, same 30 generated routes, EPSG:32632,
-1000 x 650 pixels, default 96 DPI, neutral background. Regional/town/detail
+1000 x 650 pixels, measured runtime defaults: QGIS 3 at 100 DPI, QGIS 4 at 96 DPI, neutral background. Regional/town/detail
 cameras with two repeated captures per role. All before/after/repeat PNG hashes
 match within each runtime/camera. Inspect the manifests for exact extents and
 non-background pixel counts. This is preserved appearance, not a styling change.

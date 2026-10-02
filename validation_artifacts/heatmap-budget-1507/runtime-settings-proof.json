@@ -1,0 +1,17 @@
+{
+  "method": "QgsMapSettings().outputDpi() after get_shared_qgis_app in the same capture image; harness does not override DPI",
+  "runtimes": {
+    "qgis3": {
+      "qgis": "3.44.11-Solothurn",
+      "qt": "5.15.17",
+      "pyqt": "5.15.11",
+      "dpi": 100.0
+    },
+    "qgis4": {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt": "6.9.2",
+      "pyqt": "6.9.1",
+      "dpi": 96.0
+    }
+  }
+}
