@@ -103,12 +103,11 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
     query_types = {normalize_activity_type(value) for value in query.activity_types}
 
     for activity in activities:
-        if query_types:
-            if not any(
-                normalize_activity_type(getattr(activity, field, None)) in query_types
-                for field in ACTIVITY_LABEL_FIELDS
-            ):
-                continue
+        if query_types and not any(
+            normalize_activity_type(getattr(activity, field, None)) in query_types
+            for field in ACTIVITY_LABEL_FIELDS
+        ):
+            continue
 
         activity_date = _activity_date(activity)
         if date_from is not None and (activity_date is None or activity_date < date_from):
