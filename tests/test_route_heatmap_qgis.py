@@ -73,6 +73,22 @@ class RouteHeatmapQgisTests(unittest.TestCase):
         source = None
         self.assertNotEqual(artifact.cache_key, build_route_heatmap(self.request).cache_key)
 
+    def test_multiple_activity_types_select_stored_routes_with_or(self):
+        from osgeo import ogr
+        from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
+        source = ogr.Open(self.source, 1)
+        source.ExecuteSQL("UPDATE activity_tracks SET activity_type = CASE source_activity_id WHEN '0' THEN 'Walk' WHEN '1' THEN 'Hike' ELSE 'Run' END")
+        source.ExecuteSQL("UPDATE activity_tracks SET sport_type = activity_type")
+        source = None
+        query = ActivityQuery(activity_types=("Walk", "Hike"))
+        subset = build_subset_string(query)
+        artifact = build_route_heatmap(RouteHeatmapRequest(self.source, subset, self.request.cache_dir))
+        self.assertEqual(artifact.activity_count, 2)
+        self.assertNotEqual(artifact.cache_key, build_route_heatmap(self.request).cache_key)
+        reversed_subset = build_subset_string(ActivityQuery(activity_types=("Hike", "Walk")))
+        self.assertEqual(subset, reversed_subset)
+        self.assertTrue(build_route_heatmap(RouteHeatmapRequest(self.source, reversed_subset, self.request.cache_dir)).reused)
+
     def test_fixed_red_renderer_and_raster_values_survive_navigation(self):
         artifact = build_route_heatmap(self.request)
         layer = create_route_heatmap_layer(artifact)
