@@ -1,0 +1,243 @@
+{
+  "baseline_commit": "fc7ff368eebafc01ae2e407c5cf256156e47dc21",
+  "candidate_commit": "6efc9685835052018a259a972c55c30eed64e8bf",
+  "runtime": "qgis3",
+  "synthetic_activities": 30,
+  "geometry_sha256": "47cbb317f90dd4b86881713502578b4be79febbee75ab12648c7bd8a2432b180",
+  "cache_key": "bf0cae06208175e6c92dca669e747cc0f04157ea39f814975ee160730827f1f0",
+  "crs": "EPSG:32632",
+  "baseline_build_seconds": 1.241051911998511,
+  "cold_build_seconds": 1.229770867001207,
+  "warm_build_seconds": 0.047643877998780226,
+  "cache_reused": true,
+  "captures": [
+    {
+      "file": "qgis3-regional-before-0.png",
+      "camera": "regional",
+      "role": "before",
+      "repeat": 0,
+      "sha256": "b9c4cc379c9b2359401df2c51ded079310947adbda0366d5689f30853742c068",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        367613.93030892406,
+        5118417.934124186,
+        382681.55061710835,
+        5122469.85459735
+      ],
+      "non_background_pixels": 36440,
+      "render_seconds": 0.06354614899828448
+    },
+    {
+      "file": "qgis3-regional-before-1.png",
+      "camera": "regional",
+      "role": "before",
+      "repeat": 1,
+      "sha256": "b9c4cc379c9b2359401df2c51ded079310947adbda0366d5689f30853742c068",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        367613.93030892406,
+        5118417.934124186,
+        382681.55061710835,
+        5122469.85459735
+      ],
+      "non_background_pixels": 36440,
+      "render_seconds": 0.004541237001831178
+    },
+    {
+      "file": "qgis3-regional-after-0.png",
+      "camera": "regional",
+      "role": "after",
+      "repeat": 0,
+      "sha256": "b9c4cc379c9b2359401df2c51ded079310947adbda0366d5689f30853742c068",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        367613.93030892406,
+        5118417.934124186,
+        382681.55061710835,
+        5122469.85459735
+      ],
+      "non_background_pixels": 36440,
+      "render_seconds": 0.026386525001726113
+    },
+    {
+      "file": "qgis3-regional-after-1.png",
+      "camera": "regional",
+      "role": "after",
+      "repeat": 1,
+      "sha256": "b9c4cc379c9b2359401df2c51ded079310947adbda0366d5689f30853742c068",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        367613.93030892406,
+        5118417.934124186,
+        382681.55061710835,
+        5122469.85459735
+      ],
+      "non_background_pixels": 36440,
+      "render_seconds": 0.009169887998723425
+    },
+    {
+      "file": "qgis3-town-before-0.png",
+      "camera": "town",
+      "role": "before",
+      "repeat": 0,
+      "sha256": "439d98b23c1d66a3f8de526dcb0507d641d8bf20f383f0cd226cdf7548a0fbcc",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        371654.5966657562,
+        5116935.939211971,
+        377654.5966657562,
+        5120835.939211971
+      ],
+      "non_background_pixels": 82422,
+      "render_seconds": 0.008484997000778094
+    },
+    {
+      "file": "qgis3-town-before-1.png",
+      "camera": "town",
+      "role": "before",
+      "repeat": 1,
+      "sha256": "439d98b23c1d66a3f8de526dcb0507d641d8bf20f383f0cd226cdf7548a0fbcc",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        371654.5966657562,
+        5116935.939211971,
+        377654.5966657562,
+        5120835.939211971
+      ],
+      "non_background_pixels": 82422,
+      "render_seconds": 0.004621238997060573
+    },
+    {
+      "file": "qgis3-town-after-0.png",
+      "camera": "town",
+      "role": "after",
+      "repeat": 0,
+      "sha256": "439d98b23c1d66a3f8de526dcb0507d641d8bf20f383f0cd226cdf7548a0fbcc",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        371654.5966657562,
+        5116935.939211971,
+        377654.5966657562,
+        5120835.939211971
+      ],
+      "non_background_pixels": 82422,
+      "render_seconds": 0.005667084999004146
+    },
+    {
+      "file": "qgis3-town-after-1.png",
+      "camera": "town",
+      "role": "after",
+      "repeat": 1,
+      "sha256": "439d98b23c1d66a3f8de526dcb0507d641d8bf20f383f0cd226cdf7548a0fbcc",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        371654.5966657562,
+        5116935.939211971,
+        377654.5966657562,
+        5120835.939211971
+      ],
+      "non_background_pixels": 82422,
+      "render_seconds": 0.00639033900006325
+    },
+    {
+      "file": "qgis3-detail-before-0.png",
+      "camera": "detail",
+      "role": "before",
+      "repeat": 0,
+      "sha256": "dd541a96ab1f25620529c9481600bdd1cafa807d650729ff49d76764cc0177a9",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        374054.5966657562,
+        5118495.939211971,
+        375254.5966657562,
+        5119275.939211971
+      ],
+      "non_background_pixels": 312280,
+      "render_seconds": 0.004571374000079231
+    },
+    {
+      "file": "qgis3-detail-before-1.png",
+      "camera": "detail",
+      "role": "before",
+      "repeat": 1,
+      "sha256": "dd541a96ab1f25620529c9481600bdd1cafa807d650729ff49d76764cc0177a9",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        374054.5966657562,
+        5118495.939211971,
+        375254.5966657562,
+        5119275.939211971
+      ],
+      "non_background_pixels": 312280,
+      "render_seconds": 0.005765851001342526
+    },
+    {
+      "file": "qgis3-detail-after-0.png",
+      "camera": "detail",
+      "role": "after",
+      "repeat": 0,
+      "sha256": "dd541a96ab1f25620529c9481600bdd1cafa807d650729ff49d76764cc0177a9",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        374054.5966657562,
+        5118495.939211971,
+        375254.5966657562,
+        5119275.939211971
+      ],
+      "non_background_pixels": 312280,
+      "render_seconds": 0.006540442002005875
+    },
+    {
+      "file": "qgis3-detail-after-1.png",
+      "camera": "detail",
+      "role": "after",
+      "repeat": 1,
+      "sha256": "dd541a96ab1f25620529c9481600bdd1cafa807d650729ff49d76764cc0177a9",
+      "size": [
+        1000,
+        650
+      ],
+      "extent": [
+        374054.5966657562,
+        5118495.939211971,
+        375254.5966657562,
+        5119275.939211971
+      ],
+      "non_background_pixels": 312280,
+      "render_seconds": 0.006982079998124391
+    }
+  ]
+}

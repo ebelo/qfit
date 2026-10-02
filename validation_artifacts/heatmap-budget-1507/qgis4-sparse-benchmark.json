@@ -1,0 +1,24 @@
+{
+  "runtime": "qgis4",
+  "input_tiles": 457,
+  "legacy_candidates": 4113,
+  "baseline_commit": "fc7ff368eebafc01ae2e407c5cf256156e47dc21",
+  "candidate_commit": "6efc9685835052018a259a972c55c30eed64e8bf",
+  "cell_size_metres": 10,
+  "sigma_metres": 20,
+  "fixture_tile_size": 32,
+  "baseline_error": "Smoothed heatmap exceeds the tile budget; narrow the activity filters",
+  "all_457_tile_arrays_identical": true,
+  "results": {
+    "baseline_cap_bypassed_control": {
+      "seconds": 4.501935791999131,
+      "tile_count": 457,
+      "maximum": 0.039870355278253555
+    },
+    "candidate": {
+      "seconds": 3.74695186900135,
+      "tile_count": 457,
+      "maximum": 0.039870355278253555
+    }
+  }
+}

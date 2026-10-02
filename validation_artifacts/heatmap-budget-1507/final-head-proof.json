@@ -1,0 +1,9 @@
+{
+  "capture_commit": "6efc9685835052018a259a972c55c30eed64e8bf",
+  "final_head": "04a7e87ab3d9ae0e1886965aa3cb6b9f1e550b7f",
+  "final_head_changes_only_tests": true,
+  "matched_render_camera_count_per_runtime": 3,
+  "repeats_per_role": 2,
+  "all_before_after_control_sha256_equal": true,
+  "baseline_commit": "fc7ff368eebafc01ae2e407c5cf256156e47dc21"
+}
