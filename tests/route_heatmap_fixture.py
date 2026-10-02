@@ -1,6 +1,28 @@
 """Anonymous synthetic routes; never read the user's activity database."""
 
 
+def sparse_heatmap_routes(count=457):
+    """Separated cell-centred routes: 4,113 legacy candidates, 457 outputs.
+
+    Use 32-cell tiles to keep the integration fixture cheap. Production retains
+    its 256-cell tiles and identical cell size/smoothing kernel.
+    """
+    from osgeo import osr
+    metric = osr.SpatialReference()
+    metric.ImportFromEPSG(32632)
+    geographic = osr.SpatialReference()
+    geographic.ImportFromEPSG(4326)
+    for crs in (metric, geographic):
+        crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    transform = osr.CoordinateTransformation(metric, geographic)
+    routes = []
+    for index in range(count):
+        x = (1250 + 3 * (index % 23)) * 320 + 165
+        y = (15937 + 3 * (index // 23)) * 320 + 165
+        routes.append([transform.TransformPoint(x, y)[:2], transform.TransformPoint(x + 1, y + 1)[:2]])
+    return routes
+
+
 def write_route_heatmap_fixture(path, routes=None):
     from osgeo import ogr, osr
     if routes is None:

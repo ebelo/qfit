@@ -45,6 +45,7 @@ def _synthetic_routes():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path, required=True)
+    parser.add_argument('--baseline-commit', default='dac69530fde27a77fe39d158f929cc2fee1814ce')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--commit', required=True)
     parser.add_argument('--runtime', required=True)
@@ -104,7 +105,7 @@ def main():
                                  'sha256': hashlib.sha256((args.output/name).read_bytes()).hexdigest(),
                                  'size': [1000,650], 'extent': [extent.xMinimum(),extent.yMinimum(),extent.xMaximum(),extent.yMaximum()],
                                  'non_background_pixels': colored, 'render_seconds': seconds})
-    report = {'baseline_commit': 'dac69530fde27a77fe39d158f929cc2fee1814ce',
+    report = {'baseline_commit': args.baseline_commit,
               'candidate_commit': args.commit, 'runtime': args.runtime, 'synthetic_activities': len(routes),
               'geometry_sha256': hashlib.sha256(json.dumps(routes).encode()).hexdigest(),
               'cache_key': artifact.cache_key, 'crs': artifact.crs,
