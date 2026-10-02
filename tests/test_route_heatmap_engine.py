@@ -144,6 +144,26 @@ class RouteHeatmapEngineTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "1 non-empty density tiles"):
                 _write_tiles(tiles, self.parameters, self.root, self.crs, lambda: False, lambda _: None)
 
+    def test_real_budget_failure_discards_partial_build_and_preserves_previous_cache(self):
+        key = "b" * 64
+        routes = [(('test', '1'), [[(165, 165), (166, 166)]])]
+        with patch.dict("sys.modules", {"osgeo": SimpleNamespace(gdal=self.backend)}), patch(
+            "qfit.analysis.infrastructure.route_heatmap_raster.snapshot_tracks",
+            side_effect=lambda request, work, cancelled: (work / "snapshot", key, self.crs, (0, 1, 0, 1), 1),
+        ), patch("qfit.analysis.infrastructure.route_heatmap_raster.projected_crs", return_value=(self.crs, "metric")), patch(
+            "qfit.analysis.infrastructure.route_heatmap_raster.projected_parts", return_value=routes,
+        ) as selected:
+            artifact = build_route_heatmap(self.request)
+            previous = Path(artifact.path).parent
+            hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in previous.iterdir()}
+            key = "c" * 64
+            selected.return_value = [(('test', '2'), [[(1, 1), (2, 2)]])]
+            with patch("qfit.analysis.infrastructure.route_heatmap_raster.MAX_TILES", 1):
+                with self.assertRaisesRegex(ValueError, "non-empty density tiles"):
+                    build_route_heatmap(self.request)
+            self.assertEqual(hashes, {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in previous.iterdir()})
+            self.assertEqual([p for p in Path(self.request.cache_dir).iterdir() if p.is_dir()], [previous])
+
     def test_compact_smoothing_buffer_preserves_full_neighbourhood_density(self):
         parameters = RouteDensityParameters()
         size = parameters.tile_size
