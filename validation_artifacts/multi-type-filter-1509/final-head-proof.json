@@ -1,0 +1,9 @@
+{
+  "final_head": "387afefc27c4297ce0e09efccae08cdebddb17c5",
+  "all_recaptured_pngs_identical_to_initial_controls": true,
+  "runtimes": [
+    "QGIS 3.44.11",
+    "QGIS 4.2.0"
+  ],
+  "scope": "isolated controls with Hike/Walk; normalized saved-label behavior separately verified by real checkbox clicks"
+}

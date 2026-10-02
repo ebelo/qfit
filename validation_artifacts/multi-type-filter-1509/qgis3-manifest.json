@@ -3,7 +3,7 @@
   "qgis": "3.44.11-Solothurn",
   "qt": "5.15.17",
   "pyqt": "5.15.11",
-  "candidate_commit": "cb4b6ef5487f673022a88c9a546f8923773dde5d",
+  "candidate_commit": "387afefc27c4297ce0e09efccae08cdebddb17c5",
   "baseline_commit": "2d73f5584c4ad90b2ffc108e9af6408bf45e805b",
   "baseline_control": "Stock QComboBox, as declared by baseline qfit_dockwidget_base.ui; isolated control demonstration, not a full baseline dock capture.",
   "options": [

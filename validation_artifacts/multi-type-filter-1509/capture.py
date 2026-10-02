@@ -12,7 +12,7 @@ runtime=sys.argv[1]
 root=Path('/evidence')/runtime
 root.mkdir(exist_ok=True)
 report={'runtime':runtime,'qgis':Qgis.QGIS_VERSION,'qt':QT_VERSION_STR,'pyqt':PYQT_VERSION_STR,
-        'candidate_commit':'cb4b6ef5487f673022a88c9a546f8923773dde5d',
+        'candidate_commit':'387afef',
         'baseline_commit':'2d73f5584c4ad90b2ffc108e9af6408bf45e805b',
         'baseline_control':'Stock QComboBox, as declared by baseline qfit_dockwidget_base.ui; isolated control demonstration, not a full baseline dock capture.',
         'options':['All','Hike','Run','Walk'],'style':'Fusion','size':[420,120],
