@@ -31,7 +31,7 @@ qfit currently supports:
 - loading QGIS layers for tracks, start points, and optional sampled stream points
 - filtering by activity type, text search, date range, distance, and detailed-stream availability
 - applying visualization presets, optional temporal wiring, and an optional Mapbox basemap
-- running analysis workflows such as frequent starting points and activity heatmaps
+- running analysis workflows such as frequent starting points and [static red route heatmaps](docs/static-route-heatmap.md)
 - generating atlas-ready publish layers and exporting a PDF atlas from the dock
 
 ### QGIS version support

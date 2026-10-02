@@ -211,6 +211,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._bulk_import_task = None
         self._bulk_archive_path = None
         self._bulk_destination_path = None
+        self._heatmap_task = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -399,6 +400,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             progress_facts=facts,
         )
         refresh_database_name_action(self, facts)
+        self._refresh_heatmap_controls()
         return self._local_first_dock_composition
 
     def _refresh_live_dock_navigation_from_runtime(self) -> None:
@@ -996,6 +998,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._atlas_export_task,
             self._bulk_preflight_task,
             self._bulk_import_task,
+            getattr(self, "_heatmap_task", None),
         )
         for task in tasks:
             if task is not None:
@@ -1545,6 +1548,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             or self._route_sync_task is not None
             or getattr(self, "_bulk_preflight_task", None) is not None
             or getattr(self, "_bulk_import_task", None) is not None
+            or getattr(self, "_heatmap_task", None) is not None
         ):
             self._set_status(
                 "Wait for the current synchronization to finish before clearing the database."
@@ -1669,7 +1673,100 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             apply_subset_filters=apply_subset_filters,
         )
 
+    def _refresh_heatmap_controls(self):
+        task = getattr(self, "_heatmap_task", None)
+        composition = getattr(self, "_local_first_dock_composition", None)
+        if task is not None and composition is not None:
+            button = composition.analysis_content.run_analysis_button
+            button.setText("Cancel heatmap")
+            button.setEnabled(True)
+
+    def _start_static_heatmap(self, selection_state):
+        task = getattr(self, "_heatmap_task", None)
+        if task is not None:
+            task.cancel()
+            return "Cancelling heatmap; the previous result is retained"
+        from pathlib import Path
+        import weakref
+        from .analysis.application.route_heatmap import build_route_heatmap_request
+        from .analysis.infrastructure.route_heatmap_task import RouteHeatmapTask
+        from .analysis.infrastructure.route_heatmap_source import source_revision
+        layer = getattr(self, "activities_layer", None)
+        source_path = layer.source().split("|", 1)[0] if layer is not None else ""
+        if not source_path or not Path(source_path).is_file():
+            return "Load stored activity tracks from a GeoPackage before building the heatmap"
+        request = build_route_heatmap_request(
+            source_path, Path(self.cache.base_path) / "route-heatmaps", selection_state, source_revision(source_path),
+        )
+        dock_ref = weakref.ref(self)
+        def finished(task, artifact, error_message, cancelled):
+            from qgis.PyQt import sip
+            dock = dock_ref()
+            if dock is not None and not sip.isdeleted(dock):
+                dock._on_static_heatmap_finished(task, artifact, error_message, cancelled)
+        task = RouteHeatmapTask(request, finished)
+        self._heatmap_task = task
+        def progress(value):
+            from qgis.PyQt import sip
+            dock = dock_ref()
+            if dock is not None and not sip.isdeleted(dock):
+                dock._heatmap_progress(task, value)
+        task.progressChanged.connect(progress)
+        self._refresh_live_dock_navigation_from_runtime()
+        QgsApplication.taskManager().addTask(task)
+        return "Building static red heatmap from selected activities…"
+
+    def _heatmap_progress(self, task, value):
+        if getattr(self, "_heatmap_task", None) is task:
+            self._set_status(f"Building static red heatmap… {value:.0f}%")
+
+    def _on_static_heatmap_finished(self, task, artifact, error_message, cancelled):
+        if getattr(self, "_heatmap_task", None) is not task:
+            return
+        self._heatmap_task = None
+        from .analysis.application.route_heatmap import build_route_heatmap_request
+        from .analysis.infrastructure.route_heatmap_source import source_revision
+        try:
+            source_path = getattr(self.activities_layer, "source", lambda: "")().split("|", 1)[0]
+        except RuntimeError:
+            source_path = ""
+        current = build_route_heatmap_request(
+            source_path,
+            task.request.cache_dir,
+            build_activity_preview_selection_state(build_current_activity_preview_request(self)),
+            source_revision(source_path),
+        )
+        if current != task.request or self.analysisModeComboBox.currentText() != "Heatmap":
+            self._set_status("Heatmap selection changed; refresh analysis for the current activities")
+            return
+        if cancelled or error_message:
+            self._set_status("Heatmap cancelled; previous result retained" if cancelled else "Heatmap failed; previous result retained")
+            if error_message:
+                self._show_error("Heatmap could not be built", error_message)
+            return
+        if artifact is None:
+            self._clear_analysis_layer()
+            self._set_status("No activity heatmap data matched the current filters")
+            return
+        from .analysis.infrastructure.route_heatmap_layer import create_route_heatmap_layer
+        try:
+            layer = create_route_heatmap_layer(artifact)
+        except (ValueError, RuntimeError) as exc:
+            self._show_error("Heatmap could not be loaded", str(exc))
+            self._refresh_live_dock_navigation_from_runtime()
+            return
+        self._clear_analysis_layer()
+        QgsProject.instance().addMapLayer(layer, False)
+        QgsProject.instance().layerTreeRoot().insertLayer(0, layer)
+        self._runtime_store().set_analysis_layer(layer)
+        self._mark_atlas_export_stale()
+        suffix = " (cached)" if artifact.reused else ""
+        self._set_status(f"Showing static red activity heatmap from {artifact.activity_count} activities{suffix}")
+        self._refresh_map_canvas()
+
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
+        if analysis_mode == "Heatmap":
+            return self._start_static_heatmap(selection_state)
         runtime_state = self.runtime_state
         request = self.analysis_workflow.build_request(
             analysis_mode=analysis_mode,
@@ -1710,8 +1807,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         starts_layer=None,
         selection_state=None,
     ):
-        self._clear_analysis_layer()
-
         inputs = build_apply_analysis_configuration_inputs(
             current_mode=self.analysisModeComboBox.currentText(),
             current_starts_layer=getattr(self, "starts_layer", None),
@@ -1722,6 +1817,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             starts_layer=starts_layer,
             selection_state=selection_state,
         )
+        if inputs.analysis_mode != "Heatmap":
+            self._clear_analysis_layer()
         return self._run_selected_analysis(
             inputs.analysis_mode,
             inputs.starts_layer,
@@ -1729,6 +1826,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _clear_analysis_layer(self):
+        heatmap_task = getattr(self, "_heatmap_task", None)
+        if heatmap_task is not None:
+            heatmap_task.cancel()
+            self._heatmap_task = None
         project = QgsProject.instance()
         analysis_removed = False
         if self.analysis_layer is not None:

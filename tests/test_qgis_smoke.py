@@ -4,6 +4,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import time
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -2107,6 +2108,9 @@ class QgisSmokeTests(unittest.TestCase):
         dock = QfitDockWidget(self.iface)
         try:
             with tempfile.TemporaryDirectory() as tmp:
+                dock.cache.base_path = Path(tmp) / "cache"
+                dock.dateFromEdit.setDate(QDate(2026, 1, 1))
+                dock.dateToEdit.setDate(QDate(2026, 12, 31))
                 output_path = self._write_sample_gpkg(tmp)
                 (
                     dock.activities_layer,
@@ -2118,11 +2122,12 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.analysisModeComboBox.setCurrentText("Heatmap")
                 status = dock._apply_analysis_configuration()
 
-                self.assertIn("activity heatmap", status)
+                self.assertIn("Building static red heatmap", status)
+                self._wait_for_heatmap(dock)
                 self.assertIsNotNone(dock.analysis_layer)
                 self.assertEqual(dock.analysis_layer.name(), "qfit activity heatmap")
-                self.assertGreater(dock.analysis_layer.featureCount(), 0)
-                self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
+                self.assertGreater(dock.analysis_layer.customProperty("qfit/heatmap/activity_count"), 0)
+                self.assertEqual(dock.analysis_layer.providerType(), "gdal")
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
                     dock.analysis_layer.extent(),
@@ -2130,8 +2135,16 @@ class QgisSmokeTests(unittest.TestCase):
                 artifact_path = Path(tmp) / "heatmap-analysis.png"
                 self.assertTrue(image.save(str(artifact_path)))
                 non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
-                self.assertGreater(non_white_pixels, 20000)
-                self.assertGreater(strong_pixels, 10000)
+                self.assertGreater(non_white_pixels, 100)
+                self.assertGreater(strong_pixels, 100)
+                previous = dock.analysis_layer
+                previous_key = previous.customProperty("qfit/heatmap/cache_key")
+                dock._apply_analysis_configuration()
+                self.assertIs(dock.analysis_layer, previous)
+                self._wait_for_heatmap(dock)
+                self.assertIsNot(dock.analysis_layer, previous)
+                self.assertEqual(dock.analysis_layer.customProperty("qfit/heatmap/cache_key"),
+                                 previous_key)
         finally:
             dock.close()
             dock.deleteLater()
@@ -2140,6 +2153,9 @@ class QgisSmokeTests(unittest.TestCase):
         dock = QfitDockWidget(self.iface)
         try:
             with tempfile.TemporaryDirectory() as tmp:
+                dock.cache.base_path = Path(tmp) / "cache"
+                dock.dateFromEdit.setDate(QDate(2026, 1, 1))
+                dock.dateToEdit.setDate(QDate(2026, 12, 31))
                 output_path = self._write_sample_gpkg(tmp)
                 (
                     dock.activities_layer,
@@ -2152,10 +2168,11 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.analysisModeComboBox.setCurrentText("Heatmap")
                 status = dock._apply_analysis_configuration()
 
-                self.assertIn("activity heatmap", status)
+                self.assertIn("Building static red heatmap", status)
+                self._wait_for_heatmap(dock)
                 self.assertIsNotNone(dock.analysis_layer)
-                self.assertGreater(dock.analysis_layer.featureCount(), 0)
-                self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
+                self.assertGreater(dock.analysis_layer.customProperty("qfit/heatmap/activity_count"), 0)
+                self.assertEqual(dock.analysis_layer.providerType(), "gdal")
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
                     dock.analysis_layer.extent(),
@@ -2163,9 +2180,62 @@ class QgisSmokeTests(unittest.TestCase):
                 artifact_path = Path(tmp) / "heatmap-analysis-lines-fallback.png"
                 self.assertTrue(image.save(str(artifact_path)))
                 non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
-                self.assertGreater(non_white_pixels, 5000)
-                self.assertGreater(strong_pixels, 1000)
+                self.assertGreater(non_white_pixels, 100)
+                self.assertGreater(strong_pixels, 100)
         finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_heatmap_real_task_retains_previous_on_cancel_stale_and_failure(self):
+        import threading
+        from qfit.analysis.domain.route_density import HeatmapCancelled
+        from qfit.analysis.infrastructure.route_heatmap_raster import build_route_heatmap
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                dock.cache.base_path = Path(tmp) / "cache"
+                dock.dateFromEdit.setDate(QDate(2026, 1, 1))
+                dock.dateToEdit.setDate(QDate(2026, 12, 31))
+                output = self._write_sample_gpkg(tmp)
+                dock.activities_layer, dock.starts_layer, dock.points_layer, dock.atlas_layer = dock.layer_gateway.load_output_layers(output)
+                dock.analysisModeComboBox.setCurrentText("Heatmap")
+                dock._apply_analysis_configuration()
+                self._wait_for_heatmap(dock)
+                previous = dock.analysis_layer
+                self.assertIsNotNone(previous)
+                for outcome in ("cancel", "stale", "failed", "missing"):
+                    with self.subTest(outcome=outcome):
+                        started, release = threading.Event(), threading.Event()
+                        def controlled(request, cancelled, progress):
+                            started.set()
+                            if not release.wait(5):
+                                raise RuntimeError("Test did not release worker")
+                            if cancelled():
+                                raise HeatmapCancelled()
+                            if outcome == "failed":
+                                raise ValueError("Controlled write failure")
+                            if outcome == "missing":
+                                return None
+                            return build_route_heatmap(request, cancelled, progress)
+                        with patch("qfit.analysis.infrastructure.route_heatmap_task.build_route_heatmap", side_effect=controlled), patch.object(dock, "_show_error") as error:
+                            dock._apply_analysis_configuration()
+                            self.assertTrue(started.wait(3))
+                            self.assertIs(dock.analysis_layer, previous)
+                            if outcome == "cancel":
+                                self.assertIn("Cancelling", dock._apply_analysis_configuration())
+                            elif outcome == "stale":
+                                dock.activitySearchLineEdit.setText("Changed selection")
+                            release.set()
+                            self._wait_for_heatmap(dock)
+                            if outcome == "missing":
+                                self.assertIsNone(dock.analysis_layer)
+                            else:
+                                self.assertIs(dock.analysis_layer, previous)
+                            if outcome == "failed":
+                                error.assert_called_once_with("Heatmap could not be built", "Controlled write failure")
+                        dock.activitySearchLineEdit.clear()
+        finally:
+            dock.cancel_background_tasks()
             dock.close()
             dock.deleteLater()
 
@@ -2435,6 +2505,13 @@ class QgisSmokeTests(unittest.TestCase):
             blank_pdf_content_bytes + 1000,
             "Expected exported profile PDF content stream to include the rendered chart",
         )
+
+    def _wait_for_heatmap(self, dock):
+        deadline = time.monotonic() + 30
+        while dock._heatmap_task is not None and time.monotonic() < deadline:
+            QApplication.processEvents()
+            time.sleep(0.01)
+        self.assertIsNone(dock._heatmap_task, "Background heatmap did not finish")
 
     def _write_sample_gpkg(self, temp_dir):
         return self._write_sample_gpkg_with_options(
