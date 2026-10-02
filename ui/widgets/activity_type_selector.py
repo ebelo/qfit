@@ -4,6 +4,7 @@ from qgis.PyQt.QtCore import pyqtSignal
 from qgis.gui import QgsCheckableComboBox
 
 from ...activities.domain.activity_query import selected_activity_types
+from ...activities.domain.activity_classification import normalize_activity_type
 
 
 class ActivityTypeSelector(QgsCheckableComboBox):
@@ -48,13 +49,18 @@ class ActivityTypeSelector(QgsCheckableComboBox):
         # QGIS setters manage their own signal blocking, so an explicit
         # reentrancy guard is also needed during clear/recheck operations.
         with self._selection_update():
-            # Retain missing saved labels rather than silently widening to All.
+            options = {normalize_activity_type(self.itemText(i)): self.itemText(i) for i in range(self.count())}
+            checked = []
             for value in values:
-                if self.findText(value) < 0:
-                    self.addItem(value)
+                label = options.get(normalize_activity_type(value), value)
+                if self.findText(label) < 0:
+                    # Retain truly missing labels, but use catalog spelling
+                    # for equivalent saved labels (e.g. trail-run/Trail Run).
+                    self.addItem(label)
+                checked.append(label)
             self.deselectAllOptions()
-            self.setCheckedItems(list(values))
-            self._last_checked = tuple(values)
+            self.setCheckedItems(checked)
+            self._last_checked = tuple(checked)
 
     def _on_checked_items_changed(self, values):
         if self._updating:

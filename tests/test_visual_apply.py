@@ -33,7 +33,7 @@ def _make_query(**overrides):
         detailed_route_filter="any",
     )
     defaults.update(overrides)
-    return ActivityQuery(**defaults)
+    return SimpleNamespace(**defaults)
 
 
 def _make_bg_config(**overrides):
@@ -100,6 +100,16 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
             points=MagicMock(name="points"),
             atlas=MagicMock(name="atlas"),
         )
+
+    def test_multi_type_query_reaches_every_map_layer_gateway(self):
+        self.service.apply(
+            layers=self.layers, query=ActivityQuery(activity_types=("Walk", "Hike")),
+            style_preset="By activity type", temporal_mode="Off", background_config=_make_bg_config(),
+            apply_subset_filters=True, filtered_count=2,
+        )
+        self.assertEqual(self.layer_manager.apply_filters.call_count, 4)
+        for call in self.layer_manager.apply_filters.call_args_list:
+            self.assertEqual(call.args[1], ("Hike", "Walk"))
 
     def test_applies_filters_to_all_four_layers(self):
         query = _make_query(activity_type="Run", search_text="trail", detailed_route_filter="missing")

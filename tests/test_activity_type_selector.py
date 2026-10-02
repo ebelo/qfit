@@ -47,6 +47,12 @@ class NativeCombo:
     def addItems(self, values):
         self.items.extend(values)
 
+    def count(self):
+        return len(self.items)
+
+    def itemText(self, index):
+        return self.items[index]
+
     def clear(self):
         self.items.clear()
         self.checked.clear()
@@ -126,6 +132,15 @@ class ActivityTypeSelectorTests(unittest.TestCase):
         self.assertEqual(calls[1:], ["hide", "legacyActivityTypeComboBox", "delete"])
         self.module.install_activity_type_selector(dock)
         self.assertEqual(len(calls), 4)
+
+    def test_catalog_normalization_merges_saved_alias_and_unchecking_really_clears(self):
+        selector = self.module.ActivityTypeSelector()
+        selector.setSelectedTypes(["trail-run"])
+        selector.setOptions(["All", "Trail Run", "Walk"])
+        self.assertEqual(selector.items, ["All", "Trail Run", "Walk"])
+        self.assertEqual(selector.checkedItems(), ["Trail Run"])
+        selector.deselectAllOptions()
+        self.assertEqual(selector.selectedTypes(), ())
 
 
 if __name__ == "__main__":

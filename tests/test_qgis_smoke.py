@@ -718,6 +718,12 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(selector.selectedTypes(), ("Walk",))
             click_type("Walk")
             self.assertEqual(selector.selectedTypes(), ())
+            selector.setSelectedTypes(["trail-run"])
+            selector.setOptions(["All", "Trail Run", "Walk"])
+            self.assertEqual([selector.itemText(i) for i in range(selector.count())], ["All", "Trail Run", "Walk"])
+            self.assertEqual(selector.checkedItems(), ["Trail Run"])
+            click_type("Trail Run")
+            self.assertEqual(selector.selectedTypes(), ())
         finally:
             if restored is not None:
                 restored.close()
