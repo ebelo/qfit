@@ -355,7 +355,7 @@
               <item row="0" column="0">
                <widget class="QLabel" name="activityTypeLabel">
                 <property name="text">
-                 <string>Activity type</string>
+                 <string>Activity types</string>
                 </property>
                </widget>
               </item>

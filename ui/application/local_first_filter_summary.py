@@ -6,6 +6,7 @@ from qfit.activities.domain.activity_query import (
     DETAILED_ROUTE_FILTER_ANY,
     DETAILED_ROUTE_FILTER_MISSING,
     DETAILED_ROUTE_FILTER_PRESENT,
+    selected_activity_types,
 )
 
 ALL_ACTIVITY_TYPES = "All"
@@ -22,9 +23,9 @@ def build_local_first_filter_description(request: Any) -> str | None:
 
 def _filter_description_parts(request: Any) -> list[str]:
     parts: list[str] = []
-    activity_type = _normalised_text(getattr(request, "activity_type", None))
-    if activity_type and activity_type != ALL_ACTIVITY_TYPES:
-        parts.append(f"type: {activity_type}")
+    types = selected_activity_types(getattr(request, "activity_type", None), getattr(request, "activity_types", None))
+    if types:
+        parts.append(f"type: {' or '.join(types)}")
 
     search_text = _normalised_text(getattr(request, "search_text", None))
     if search_text:

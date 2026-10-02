@@ -37,6 +37,12 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
             lambda value: dock._set_int_value(dock.pointSamplingStrideSpinBox, value, 5),
         ),
         UIFieldBinding(
+            "activity_types",
+            [],
+            lambda: list(dock.activityTypeComboBox.selectedTypes()),
+            dock.activityTypeComboBox.setSelectedTypes,
+        ),
+        UIFieldBinding(
             "activity_search_text",
             "",
             lambda: dock.activitySearchLineEdit.text().strip(),

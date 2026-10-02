@@ -92,8 +92,20 @@ def _settings(data=None):
     )
 
 
+class TypeSelectionWidget:
+    def __init__(self):
+        self.values = ()
+
+    def selectedTypes(self):
+        return self.values
+
+    def setSelectedTypes(self, values):
+        self.values = tuple(values)
+
+
 class FakeDock:
     def __init__(self):
+        self.activityTypeComboBox = TypeSelectionWidget()
         self.outputPathLineEdit = TextWidget()
         self.writeActivityPointsCheckBox = CheckWidget(True)
         self.pointSamplingStrideSpinBox = SpinWidget(5)
@@ -164,6 +176,7 @@ class FakeDock:
 
 class DockSettingsBindingsTests(unittest.TestCase):
     EXPECTED_KEYS = {
+        "activity_types",
         "output_path",
         "write_activity_points",
         "point_sampling_stride",
@@ -214,6 +227,7 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
     def test_save_roundtrip_preserves_values(self):
         dock = FakeDock()
+        dock.activityTypeComboBox.setSelectedTypes(["Walk", "Hike"])
         dock.outputPathLineEdit.setText("/tmp/out.gpkg")
         dock.writeActivityPointsCheckBox.setChecked(False)
         dock.pointSamplingStrideSpinBox.setValue(9)
@@ -233,6 +247,9 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
         settings = _settings()
         save_bindings(build_dock_settings_bindings(dock), settings)
+        restored = FakeDock()
+        load_bindings(build_dock_settings_bindings(restored), settings)
+        self.assertEqual(restored.activityTypeComboBox.selectedTypes(), ("Walk", "Hike"))
 
         self.assertIsNone(settings.get("client_id"))
         self.assertIsNone(settings.get("client_secret"))

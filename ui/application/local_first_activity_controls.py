@@ -30,6 +30,10 @@ def build_current_activity_preview_request(dock):
         max_distance_km=dock.maxDistanceSpinBox.value(),
         search_text=dock.activitySearchLineEdit.text().strip(),
         detailed_route_filter=dock.detailedRouteStatusComboBox.currentData(),
+        activity_types=(
+            tuple(dock.activityTypeComboBox.selectedTypes())
+            if hasattr(dock.activityTypeComboBox, "selectedTypes") else None
+        ),
     )
 
 
@@ -37,6 +41,9 @@ def configure_local_first_activity_preview_options(dock) -> None:
     """Prepare activity preview backing controls for the Data page."""
 
     configure_detailed_route_filter_options(dock)
+    if hasattr(dock, "activityTypeComboBox"):
+        from ..widgets.activity_type_selector import install_activity_type_selector
+        install_activity_type_selector(dock)
 
 
 def configure_detailed_route_filter_options(dock) -> None:
