@@ -591,7 +591,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             editing_finished.connect(self._on_output_path_editing_finished)
 
         preview_inputs = [
-            self.activityTypeComboBox.currentTextChanged,
+            getattr(self.activityTypeComboBox, "selectionChanged", self.activityTypeComboBox.currentTextChanged),
             self.activitySearchLineEdit.textChanged,
             self.dateFromEdit.dateChanged,
             self.dateToEdit.dateChanged,
@@ -2006,6 +2006,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return date(value.year(), value.month(), value.day())
 
     def _apply_activity_type_options(self, result: ActivityTypeOptionsResult) -> None:
+        if hasattr(self.activityTypeComboBox, "setOptions"):
+            self.activityTypeComboBox.setOptions(result.options)
+            return
         self.activityTypeComboBox.clear()
         for value in result.options:
             self.activityTypeComboBox.addItem(value)
@@ -2030,12 +2033,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:
+            # Read the complete catalog without clearing the visible layer's
+            # subset. Otherwise an applied Walk/Hike filter hides Run from
+            # the selector itself on subsequent refreshes.
+            catalog = self.activities_layer
+            if hasattr(catalog, "clone"):
+                catalog = catalog.clone()
+                catalog.setSubsetString("")
             field_names = [
-                self.activities_layer.fields().at(i).name()
-                for i in range(self.activities_layer.fields().count())
+                catalog.fields().at(i).name()
+                for i in range(catalog.fields().count())
             ]
             result = build_activity_type_options_from_records(
-                self.activities_layer.getFeatures(),
+                catalog.getFeatures(),
                 field_names,
                 current_value=current_value,
             )

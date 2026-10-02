@@ -43,10 +43,26 @@ def _has_detailed_route(activity) -> bool:
     return (getattr(activity, "geometry_source", None) or "").strip().lower() == "stream"
 
 
+def selected_activity_types(activity_type="All", activity_types=None) -> tuple[str, ...]:
+    """Resolve multi-choice or legacy single-type input; empty/All is unrestricted."""
+    values = activity_types if activity_types is not None else activity_type
+    if isinstance(values, str):
+        values = (values,)
+    labels = {}
+    for value in values or ():
+        label = str(value or "").strip()
+        normalized = normalize_activity_type(label)
+        if normalized == "all":
+            return ()
+        if normalized:
+            labels.setdefault(normalized, label)
+    return tuple(labels[key] for key in sorted(labels))
+
+
 class ActivityQuery:
     def __init__(
         self,
-        activity_type: str | None = "All",
+        activity_type: str | Sequence[str] | None = "All",
         date_from: str | None = None,
         date_to: str | None = None,
         min_distance_km: float | int | None = None,
@@ -54,8 +70,10 @@ class ActivityQuery:
         search_text: str | None = None,
         detailed_only: bool = False,
         detailed_route_filter: str | None = None,
+        activity_types: Sequence[str] | None = None,
     ):
         self.activity_type = activity_type or "All"
+        self.activity_types = selected_activity_types(activity_type, activity_types)
         self.date_from = date_from or None
         self.date_to = date_to or None
         self.min_distance_km = _safe_float(min_distance_km)
@@ -67,18 +85,27 @@ class ActivityQuery:
             detailed_only=self.detailed_only,
         )
 
+    @property
+    def activity_type_filter(self):
+        """Single-label legacy gateway calls or an OR-selection of labels."""
+        if not self.activity_types:
+            return "All"
+        if len(self.activity_types) == 1:
+            return self.activity_types[0]
+        return self.activity_types
+
 
 def filter_activities(activities: Iterable[object], query: ActivityQuery) -> list[object]:
     results = []
     search_text = query.search_text.casefold()
     date_from = _parse_iso_date(query.date_from)
     date_to = _parse_iso_date(query.date_to)
+    query_types = {normalize_activity_type(value) for value in query.activity_types}
 
     for activity in activities:
-        if query.activity_type and query.activity_type != "All":
-            query_norm = normalize_activity_type(query.activity_type)
+        if query_types:
             if not any(
-                normalize_activity_type(getattr(activity, field, None)) == query_norm
+                normalize_activity_type(getattr(activity, field, None)) in query_types
                 for field in ACTIVITY_LABEL_FIELDS
             ):
                 continue
@@ -192,10 +219,11 @@ def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[st
 
 def build_subset_string(query: ActivityQuery) -> str:
     clauses = []
-    if query.activity_type and query.activity_type != "All":
-        normalized = _escape_sql_literal(normalize_activity_type(query.activity_type))
+    if query.activity_types:
+        normalized = [_escape_sql_literal(normalize_activity_type(value)) for value in query.activity_types]
+        comparison = f"= '{normalized[0]}'" if len(normalized) == 1 else "IN (" + ", ".join(f"'{value}'" for value in normalized) + ")"
         type_matches = [
-            f"{_sql_normalize_expr(field_name)} = '{normalized}'"
+            f"{_sql_normalize_expr(field_name)} {comparison}"
             for field_name in reversed(ACTIVITY_LABEL_FIELDS)
         ]
         clauses.append(f"({' OR '.join(type_matches)})")

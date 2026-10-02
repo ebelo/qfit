@@ -12,11 +12,19 @@ from qfit.activities.domain.activity_query import (
     format_summary_text,
     sort_activities,
     summarize_activities,
+    selected_activity_types,
 )
 from qfit.activities.domain.models import Activity
 
 
 class ActivityQueryTests(unittest.TestCase):
+    def test_multi_type_inputs_normalize_and_keep_legacy_defaults(self):
+        self.assertEqual(selected_activity_types(activity_types=[" Run ", "trail-run", "Trail Run", ""]), ("Run", "trail-run"))
+        self.assertEqual(selected_activity_types(activity_types=["All", "Run"]), ())
+        self.assertEqual(selected_activity_types(activity_types=[]), ())
+        self.assertEqual(selected_activity_types("Ride"), ("Ride",))
+        self.assertEqual(selected_activity_types(activity_types="Walk"), ("Walk",))
+
     def setUp(self):
         self.activities = [
             Activity(
@@ -232,6 +240,22 @@ class FilterParityTests(unittest.TestCase):
     def test_parity_activity_type_filter(self):
         query = ActivityQuery(activity_type="Ride")
         self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_multi_type_or_has_python_sql_parity_and_other_filters_remain_and(self):
+        query = ActivityQuery(activity_types=("Hike", "Run"))
+        self.assertEqual(self._python_filter(query), ["B", "D"])
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+        restricted = ActivityQuery(activity_types=("Hike", "Run"), max_distance_km=11, search_text="lunch")
+        self.assertEqual(self._python_filter(restricted), ["B"])
+        self.assertEqual(self._python_filter(restricted), self._sql_filter(restricted))
+        mixed = ActivityQuery(activity_types=("Gravel Ride", "Hike"))
+        self.assertEqual(self._python_filter(mixed), ["A", "D"])
+        self.assertEqual(self._python_filter(mixed), self._sql_filter(mixed))
+        self.assertEqual(build_subset_string(mixed), build_subset_string(ActivityQuery(activity_types=("Hike", "Gravel Ride"))))
+        for values in ((), ("All", "Run"), ("Rock'n'Roll", "Hike")):
+            with self.subTest(values=values):
+                query = ActivityQuery(activity_types=values)
+                self.assertEqual(self._python_filter(query), self._sql_filter(query))
 
     def test_parity_sport_type_filter(self):
         """Filtering by a sport_type value (e.g. 'GravelRide') works in both paths."""

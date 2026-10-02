@@ -220,6 +220,10 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
         self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_PRESENT)
         self.assertFalse(hasattr(request, "sort_label"))
 
+        activity_type_combo.selectedTypes = lambda: ("Hike", "Walk")
+        multiple = build_current_activity_preview_request(dock)
+        self.assertEqual(multiple.activity_types, ("Hike", "Walk"))
+
     def test_build_current_activity_preview_request_uses_safe_defaults(self):
         activity_type_combo = FakeComboBox()
         detailed_route_status_combo = FakeComboBox()

@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
+from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.visualization.application.render_plan import (
     DEFAULT_RENDER_PRESET,
     RENDERER_SIMPLE_LINES,
@@ -32,7 +33,7 @@ def _make_query(**overrides):
         detailed_route_filter="any",
     )
     defaults.update(overrides)
-    return SimpleNamespace(**defaults)
+    return ActivityQuery(**defaults)
 
 
 def _make_bg_config(**overrides):

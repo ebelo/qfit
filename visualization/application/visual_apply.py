@@ -190,7 +190,7 @@ class VisualApplyService:
         for layer in [layers.activities, layers.starts, layers.points, layers.atlas]:
             self.layer_gateway.apply_filters(
                 layer,
-                query.activity_type,
+                query.activity_type_filter,
                 query.date_from,
                 query.date_to,
                 query.min_distance_km,

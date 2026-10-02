@@ -664,6 +664,67 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_multi_activity_type_selector_real_clicks_apply_map_filters_and_restore_settings(self):
+        from qgis.PyQt.QtTest import QTest
+        from qfit.ui.application.local_first_activity_controls import build_current_activity_preview_request
+        from qfit.activities.application.activity_preview import build_activity_query
+        from qfit.ui.widgets.activity_type_selector import ActivityTypeSelector
+        settings = SettingsService(qsettings=_FakeQSettings(), credential_store=InMemoryCredentialStore())
+        dependencies = replace(build_dockwidget_dependencies(self.iface), settings=settings)
+        dock = QfitDockWidget(self.iface, dependencies=dependencies)
+        restored = None
+        try:
+            selector = dock.activityTypeComboBox
+            self.assertIsInstance(selector, ActivityTypeSelector)
+            selector.setOptions(["All", "Walk", "Hike", "Run"])
+            selector.resize(240, 35)
+            selector.show()
+
+            def click_type(label):
+                selector.showPopup()
+                self.qgs.processEvents()
+                index = selector.model().index(selector.findText(label), 0)
+                position = selector.view().visualRect(index).center()
+                QTest.mouseClick(selector.view().viewport(), qt_enum_value(Qt, "MouseButton", "LeftButton"), pos=position)
+                self.qgs.processEvents()
+                selector.hidePopup()
+
+            click_type("Walk")
+            click_type("Hike")
+            self.assertEqual(selector.selectedTypes(), ("Hike", "Walk"))
+            layer = QgsVectorLayer("LineString?crs=EPSG:4326&field=activity_type:string&field=sport_type:string&field=start_date:string&field=distance_m:double&field=name:string&field=geometry_source:string", "Types", "memory")
+            for label in ("Walk", "Hike", "Run"):
+                feature = QgsFeature(layer.fields())
+                feature.setAttributes([label, label, "2026-05-01T10:00:00", 5000, "Morning route", "stream"])
+                layer.dataProvider().addFeatures([feature])
+            dock.activities_layer = layer
+            dock.dateFromEdit.setDate(QDate(2026, 1, 1))
+            dock.dateToEdit.setDate(QDate(2026, 12, 31))
+            dock.on_apply_filters_clicked()
+            self.assertEqual({f["activity_type"] for f in layer.getFeatures()}, {"Walk", "Hike"})
+            query = build_activity_query(build_current_activity_preview_request(dock))
+            self.assertEqual(query.activity_types, ("Hike", "Walk"))
+            self.assertEqual(layer.subsetString(), build_subset_string(query))
+            dock._populate_activity_types_from_layer()
+            self.assertEqual(selector.selectedTypes(), ("Hike", "Walk"))
+            self.assertGreaterEqual(selector.findText("Run"), 0)
+            self.assertEqual({f["activity_type"] for f in layer.getFeatures()}, {"Walk", "Hike"})
+            dock._save_settings()
+            restored = QfitDockWidget(self.iface, dependencies=dependencies)
+            self.assertEqual(restored.activityTypeComboBox.selectedTypes(), ("Hike", "Walk"))
+            click_type("All")
+            self.assertEqual(selector.selectedTypes(), ())
+            click_type("Walk")
+            self.assertEqual(selector.selectedTypes(), ("Walk",))
+            click_type("Walk")
+            self.assertEqual(selector.selectedTypes(), ())
+        finally:
+            if restored is not None:
+                restored.close()
+                restored.deleteLater()
+            dock.close()
+            dock.deleteLater()
+
     def test_dock_widget_updates_local_first_visibility_rules(self):
         dock = QfitDockWidget(self.iface)
         try:

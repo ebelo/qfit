@@ -28,6 +28,7 @@ class ActivityPreviewRequest:
     search_text: str | None = None
     detailed_route_filter: str | None = None
     preview_limit: int = 10
+    activity_types: tuple[str, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,7 @@ def build_activity_preview_request(
     search_text: str | None = None,
     detailed_route_filter: str | None = None,
     preview_limit: int = 10,
+    activity_types: tuple[str, ...] | None = None,
 ) -> ActivityPreviewRequest:
     return ActivityPreviewRequest(
         activities=activities,
@@ -60,12 +62,14 @@ def build_activity_preview_request(
         search_text=search_text,
         detailed_route_filter=detailed_route_filter,
         preview_limit=preview_limit,
+        activity_types=activity_types,
     )
 
 
 def build_activity_query(request: ActivityPreviewRequest) -> ActivityQuery:
     return ActivityQuery(
         activity_type=request.activity_type or "All",
+        activity_types=request.activity_types,
         date_from=request.date_from,
         date_to=request.date_to,
         min_distance_km=request.min_distance_km,

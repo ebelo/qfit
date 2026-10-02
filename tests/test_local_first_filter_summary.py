@@ -12,6 +12,9 @@ from qfit.ui.application.local_first_filter_summary import (
 
 
 class LocalFirstFilterSummaryTests(unittest.TestCase):
+    def test_multi_type_description_is_not_a_single_joined_type(self):
+        request = SimpleNamespace(activity_type="Hike, Walk", activity_types=("Walk", "Hike"))
+        self.assertEqual(build_local_first_filter_description(request), "type: Hike or Walk")
     def test_build_local_first_filter_description_skips_default_controls(self):
         request = SimpleNamespace(
             activity_type="All",
