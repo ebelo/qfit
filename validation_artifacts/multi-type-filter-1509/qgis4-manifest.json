@@ -1,0 +1,47 @@
+{
+  "runtime": "qgis4",
+  "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+  "qt": "6.9.2",
+  "pyqt": "6.9.1",
+  "candidate_commit": "cb4b6ef5487f673022a88c9a546f8923773dde5d",
+  "baseline_commit": "2d73f5584c4ad90b2ffc108e9af6408bf45e805b",
+  "baseline_control": "Stock QComboBox, as declared by baseline qfit_dockwidget_base.ui; isolated control demonstration, not a full baseline dock capture.",
+  "options": [
+    "All",
+    "Hike",
+    "Run",
+    "Walk"
+  ],
+  "style": "Fusion",
+  "size": [
+    420,
+    120
+  ],
+  "logical_dpi": 96.0,
+  "captures": [
+    {
+      "file": "qgis4-before-0.png",
+      "role": "before",
+      "repeat": 0,
+      "sha256": "7258b6718305f09bed98acae60bdca16528bb2a8e3764a50776e3cc57e61a7ab"
+    },
+    {
+      "file": "qgis4-before-1.png",
+      "role": "before",
+      "repeat": 1,
+      "sha256": "7258b6718305f09bed98acae60bdca16528bb2a8e3764a50776e3cc57e61a7ab"
+    },
+    {
+      "file": "qgis4-after-0.png",
+      "role": "after",
+      "repeat": 0,
+      "sha256": "fc69f6ae98964fca2e4653a631436b8214aa2577d6e2dd0b36c7fc71874435ca"
+    },
+    {
+      "file": "qgis4-after-1.png",
+      "role": "after",
+      "repeat": 1,
+      "sha256": "fc69f6ae98964fca2e4653a631436b8214aa2577d6e2dd0b36c7fc71874435ca"
+    }
+  ]
+}
