@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from tests import _path  # noqa: F401
-from tests.route_heatmap_fixture import write_route_heatmap_fixture
+from tests.route_heatmap_fixture import write_route_heatmap_fixture, sparse_heatmap_routes
 
 REQUIRE_QGIS = os.environ.get("QFIT_REQUIRE_QGIS") == "1"
 if REQUIRE_QGIS:
@@ -134,3 +134,26 @@ class RouteHeatmapQgisTests(unittest.TestCase):
         left = _smooth_tile((0, 0), tiles, parameters)
         right = _smooth_tile((1, 0), tiles, parameters)
         self.assertTrue(np.allclose(left[:, -1], right[:, 0]))
+
+    def test_large_sparse_selection_builds_real_raster_without_false_budget_error(self):
+        source = write_route_heatmap_fixture(self.root / "large-sparse.gpkg", sparse_heatmap_routes())
+        parameters = RouteDensityParameters(tile_size=32)
+        request = RouteHeatmapRequest(source, "", self.request.cache_dir, parameters)
+        source_digest = hashlib.sha256(Path(source).read_bytes()).hexdigest()
+        artifact = build_route_heatmap(request)
+        directory = Path(artifact.path).parent
+        manifest = json.loads((directory / "manifest.json").read_text())
+        self.assertEqual(artifact.activity_count, 457)
+        self.assertEqual(manifest["tile_count"], 457)
+        self.assertEqual(manifest["parameters"]["cell_size"], 10)
+        self.assertEqual(manifest["parameters"]["sigma"], 20)
+        self.assertEqual(source_digest, hashlib.sha256(Path(source).read_bytes()).hexdigest())
+        dataset = gdal.Open(artifact.path)
+        self.assertEqual(dataset.GetGeoTransform()[1], 10)
+        self.assertGreater(float(gdal.Open(str(next(directory.glob("*.tif")))).ReadAsArray().max()), 0)
+        self.assertTrue(build_route_heatmap(request).reused)
+        layer = create_route_heatmap_layer(artifact)
+        self.assertTrue(layer.isValid())
+        self.assertEqual(layer.renderer().classificationMax(), artifact.maximum)
+        dataset = None
+        layer = None

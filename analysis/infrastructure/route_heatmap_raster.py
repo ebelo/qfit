@@ -123,20 +123,52 @@ def _count_tiles(request, work, snapshot, source_crs, target_crs, count, cancell
     return tile_paths, maximum
 
 
+def _halo_slices(offset, size, halo):
+    """Neighbour source and compact canvas destination intervals on one axis."""
+    if offset < 0:
+        return slice(size - halo, size), slice(0, halo)
+    if offset > 0:
+        return slice(0, halo), slice(size + halo, size + 2 * halo)
+    return slice(0, size), slice(halo, size + halo)
+
+
+def _density_candidates(tiles, parameters, cancelled):
+    """Only expand neighbours reached by occupied edge/corner cells."""
+    import numpy as np
+
+    size = parameters.tile_size
+    halo = math.ceil(3 * parameters.sigma / parameters.cell_size)
+    offsets = (-1, 0, 1) if halo else (0,)
+    candidates = set()
+    for (x, y), path in tiles.items():
+        check_cancelled(cancelled)
+        data = np.memmap(path, dtype="uint32", mode="r", shape=(size, size))
+        for dx in offsets:
+            cols, _ = _halo_slices(-dx, size, halo)
+            for dy in offsets:
+                rows, _ = _halo_slices(-dy, size, halo)
+                if np.any(data[rows, cols]):
+                    candidates.add((x + dx, y + dy))
+        del data
+    return sorted(candidates)
+
+
 def _smooth_tile(tile, tiles, parameters):
     import numpy as np
 
     size = parameters.tile_size
     halo = math.ceil(3 * parameters.sigma / parameters.cell_size)
-    canvas = np.zeros((size * 3, size * 3), dtype="float32")
-    for dx in (-1, 0, 1):
-        for dy in (-1, 0, 1):
+    canvas = np.zeros((size + 2 * halo, size + 2 * halo), dtype="float32")
+    offsets = (-1, 0, 1) if halo else (0,)
+    for dx in offsets:
+        source_cols, target_cols = _halo_slices(dx, size, halo)
+        for dy in offsets:
             path = tiles.get((tile[0] + dx, tile[1] + dy))
             if path is not None:
                 data = np.memmap(path, dtype="uint32", mode="r", shape=(size, size))
-                canvas[(dy + 1) * size:(dy + 2) * size, (dx + 1) * size:(dx + 2) * size] = data
+                source_rows, target_rows = _halo_slices(dy, size, halo)
+                canvas[target_rows, target_cols] = data[source_rows, source_cols]
                 del data
-    canvas = canvas[size - halo:2 * size + halo, size - halo:2 * size + halo]
     if halo:
         distances = np.arange(-halo, halo + 1)
         kernel = np.exp(-0.5 * (distances / (parameters.sigma / parameters.cell_size)) ** 2)
@@ -150,9 +182,7 @@ def _write_tiles(tiles, parameters, directory, crs, cancelled, progress):
     import numpy as np
     from osgeo import gdal
 
-    candidates = sorted({(x + dx, y + dy) for x, y in tiles for dx in (-1, 0, 1) for dy in (-1, 0, 1)})
-    if len(candidates) > MAX_TILES:
-        raise ValueError("Smoothed heatmap exceeds the tile budget; narrow the activity filters")
+    candidates = _density_candidates(tiles, parameters, cancelled)
     paths = []
     maximum = 0.0
     for index, tile in enumerate(candidates):
@@ -160,6 +190,8 @@ def _write_tiles(tiles, parameters, directory, crs, cancelled, progress):
         density = _smooth_tile(tile, tiles, parameters)
         if not np.any(density):
             continue
+        if len(paths) >= MAX_TILES:
+            raise ValueError(f"Heatmap exceeds the budget of {MAX_TILES:,} non-empty density tiles; narrow the activity filters")
         maximum = max(maximum, float(density.max()))
         path = directory / f"tile-{tile[0]}-{tile[1]}.tif"
         dataset = gdal.GetDriverByName("GTiff").Create(str(path), parameters.tile_size, parameters.tile_size, 1,

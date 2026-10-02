@@ -11,7 +11,7 @@ from tests import _path  # noqa: F401
 from qfit.analysis.application.route_heatmap import RouteHeatmapRequest
 from qfit.analysis.domain.route_density import RouteDensityParameters, HeatmapCancelled
 from qfit.analysis.infrastructure.route_heatmap_raster import (
-    build_route_heatmap, _cached_artifact, _count_tiles, _smooth_tile, _write_tiles,
+    build_route_heatmap, _cached_artifact, _count_tiles, _density_candidates, _smooth_tile, _write_tiles,
 )
 
 
@@ -88,6 +88,98 @@ class RouteHeatmapEngineTests(unittest.TestCase):
                   (('test', '2'), [[(1, 1), (101, 1)]])]
         with patch("qfit.analysis.infrastructure.route_heatmap_raster.projected_parts", return_value=routes):
             return _count_tiles(self.request, self.root, None, None, None, 2, lambda: False, lambda _: None)
+
+    def _impulse(self, tile, row=16, col=16, size=32):
+        path = self.root / f"impulse-{tile[0]}-{tile[1]}.bin"
+        data = np.memmap(path, dtype="uint32", mode="w+", shape=(size, size))
+        data[:] = 0
+        data[row, col] = 1
+        data.flush()
+        del data
+        return path
+
+    def test_large_sparse_selection_exceeds_old_candidate_budget_but_fits_density_budget(self):
+        tiles = {(3 * (i % 23), 3 * (i // 23)): None for i in range(457)}
+        for tile in tiles:
+            tiles[tile] = self._impulse(tile)
+        potential = {(x + dx, y + dy) for x, y in tiles for dx in (-1, 0, 1) for dy in (-1, 0, 1)}
+        self.assertEqual(len(potential), 4113)
+        directory = self.root / "sparse-output"
+        directory.mkdir()
+        progress = []
+        with patch.dict("sys.modules", {"osgeo": SimpleNamespace(gdal=self.backend)}):
+            maximum, paths = _write_tiles(tiles, self.parameters, directory, self.crs, lambda: False, progress.append)
+        self.assertEqual(len(paths), 457)
+        self.assertGreater(maximum, 0)
+        self.assertEqual(progress[-1], 95)
+        self.assertAlmostEqual(sum(float(d.band.pixels.sum()) for d in self.backend.datasets), 457, places=4)
+
+    def test_candidates_follow_occupied_edges_corners_and_negative_tile_coordinates(self):
+        for row, col, expected in ((16, 16, {(-2, -3)}), (16, 0, {(-2, -3), (-3, -3)}),
+                                   (31, 31, {(-2, -3), (-1, -3), (-2, -2), (-1, -2)}),
+                                   (6, 25, {(-2, -3)})):
+            with self.subTest(row=row, col=col):
+                tiles = {(-2, -3): self._impulse((-2, -3), row, col)}
+                candidates = _density_candidates(tiles, self.parameters, lambda: False)
+                self.assertEqual(set(candidates), expected)
+                brute_force = {(x, y) for x in (-3, -2, -1) for y in (-4, -3, -2)
+                               if np.any(_smooth_tile((x, y), tiles, self.parameters))}
+                self.assertEqual(set(candidates), brute_force)
+        unsmoothed = RouteDensityParameters(sigma=0, tile_size=32)
+        self.assertEqual(_density_candidates(tiles, unsmoothed, lambda: False), [(-2, -3)])
+        with self.assertRaises(HeatmapCancelled):
+            _density_candidates(tiles, self.parameters, lambda: True)
+
+    def test_output_budget_checks_nonempty_density_and_still_rejects_real_overflow(self):
+        tile = (0, 0)
+        tiles = {tile: self._impulse(tile, 16, 31)}
+        # A tiny sigma underflows outside the occupied cell: a conservative
+        # neighbour candidate must not consume the actual output budget.
+        narrow = RouteDensityParameters(sigma=0.01, tile_size=32)
+        with patch.dict("sys.modules", {"osgeo": SimpleNamespace(gdal=self.backend)}), patch(
+            "qfit.analysis.infrastructure.route_heatmap_raster.MAX_TILES", 1,
+        ):
+            _, paths = _write_tiles(tiles, narrow, self.root, self.crs, lambda: False, lambda _: None)
+            self.assertEqual(len(paths), 1)
+            with self.assertRaisesRegex(ValueError, "1 non-empty density tiles"):
+                _write_tiles(tiles, self.parameters, self.root, self.crs, lambda: False, lambda _: None)
+
+    def test_real_budget_failure_discards_partial_build_and_preserves_previous_cache(self):
+        key = "b" * 64
+        routes = [(('test', '1'), [[(165, 165), (166, 166)]])]
+        with patch.dict("sys.modules", {"osgeo": SimpleNamespace(gdal=self.backend)}), patch(
+            "qfit.analysis.infrastructure.route_heatmap_raster.snapshot_tracks",
+            side_effect=lambda request, work, cancelled: (work / "snapshot", key, self.crs, (0, 1, 0, 1), 1),
+        ), patch("qfit.analysis.infrastructure.route_heatmap_raster.projected_crs", return_value=(self.crs, "metric")), patch(
+            "qfit.analysis.infrastructure.route_heatmap_raster.projected_parts", return_value=routes,
+        ) as selected:
+            artifact = build_route_heatmap(self.request)
+            previous = Path(artifact.path).parent
+            hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in previous.iterdir()}
+            key = "c" * 64
+            selected.return_value = [(('test', '2'), [[(1, 1), (2, 2)]])]
+            with patch("qfit.analysis.infrastructure.route_heatmap_raster.MAX_TILES", 1):
+                with self.assertRaisesRegex(ValueError, "non-empty density tiles"):
+                    build_route_heatmap(self.request)
+            self.assertEqual(hashes, {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in previous.iterdir()})
+            self.assertEqual([p for p in Path(self.request.cache_dir).iterdir() if p.is_dir()], [previous])
+
+    def test_compact_smoothing_buffer_preserves_full_neighbourhood_density(self):
+        parameters = RouteDensityParameters()
+        size = parameters.tile_size
+        tiles = {(-1, -1): self._impulse((-1, -1), 255, 255, size),
+                 (0, 0): self._impulse((0, 0), 0, 0, size),
+                 (1, 1): self._impulse((1, 1), 0, 0, size)}
+        with patch.object(np, "zeros", wraps=np.zeros) as allocated:
+            density = _smooth_tile((0, 0), tiles, parameters)
+        self.assertEqual(allocated.call_args_list[0].args[0], (268, 268))
+        # Known analytical impulse response at the lower-left corner: the
+        # central impulse plus the diagonal source one cell outside each axis.
+        distances = np.arange(-6, 7)
+        kernel = np.exp(-0.5 * (distances / 2) ** 2)
+        kernel /= kernel.sum()
+        self.assertAlmostEqual(float(density[0, 0]), kernel[6] ** 2 + kernel[7] ** 2, places=7)
+        self.assertAlmostEqual(float(density[-1, -1]), kernel[7] ** 2, places=7)
 
     def test_each_activity_counts_once_and_tile_budget_is_bounded(self):
         tiles, maximum = self._counts()

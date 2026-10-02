@@ -36,11 +36,19 @@ QGIS layer is a VRT over compressed GeoTIFFs; peak-preserving overviews keep
 narrow corridors visible when zoomed out. NumPy and GDAL come with supported
 QGIS runtimes; qfit does not bundle its own copies.
 
+Smoothing visits only neighbours reached by occupied edge/corner cells. It reads
+the required neighbour strips into a tile-plus-halo buffer, not nine full tiles.
+Large sparse selections therefore avoid smoothing and writing empty surrounding
+tiles. This optimization does not coarsen the grid or change density values.
+
 Regional selections use a local UTM grid. Wide/global selections use EPSG:3857,
 whose map metres distort ground distances at high latitudes. This version is
 not a geodesic/global heatmap and does not unwrap antimeridian-crossing tracks.
-Very large selections are bounded at 4,096 tiles (including smoothing neighbours)
-and two million cells per activity; narrow filters if a budget error is shown.
+Very large selections are bounded at 4,096 occupied count tiles and 4,096
+**non-empty density output tiles**, plus two million cells per activity. Empty
+potential smoothing neighbours do not consume the output budget. A selection
+whose actual density exceeds that limit still requires narrower filters; qfit
+never silently reduces resolution based on selection size or the map view.
 Single-vertex/no-line tracks cannot contribute. Bad geometry fails the build
 without modifying the stored tracks or replacing the previous heatmap.
 
