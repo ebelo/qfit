@@ -1,0 +1,72 @@
+{
+  "baseline": "bad27ad1742053c1644bb41fa0e5b2b301a75281",
+  "candidate": "c762102d76dd4bd373ffad493db3f6e86937d686",
+  "style": "Fusion",
+  "dimensions": [
+    420,
+    280
+  ],
+  "selection": [
+    "Walk",
+    "Hike"
+  ],
+  "dates": [
+    "2026-05-01",
+    "2026-05-31"
+  ],
+  "scope": "Actual dock filter group detached for matched UI panel capture; not a map, atlas, Windows or private-data capture",
+  "images": {
+    "qgis3-before.png": {
+      "image": "qgis3-before.png",
+      "qgis": "3.44.11-Solothurn",
+      "qt": "5.15.17",
+      "pyqt": "5.15.11",
+      "dimensions": [
+        420,
+        280
+      ],
+      "route_selector_present": true,
+      "scope": "Actual dock Map filters group detached for matched panel capture; no map render or Windows UI claim",
+      "sha256": "810fa27fdc1eac84a8990e03c3ffc3210c6351d2f6ec307e15c1401aa556b949"
+    },
+    "qgis3-after.png": {
+      "image": "qgis3-after.png",
+      "qgis": "3.44.11-Solothurn",
+      "qt": "5.15.17",
+      "pyqt": "5.15.11",
+      "dimensions": [
+        420,
+        280
+      ],
+      "route_selector_present": false,
+      "scope": "Actual dock Map filters group detached for matched panel capture; no map render or Windows UI claim",
+      "sha256": "cce8e02017b3ad37ea691552be92b8c7d437d4270fe07d012fc12d17f47ab8f4"
+    },
+    "qgis4-before.png": {
+      "image": "qgis4-before.png",
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt": "6.9.2",
+      "pyqt": "6.9.1",
+      "dimensions": [
+        420,
+        280
+      ],
+      "route_selector_present": true,
+      "scope": "Actual dock Map filters group detached for matched panel capture; no map render or Windows UI claim",
+      "sha256": "653e514321cf80b3b732ca25a6c07afb2d40461e58d67e01ae223c5d6ec089cd"
+    },
+    "qgis4-after.png": {
+      "image": "qgis4-after.png",
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt": "6.9.2",
+      "pyqt": "6.9.1",
+      "dimensions": [
+        420,
+        280
+      ],
+      "route_selector_present": false,
+      "scope": "Actual dock Map filters group detached for matched panel capture; no map render or Windows UI claim",
+      "sha256": "b106e2307a896f9260473e1ce02f1b34278f332edd29e2b3c8d0703a0bafe12b"
+    }
+  }
+}
