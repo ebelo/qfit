@@ -22,6 +22,7 @@ All PRs must pass the following before merging:
 - Common issues: duplicate string literals (extract to local constant), broad `except Exception` without logging.
 
 ### Test coverage (mandatory)
+- Install the [local test dependencies](README.md#testing) before running the suite, including PyYAML for workflow regressions.
 - **New behaviour** → write unit tests that cover it.
 - **Bug fix** → add a regression test that would have caught the bug before the fix.
 - **Refactor** → all existing tests must still pass; add tests for any previously untested paths.

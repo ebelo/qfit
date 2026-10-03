@@ -258,7 +258,11 @@ If new code belongs to one feature, it should usually live under that feature pa
 
 Run the main test suite with:
 
+Install the no-QGIS test dependencies, matching the unit-test CI environment.
+PyYAML is required by the workflow regressions:
+
 ```bash
+python3 -m pip install pytest pyyaml pypdf fitdecode==0.11.0 numpy==1.26.4
 python3 -m pytest tests/ -x -q --tb=short
 ```
 
@@ -287,14 +291,14 @@ python3 scripts/install_plugin.py --plugins-dir <QGIS plugins dir> --mode copy
 Build a release-style plugin archive with:
 
 ```bash
-python -m pip install pypdf
+python -m pip install pypdf fitdecode==0.11.0
 python3 scripts/package_plugin.py
 ```
 
 Build the QGIS-major release archives with:
 
 ```bash
-python -m pip install pypdf
+python -m pip install pypdf fitdecode==0.11.0
 python3 scripts/package_plugin.py --qgis-major 3
 python3 scripts/package_plugin.py --qgis-major 4
 ```
