@@ -63,5 +63,5 @@ jobs:
             dist/*-qgis*.zip \
             dist/*-SHA256SUMS.txt \
             --draft \
-            --title "${{ github.ref_name }}" \
+            --title "$RELEASE_TAG" \
             --generate-notes

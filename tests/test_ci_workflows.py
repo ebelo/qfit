@@ -159,7 +159,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             gh_stub.chmod(0o755)
             captured = root / "release-args.txt"
             env.update(PATH=f"{bin_dir}{os.pathsep}{env['PATH']}", CAPTURED_ARGS=str(captured))
-            command = release_step["run"].replace("${{ github.ref_name }}", "v1.2.3")
+            command = release_step["run"]
             subprocess.run(
                 ["bash", "-e", "-o", "pipefail", "-c", command],
                 cwd=root, env=env, check=True, capture_output=True,
@@ -167,6 +167,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             args = captured.read_text().splitlines()
             self.assertEqual(args[:3], ["release", "create", "v1.2.3"])
             self.assertIn("--draft", args)
+            self.assertEqual(args[args.index("--title") + 1], "v1.2.3")
             self.assertEqual(
                 {arg for arg in args if arg.startswith("dist/")},
                 {f"dist/{name}" for name in packages} | {f"dist/{manifest.name}"},
