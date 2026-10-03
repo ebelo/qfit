@@ -102,6 +102,11 @@ class ReleaseWorkflowTests(unittest.TestCase):
         checkout = next(step for step in job["steps"] if step.get("uses", "").startswith("actions/checkout@"))
         self.assertEqual(checkout["with"]["ref"], "refs/tags/${{ env.RELEASE_TAG }}")
 
+    def test_same_version_runs_are_serialized_without_cancelling_uploads(self):
+        job = yaml.safe_load(self.text)["jobs"]["release"]
+        self.assertEqual(job["concurrency"]["group"], "release-${{ inputs.tag || github.ref_name }}")
+        self.assertIs(job["concurrency"]["cancel-in-progress"], False)
+
     def test_tag_validation_rejects_invalid_refs_before_checkout(self):
         if os.name == "nt" or not all(shutil.which(tool) for tool in ("bash", "git")):
             self.skipTest("Release tag validation needs Linux/WSL with bash and git")
