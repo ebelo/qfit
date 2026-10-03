@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to validate and release
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -11,9 +17,18 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
+      - name: Validate version tag
+        run: |
+          [[ "$RELEASE_TAG" == v* ]]
+          git check-ref-format "refs/tags/$RELEASE_TAG"
+
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -21,10 +36,10 @@ jobs:
           python-version: '3.12'
 
       - name: Install test and packaging dependencies
-        run: python -m pip install --upgrade pyyaml pypdf fitdecode==0.11.0
+        run: python -m pip install --upgrade pytest pyyaml pypdf fitdecode==0.11.0 numpy==1.26.4
 
       - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+        run: python -m pytest tests/ -x -q --tb=short
 
       - name: Build QGIS-major plugin ZIPs
         run: |
@@ -34,13 +49,17 @@ jobs:
       - name: Generate ZIP checksums
         run: |
           cd dist
-          sha256sum *-qgis*.zip > "qfit-${GITHUB_REF_NAME#v}-SHA256SUMS.txt"
+          sha256sum *-qgis*.zip > "qfit-${RELEASE_TAG#v}-SHA256SUMS.txt"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ github.ref_name }}" \
+          if gh release view "$RELEASE_TAG" --json tagName --jq .tagName; then
+            echo "Release already exists; preserving its status, notes and assets."
+            exit 0
+          fi
+          gh release create "$RELEASE_TAG" \
             dist/*-qgis*.zip \
             dist/*-SHA256SUMS.txt \
             --draft \

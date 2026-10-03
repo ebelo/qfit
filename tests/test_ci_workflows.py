@@ -6,6 +6,7 @@ import importlib.util
 import os
 import pathlib
 import shutil
+import shlex
 import subprocess
 import tempfile
 import types
@@ -80,7 +81,39 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("scripts/package_plugin.py", self.text)
 
     def test_runs_unit_tests(self):
-        self.assertIn("unittest discover", self.text)
+        self.assertIn("python -m pytest tests/ -x -q --tb=short", self.text)
+
+    def test_release_installs_all_normal_unit_test_dependencies(self):
+        release_steps = yaml.safe_load(self.text)["jobs"]["release"]["steps"]
+        unit_steps = yaml.safe_load(_read_workflow("tests.yml"))["jobs"]["unit-tests"]["steps"]
+
+        def dependencies(steps):
+            install = next(step["run"] for step in steps if "pip install" in step.get("run", ""))
+            return set(shlex.split(install)[shlex.split(install).index("--upgrade") + 1:])
+
+        self.assertGreaterEqual(dependencies(release_steps), dependencies(unit_steps))
+
+    def test_manual_retry_checks_out_requested_tag_not_main(self):
+        workflow = yaml.safe_load(self.text)
+        triggers = workflow.get("on", workflow.get(True))
+        self.assertTrue(triggers["workflow_dispatch"]["inputs"]["tag"]["required"])
+        job = workflow["jobs"]["release"]
+        self.assertEqual(job["env"]["RELEASE_TAG"], "${{ inputs.tag || github.ref_name }}")
+        checkout = next(step for step in job["steps"] if step.get("uses", "").startswith("actions/checkout@"))
+        self.assertEqual(checkout["with"]["ref"], "refs/tags/${{ env.RELEASE_TAG }}")
+
+    def test_tag_validation_rejects_invalid_refs_before_checkout(self):
+        if os.name == "nt" or not all(shutil.which(tool) for tool in ("bash", "git")):
+            self.skipTest("Release tag validation needs Linux/WSL with bash and git")
+        steps = yaml.safe_load(self.text)["jobs"]["release"]["steps"]
+        self.assertEqual(steps[0]["name"], "Validate version tag")
+        for tag, valid in (("v0.54.0", True), ("main", False), ("vbad ref", False), ("v../main", False)):
+            with self.subTest(tag=tag):
+                result = subprocess.run(
+                    ["bash", "-e", "-c", steps[0]["run"]],
+                    env={**os.environ, "RELEASE_TAG": tag}, capture_output=True,
+                )
+                self.assertEqual(result.returncode == 0, valid)
 
     def test_releases_qgis_major_packages(self):
         self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
@@ -103,7 +136,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             }
             for name, payload in packages.items():
                 (dist / name).write_bytes(payload)
-            env = {**os.environ, "GITHUB_REF_NAME": "v1.2.3"}
+            env = {**os.environ, "RELEASE_TAG": "v1.2.3"}
             subprocess.run(
                 ["bash", "-e", "-o", "pipefail", "-c", checksum_step["run"]],
                 cwd=root, env=env, check=True, capture_output=True,
@@ -119,7 +152,10 @@ class ReleaseWorkflowTests(unittest.TestCase):
             bin_dir = root / "bin"
             bin_dir.mkdir()
             gh_stub = bin_dir / "gh"
-            gh_stub.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$CAPTURED_ARGS"\n')
+            gh_stub.write_text(
+                '#!/bin/sh\nprintf "%s\\n" "$@" > "$CAPTURED_ARGS"\n'
+                'if [ "$2" = "view" ]; then exit "${EXISTING_RELEASE_STATUS:-1}"; fi\n'
+            )
             gh_stub.chmod(0o755)
             captured = root / "release-args.txt"
             env.update(PATH=f"{bin_dir}{os.pathsep}{env['PATH']}", CAPTURED_ARGS=str(captured))
@@ -134,6 +170,17 @@ class ReleaseWorkflowTests(unittest.TestCase):
             self.assertEqual(
                 {arg for arg in args if arg.startswith("dist/")},
                 {f"dist/{name}" for name in packages} | {f"dist/{manifest.name}"},
+            )
+
+            env["EXISTING_RELEASE_STATUS"] = "0"
+            subprocess.run(
+                ["bash", "-e", "-o", "pipefail", "-c", command],
+                cwd=root, env=env, check=True, capture_output=True,
+            )
+            # The only command on retry is read-only: no create/edit/upload.
+            self.assertEqual(
+                captured.read_text().splitlines(),
+                ["release", "view", "v1.2.3", "--json", "tagName", "--jq", ".tagName"],
             )
 
 
