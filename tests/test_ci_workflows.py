@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import os
 import pathlib
+import shutil
 import subprocess
 import tempfile
 import types
@@ -87,6 +88,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("dist/*-qgis*.zip", self.text)
 
     def test_release_checksum_generation_and_attachment(self):
+        if os.name == "nt" or not all(shutil.which(tool) for tool in ("bash", "sha256sum")):
+            self.skipTest("Release shell integration needs Linux/WSL with bash and sha256sum")
         steps = yaml.safe_load(self.text)["jobs"]["release"]["steps"]
         checksum_step = next(step for step in steps if step["name"] == "Generate ZIP checksums")
         release_step = next(step for step in steps if step["name"] == "Create GitHub Release")
@@ -127,6 +130,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             )
             args = captured.read_text().splitlines()
             self.assertEqual(args[:3], ["release", "create", "v1.2.3"])
+            self.assertIn("--draft", args)
             self.assertEqual(
                 {arg for arg in args if arg.startswith("dist/")},
                 {f"dist/{name}" for name in packages} | {f"dist/{manifest.name}"},

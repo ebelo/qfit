@@ -258,13 +258,19 @@ If new code belongs to one feature, it should usually live under that feature pa
 
 Run the main test suite with:
 
-Install the no-QGIS test dependencies, matching the unit-test CI environment.
-PyYAML is required by the workflow regressions:
+Use **Python 3.12**, matching the unit-test CI environment, for this pinned
+dependency setup. Run the following in a Python 3.12 environment; PyYAML is
+required by the workflow regressions:
 
 ```bash
 python3 -m pip install pytest pyyaml pypdf fitdecode==0.11.0 numpy==1.26.4
 python3 -m pytest tests/ -x -q --tb=short
 ```
+
+The release-shell integration regression requires Linux/WSL with `bash` and
+`sha256sum`, matching GitHub Actions' Ubuntu runner. It reports an explicit skip
+on native Windows or when these tools are unavailable; use Linux/WSL for complete
+release-workflow coverage. This does not skip the required real-QGIS CI gates.
 
 Run unittest discovery with:
 

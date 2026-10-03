@@ -43,5 +43,6 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             dist/*-qgis*.zip \
             dist/*-SHA256SUMS.txt \
+            --draft \
             --title "${{ github.ref_name }}" \
             --generate-notes
