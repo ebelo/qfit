@@ -1,14 +1,20 @@
 """Sanity checks for GitHub Actions workflow files."""
 
 import configparser
+import hashlib
 import importlib.util
+import os
 import pathlib
+import shutil
+import subprocess
 import tempfile
 import types
 import unittest
 import zipfile
 from importlib import metadata
 from unittest.mock import patch
+
+import yaml
 
 WORKFLOWS_DIR = pathlib.Path(__file__).resolve().parents[1] / ".github" / "workflows"
 METADATA_PATH = WORKFLOWS_DIR.parents[1] / "metadata.txt"
@@ -80,6 +86,55 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
         self.assertIn("scripts/package_plugin.py --qgis-major 4", self.text)
         self.assertIn("dist/*-qgis*.zip", self.text)
+
+    def test_release_checksum_generation_and_attachment(self):
+        if os.name == "nt" or not all(shutil.which(tool) for tool in ("bash", "sha256sum")):
+            self.skipTest("Release shell integration needs Linux/WSL with bash and sha256sum")
+        steps = yaml.safe_load(self.text)["jobs"]["release"]["steps"]
+        checksum_step = next(step for step in steps if step["name"] == "Generate ZIP checksums")
+        release_step = next(step for step in steps if step["name"] == "Create GitHub Release")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = pathlib.Path(temp_dir)
+            dist = root / "dist"
+            dist.mkdir()
+            packages = {
+                f"qfit-1.2.3-qgis{major}.zip": f"package {major}".encode()
+                for major in (3, 4)
+            }
+            for name, payload in packages.items():
+                (dist / name).write_bytes(payload)
+            env = {**os.environ, "GITHUB_REF_NAME": "v1.2.3"}
+            subprocess.run(
+                ["bash", "-e", "-o", "pipefail", "-c", checksum_step["run"]],
+                cwd=root, env=env, check=True, capture_output=True,
+            )
+            manifest = dist / "qfit-1.2.3-SHA256SUMS.txt"
+            actual = dict(line.split("  ", 1)[::-1] for line in manifest.read_text().splitlines())
+            expected = {name: hashlib.sha256(payload).hexdigest() for name, payload in packages.items()}
+            self.assertEqual(actual, expected)
+            subprocess.run(
+                ["sha256sum", "--check", manifest.name],
+                cwd=dist, check=True, capture_output=True,
+            )
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            gh_stub = bin_dir / "gh"
+            gh_stub.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$CAPTURED_ARGS"\n')
+            gh_stub.chmod(0o755)
+            captured = root / "release-args.txt"
+            env.update(PATH=f"{bin_dir}{os.pathsep}{env['PATH']}", CAPTURED_ARGS=str(captured))
+            command = release_step["run"].replace("${{ github.ref_name }}", "v1.2.3")
+            subprocess.run(
+                ["bash", "-e", "-o", "pipefail", "-c", command],
+                cwd=root, env=env, check=True, capture_output=True,
+            )
+            args = captured.read_text().splitlines()
+            self.assertEqual(args[:3], ["release", "create", "v1.2.3"])
+            self.assertIn("--draft", args)
+            self.assertEqual(
+                {arg for arg in args if arg.startswith("dist/")},
+                {f"dist/{name}" for name in packages} | {f"dist/{manifest.name}"},
+            )
 
 
 class TestsWorkflowTests(unittest.TestCase):
