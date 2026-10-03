@@ -1,18 +1,10 @@
-import sys
 import unittest
-from types import ModuleType, SimpleNamespace
-from unittest.mock import patch
+from types import SimpleNamespace
 
 from tests import _path  # noqa: F401
 
-from qfit.activities.domain.activity_query import (
-    DETAILED_ROUTE_FILTER_ANY,
-    DETAILED_ROUTE_FILTER_MISSING,
-    DETAILED_ROUTE_FILTER_PRESENT,
-)
 from qfit.ui.application.local_first_activity_controls import (
     build_current_activity_preview_request,
-    configure_detailed_route_filter_options,
     configure_local_first_activity_preview_options,
 )
 
@@ -89,114 +81,17 @@ class FakeSpinBox:
         return self._value
 
 
-class FakeLayout:
-    def __init__(self):
-        self.replacements = []
-
-    def replaceWidget(self, old_widget, new_widget):
-        self.replacements.append((old_widget, new_widget))
-
-
-class FakeParent:
-    def __init__(self):
-        self._layout = FakeLayout()
-
-    def layout(self):
-        return self._layout
-
-
-class FakeLegacyCheckBox:
-    def __init__(self, parent):
-        self._parent = parent
-        self.hidden = False
-
-    def parentWidget(self):
-        return self._parent
-
-    def hide(self):
-        self.hidden = True
-
-
-def install_fake_qtwidgets():
-    qgis = ModuleType("qgis")
-    pyqt = ModuleType("qgis.PyQt")
-    qtwidgets = ModuleType("qgis.PyQt.QtWidgets")
-    qtwidgets.QComboBox = FakeComboBox
-    qgis.PyQt = pyqt
-    pyqt.QtWidgets = qtwidgets
-    return {
-        "qgis": qgis,
-        "qgis.PyQt": pyqt,
-        "qgis.PyQt.QtWidgets": qtwidgets,
-    }
-
-
 class LocalFirstActivityControlsTests(unittest.TestCase):
-    def test_configure_detailed_route_filter_replaces_legacy_checkbox(self):
-        parent = FakeParent()
-        legacy_checkbox = FakeLegacyCheckBox(parent)
-        dock = SimpleNamespace(detailedOnlyCheckBox=legacy_checkbox)
-
-        with patch.dict(sys.modules, install_fake_qtwidgets()):
-            configure_detailed_route_filter_options(dock)
-
-        combo = dock.detailedRouteStatusComboBox
-        self.assertIs(combo.parentWidget(), parent)
-        self.assertEqual(combo.object_name, "detailedRouteStatusComboBox")
-        self.assertEqual(
-            parent.layout().replacements,
-            [(legacy_checkbox, combo)],
-        )
-        self.assertTrue(legacy_checkbox.hidden)
-        self.assertEqual(
-            combo.items,
-            [
-                ("Any routes", DETAILED_ROUTE_FILTER_ANY),
-                ("Detailed routes only", DETAILED_ROUTE_FILTER_PRESENT),
-                ("Missing detailed routes", DETAILED_ROUTE_FILTER_MISSING),
-            ],
-        )
-        self.assertEqual(
-            combo.tooltip,
-            "Filter activities by detailed-route availability",
-        )
-
-    def test_configure_detailed_route_filter_reuses_existing_combo(self):
-        combo = FakeComboBox()
-        combo.addItem("stale", "value")
-        dock = SimpleNamespace(detailedRouteStatusComboBox=combo)
-
-        configure_detailed_route_filter_options(dock)
-
-        self.assertTrue(combo.cleared)
-        self.assertEqual(
-            combo.items,
-            [
-                ("Any routes", DETAILED_ROUTE_FILTER_ANY),
-                ("Detailed routes only", DETAILED_ROUTE_FILTER_PRESENT),
-                ("Missing detailed routes", DETAILED_ROUTE_FILTER_MISSING),
-            ],
-        )
-
-    def test_configure_activity_preview_options_populates_route_filter_combo(self):
-        route_status_combo = FakeComboBox()
-        dock = SimpleNamespace(
-            detailedRouteStatusComboBox=route_status_combo,
-        )
-
+    def test_configure_preview_options_needs_no_route_detail_backing_controls(self):
+        dock = SimpleNamespace()
         configure_local_first_activity_preview_options(dock)
-
-        self.assertEqual(route_status_combo.items[0], ("Any routes", "any"))
+        self.assertFalse(hasattr(dock, "detailedRouteStatusComboBox"))
+        self.assertFalse(hasattr(dock, "detailedOnlyCheckBox"))
 
     def test_build_current_activity_preview_request_reads_local_first_backing_controls(self):
         activities = [SimpleNamespace(name="Morning Ride")]
         activity_type_combo = FakeComboBox()
         activity_type_combo.addItem("Ride", "ride")
-        detailed_route_status_combo = FakeComboBox()
-        detailed_route_status_combo.addItem(
-            "Detailed routes only",
-            DETAILED_ROUTE_FILTER_PRESENT,
-        )
         dock = SimpleNamespace(
             runtime_state=SimpleNamespace(activities=activities),
             activityTypeComboBox=activity_type_combo,
@@ -205,7 +100,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             minDistanceSpinBox=FakeSpinBox(12),
             maxDistanceSpinBox=FakeSpinBox(120),
             activitySearchLineEdit=FakeLineEdit("  gravel  "),
-            detailedRouteStatusComboBox=detailed_route_status_combo,
         )
 
         request = build_current_activity_preview_request(dock)
@@ -217,7 +111,7 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
         self.assertEqual(request.min_distance_km, 12)
         self.assertEqual(request.max_distance_km, 120)
         self.assertEqual(request.search_text, "gravel")
-        self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_PRESENT)
+        self.assertIsNone(request.detailed_route_filter)
         self.assertFalse(hasattr(request, "sort_label"))
 
         activity_type_combo.selectedTypes = lambda: ("Hike", "Walk")
@@ -226,8 +120,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
 
     def test_build_current_activity_preview_request_uses_safe_defaults(self):
         activity_type_combo = FakeComboBox()
-        detailed_route_status_combo = FakeComboBox()
-        detailed_route_status_combo.addItem("Any routes", DETAILED_ROUTE_FILTER_ANY)
         dock = SimpleNamespace(
             runtime_state=SimpleNamespace(activities=[]),
             activityTypeComboBox=activity_type_combo,
@@ -236,7 +128,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             minDistanceSpinBox=FakeSpinBox(0),
             maxDistanceSpinBox=FakeSpinBox(0),
             activitySearchLineEdit=FakeLineEdit(""),
-            detailedRouteStatusComboBox=detailed_route_status_combo,
         )
 
         request = build_current_activity_preview_request(dock)

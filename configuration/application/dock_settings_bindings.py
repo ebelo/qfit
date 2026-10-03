@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from .ui_settings_binding import UIFieldBinding
 from ...activities.application.storage_selection import normalize_storage_path
-from ...activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 
 
@@ -53,16 +52,6 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
             0.0,
             lambda: dock.maxDistanceSpinBox.value(),
             lambda value: dock._set_float_value(dock.maxDistanceSpinBox, value, 0.0),
-        ),
-        UIFieldBinding(
-            "detailed_route_filter",
-            DETAILED_ROUTE_FILTER_ANY,
-            lambda: dock.detailedRouteStatusComboBox.currentData(),
-            lambda value: dock._set_combo_data_value(
-                dock.detailedRouteStatusComboBox,
-                value,
-                DETAILED_ROUTE_FILTER_ANY,
-            ),
         ),
         UIFieldBinding(
             "use_background_map",

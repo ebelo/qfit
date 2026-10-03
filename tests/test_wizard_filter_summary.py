@@ -10,6 +10,11 @@ from qfit.ui.application.wizard_filter_summary import build_wizard_filter_descri
 
 
 class WizardFilterSummaryTests(unittest.TestCase):
+    def test_retired_route_detail_filter_is_not_described(self):
+        for value in ("present", "missing", "unknown"):
+            with self.subTest(value=value):
+                self.assertIsNone(build_wizard_filter_description(SimpleNamespace(detailed_route_filter=value)))
+
     def test_build_wizard_filter_description_skips_default_controls(self):
         request = SimpleNamespace(
             activity_type="All",
@@ -39,7 +44,7 @@ class WizardFilterSummaryTests(unittest.TestCase):
         self.assertEqual(
             description,
             "type: Run · search: “alps” · dates: 2026-04-01–2026-04-30 · "
-            "distance: 5–42.5 km · routes: detailed only",
+            "distance: 5–42.5 km",
         )
 
     def test_build_wizard_filter_description_handles_open_bounds_and_missing_routes(self):
@@ -57,8 +62,7 @@ class WizardFilterSummaryTests(unittest.TestCase):
 
         self.assertEqual(
             description,
-            "type: Ride · dates: until 2026-05-01 · distance: ≤ 80 km · "
-            "routes: missing details",
+            "type: Ride · dates: until 2026-05-01 · distance: ≤ 80 km",
         )
 
 

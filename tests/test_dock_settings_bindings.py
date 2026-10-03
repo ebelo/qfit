@@ -4,7 +4,6 @@ from tests import _path  # noqa: F401
 
 from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
 from qfit.configuration.application.settings_service import SettingsService
-from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from qfit.configuration.application.ui_settings_binding import load_bindings, save_bindings
 from qfit.mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
@@ -111,10 +110,6 @@ class FakeDock:
         self.pointSamplingStrideSpinBox = SpinWidget(5)
         self.activitySearchLineEdit = TextWidget()
         self.maxDistanceSpinBox = SpinWidget(0.0)
-        self.detailedRouteStatusComboBox = ComboWidget(
-            ["Any routes", "Detailed routes only", "Missing detailed routes"],
-            data=[DETAILED_ROUTE_FILTER_ANY, "present", "missing"],
-        )
         self.backgroundMapCheckBox = CheckWidget(False)
         self.mapboxStyleOwnerLineEdit = TextWidget()
         self.mapboxStyleIdLineEdit = TextWidget()
@@ -158,16 +153,6 @@ class FakeDock:
             spin_box.setValue(int(default))
 
     @staticmethod
-    def _set_combo_data_value(combo_box, value, default):
-        target = value if value not in (None, "") else default
-        index = combo_box.findData(target)
-        if index < 0:
-            index = combo_box.findData(default)
-        if index < 0:
-            index = 0
-        combo_box.setCurrentIndex(index)
-
-    @staticmethod
     def _set_float_value(spin_box, value, default):
         try:
             spin_box.setValue(float(value))
@@ -182,7 +167,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         "point_sampling_stride",
         "activity_search_text",
         "max_distance_km",
-        "detailed_route_filter",
         "use_background_map",
         "mapbox_style_owner",
         "mapbox_style_id",
@@ -218,7 +202,7 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(settings.get("client_id"), "client-123")
         self.assertEqual(settings.get("redirect_uri"), "http://example.test/callback")
         self.assertEqual(dock.outputPathLineEdit.text(), dock._default_output_path())
-        self.assertEqual(dock.detailedRouteStatusComboBox.currentData(), "missing")
+        self.assertFalse(hasattr(dock, "detailedRouteStatusComboBox"))
         self.assertTrue(dock.backgroundMapCheckBox.isChecked())
         self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
         self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Selected rides")
@@ -233,7 +217,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         dock.pointSamplingStrideSpinBox.setValue(9)
         dock.activitySearchLineEdit.setText(" commute ")
         dock.maxDistanceSpinBox.setValue(42.5)
-        dock.detailedRouteStatusComboBox.setCurrentIndex(2)
         dock.backgroundMapCheckBox.setChecked(True)
         dock.mapboxStyleOwnerLineEdit.setText("custom-owner")
         dock.mapboxStyleIdLineEdit.setText("style-id")
@@ -260,7 +243,7 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertIsNone(settings.get("use_detailed_streams"))
         self.assertIsNone(settings.get("detailed_route_strategy"))
         self.assertFalse(settings.get_bool("write_activity_points", True))
-        self.assertEqual(settings.get("detailed_route_filter"), "missing")
+        self.assertIsNone(settings.get("detailed_route_filter"))
         self.assertEqual(settings.get("mapbox_style_owner"), "custom-owner")
         self.assertEqual(settings.get("atlas_title"), "Weekend Atlas")
         self.assertEqual(settings.get("atlas_subtitle"), "Alpine routes")

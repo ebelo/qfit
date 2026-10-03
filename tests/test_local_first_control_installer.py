@@ -78,7 +78,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
             dateToEdit=object(),
             minDistanceSpinBox=object(),
             maxDistanceSpinBox=object(),
-            detailedRouteStatusComboBox=object(),
         )
         target_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -170,7 +169,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
             dateToEdit=object(),
             minDistanceSpinBox=object(),
             maxDistanceSpinBox=object(),
-            detailedRouteStatusComboBox=object(),
         )
         target_layout = MagicMock()
         panel = object()

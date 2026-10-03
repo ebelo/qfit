@@ -112,13 +112,6 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
-        anchor_name="detailedRouteStatusComboBox",
-        target_text="Only activities with detailed tracks",
-        tooltip=(
-            "Filters the preview and loaded layers to activities that already have detailed stream geometry available."
-        ),
-    ),
-    HelpEntry(
         anchor_name="refreshButton",
         target_text="Sync activities",
         tooltip=(

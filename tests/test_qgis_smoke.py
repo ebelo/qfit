@@ -664,6 +664,87 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_map_filters_ignore_retired_route_detail_settings_on_startup_and_restore(self):
+        from qgis.PyQt.QtWidgets import QWidget
+        from qfit.activities.application.activity_preview import build_activity_preview_selection_state
+        from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
+        from qfit.ui.application.local_first_activity_controls import build_current_activity_preview_request
+        from qfit.ui.application.local_first_filter_summary import build_local_first_filter_description
+
+        for saved_value in (None, "present", "missing"):
+            with self.subTest(saved_value=saved_value):
+                settings = SettingsService(
+                    qsettings=_FakeQSettings({"qfit/detailed_route_filter": saved_value}),
+                    credential_store=InMemoryCredentialStore(),
+                )
+                dependencies = replace(build_dockwidget_dependencies(self.iface), settings=settings)
+                dock = QfitDockWidget(self.iface, dependencies=dependencies)
+                restored = None
+                try:
+                    dock.show()
+                    self.qgs.processEvents()
+                    self.assertFalse(hasattr(dock, "detailedRouteStatusComboBox"))
+                    self.assertFalse(hasattr(dock, "detailedOnlyCheckBox"))
+                    for name in ("detailedRouteStatusComboBox", "detailedOnlyCheckBox"):
+                        self.assertIsNone(dock.findChild(QWidget, name))
+                    self.assertTrue(dock._local_first_filter_controls_installed)
+                    self.assertIs(dock.filterGroupBox.parentWidget(), dock._local_first_dock_composition.map_content.filter_controls_panel)
+                    dock.activityTypeComboBox.setOptions(["All", "Walk", "Hike", "Run"])
+                    dock.activityTypeComboBox.setSelectedTypes(["Walk", "Hike"])
+                    dock.dateFromEdit.setDate(QDate(2026, 5, 1))
+                    dock.dateToEdit.setDate(QDate(2026, 5, 31))
+                    dock.minDistanceSpinBox.setValue(4)
+                    dock.maxDistanceSpinBox.setValue(6)
+                    dock.activitySearchLineEdit.setText("Morning")
+                    activities = [
+                        Activity(source="fixture", source_activity_id=str(i), activity_type=kind,
+                                 sport_type=kind, geometry_source=geometry, name=name,
+                                 distance_m=distance, start_date=f"{date}T10:00:00")
+                        for i, (kind, geometry, name, distance, date) in enumerate([
+                            ("Walk", "stream", "Morning walk", 5000, "2026-05-01"),
+                            ("Walk", "summary_polyline", "Morning walk", 5000, "2026-05-01"),
+                            ("Hike", None, "Morning hike", 5000, "2026-05-01"),
+                            ("Run", "stream", "Morning run", 5000, "2026-05-01"),
+                            ("Walk", "stream", "Evening walk", 5000, "2026-05-01"),
+                            ("Walk", "stream", "Morning walk", 9000, "2026-05-01"),
+                            ("Walk", "stream", "Morning walk", 5000, "2026-04-01"),
+                        ])
+                    ]
+                    dock.activities = activities
+                    layer = QgsVectorLayer("LineString?crs=EPSG:4326&field=activity_type:string&field=sport_type:string&field=start_date:string&field=distance_m:double&field=name:string&field=geometry_source:string", "Route detail migration", "memory")
+                    for activity in activities:
+                        feature = QgsFeature(layer.fields())
+                        feature.setAttributes([activity.activity_type, activity.sport_type, activity.start_date,
+                                               activity.distance_m, activity.name, activity.geometry_source])
+                        layer.dataProvider().addFeatures([feature])
+                    dock.activities_layer = layer
+                    request = build_current_activity_preview_request(dock)
+                    selection = build_activity_preview_selection_state(request)
+                    self.assertEqual(selection.query.detailed_route_filter, DETAILED_ROUTE_FILTER_ANY)
+                    self.assertEqual(selection.filtered_count, 3)
+                    self.assertNotIn("routes:", build_local_first_filter_description(request))
+                    dock.on_apply_filters_clicked()
+                    self.assertEqual(layer.featureCount(), 3)
+                    self.assertEqual(layer.subsetString(), build_subset_string(selection.query))
+                    self.assertNotIn("geometry_source", layer.subsetString())
+                    dock._save_settings()
+                    restored = QfitDockWidget(self.iface, dependencies=dependencies)
+                    restored.activities = activities
+                    restored.dateFromEdit.setDate(dock.dateFromEdit.date())
+                    restored.dateToEdit.setDate(dock.dateToEdit.date())
+                    restored.minDistanceSpinBox.setValue(dock.minDistanceSpinBox.value())
+                    restored_selection = build_activity_preview_selection_state(build_current_activity_preview_request(restored))
+                    self.assertEqual(restored_selection.query.detailed_route_filter, DETAILED_ROUTE_FILTER_ANY)
+                    self.assertEqual(restored_selection.filtered_count, 3)
+                    self.assertEqual(restored.activityTypeComboBox.selectedTypes(), ("Hike", "Walk"))
+                    self.assertEqual(settings.get("detailed_route_filter"), saved_value)
+                finally:
+                    if restored is not None:
+                        restored.close()
+                        restored.deleteLater()
+                    dock.close()
+                    dock.deleteLater()
+
     def test_multi_activity_type_selector_real_clicks_apply_map_filters_and_restore_settings(self):
         from qgis.PyQt.QtTest import QTest
         from qfit.ui.application.local_first_activity_controls import build_current_activity_preview_request
