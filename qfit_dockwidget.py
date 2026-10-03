@@ -597,7 +597,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.dateToEdit.dateChanged,
             self.minDistanceSpinBox.valueChanged,
             self.maxDistanceSpinBox.valueChanged,
-            self.detailedRouteStatusComboBox.currentIndexChanged,
         ]
         for signal in preview_inputs:
             signal.connect(self._refresh_activity_preview)
@@ -671,16 +670,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             spin_box.setValue(int(value))
         except (TypeError, ValueError):
             spin_box.setValue(int(default))
-
-    @staticmethod
-    def _set_combo_data_value(combo_box, value, default: str) -> None:
-        target = value if value not in (None, "") else default
-        index = combo_box.findData(target)
-        if index < 0:
-            index = combo_box.findData(default)
-        if index < 0:
-            index = 0
-        combo_box.setCurrentIndex(index)
 
     @staticmethod
     def _set_float_value(spin_box, value, default: float) -> None:

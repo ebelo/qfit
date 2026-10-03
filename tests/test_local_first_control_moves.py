@@ -72,7 +72,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                     "dateToEdit",
                     "minDistanceSpinBox",
                     "maxDistanceSpinBox",
-                    "detailedRouteStatusComboBox",
                 ),
                 "atlas_pdf": ("atlasPdfPathLineEdit", "atlasPdfBrowseButton"),
                 "basemap": (

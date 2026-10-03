@@ -50,7 +50,6 @@ from .local_first_parity_audit import (
 )
 from .local_first_activity_controls import (
     build_current_activity_preview_request,
-    configure_detailed_route_filter_options,
     configure_local_first_activity_preview_options,
 )
 from .local_first_analysis_controls import (
@@ -315,7 +314,6 @@ __all__ = [
     "bind_local_first_analysis_mode_controls",
     "bind_local_first_basemap_preset_controls",
     "bind_local_first_conditional_visibility_controls",
-    "configure_detailed_route_filter_options",
     "configure_local_first_activity_preview_options",
     "configure_local_first_analysis_mode_backing_controls",
     "configure_local_first_basemap_options",

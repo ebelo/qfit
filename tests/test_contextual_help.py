@@ -345,6 +345,8 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
+        self.assertNotIn("detailedRouteStatusComboBox", entries)
+        self.assertNotIn("detailedOnlyCheckBox", entries)
         self.assertNotIn("backfillMissingDetailedRoutesButton", entries)
         self.assertEqual(entries["backgroundMapCheckBox"].target_text, "Enable Mapbox basemap")
         self.assertEqual(

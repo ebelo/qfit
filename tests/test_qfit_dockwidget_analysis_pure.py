@@ -745,7 +745,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(
             filter_description,
             "type: Run · search: “alps” · dates: from 2026-04-01 · "
-            "distance: ≥ 10 km · routes: missing details",
+            "distance: ≥ 10 km",
         )
 
     def test_current_wizard_filter_facts_reports_unfiltered_preview_request(self):
@@ -1268,9 +1268,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.dateToEdit = SimpleNamespace(dateChanged=_FakeSignal())
         dock.minDistanceSpinBox = SimpleNamespace(valueChanged=_FakeSignal())
         dock.maxDistanceSpinBox = SimpleNamespace(valueChanged=_FakeSignal())
-        dock.detailedRouteStatusComboBox = SimpleNamespace(
-            currentIndexChanged=_FakeSignal(),
-        )
         for name in (
             "on_browse_clicked",
             "on_open_existing_clicked",

@@ -3,9 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from qfit.activities.domain.activity_query import (
-    DETAILED_ROUTE_FILTER_ANY,
-    DETAILED_ROUTE_FILTER_MISSING,
-    DETAILED_ROUTE_FILTER_PRESENT,
     selected_activity_types,
 )
 
@@ -45,12 +42,6 @@ def _filter_description_parts(request: Any) -> list[str]:
     if distance_part is not None:
         parts.append(distance_part)
 
-    route_part = _route_filter_part(
-        _normalised_text(getattr(request, "detailed_route_filter", None))
-    )
-    if route_part is not None:
-        parts.append(route_part)
-
     return parts
 
 
@@ -77,16 +68,6 @@ def _distance_range_part(
     if maximum is not None:
         return f"distance: ≤ {_format_km(maximum)} km"
     return None
-
-
-def _route_filter_part(value: str | None) -> str | None:
-    if value in (None, "", DETAILED_ROUTE_FILTER_ANY):
-        return None
-    if value == DETAILED_ROUTE_FILTER_PRESENT:
-        return "routes: detailed only"
-    if value == DETAILED_ROUTE_FILTER_MISSING:
-        return "routes: missing details"
-    return f"routes: {value}"
 
 
 def _normalised_text(value: Any) -> str | None:

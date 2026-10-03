@@ -90,7 +90,6 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
             "dateToEdit",
             "minDistanceSpinBox",
             "maxDistanceSpinBox",
-            "detailedRouteStatusComboBox",
         ),
         installed_attr="_local_first_filter_controls_installed",
         installed_target_attr="_local_first_filter_controls_installed_target",
