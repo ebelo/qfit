@@ -107,7 +107,10 @@ class ReleaseWorkflowTests(unittest.TestCase):
             self.skipTest("Release tag validation needs Linux/WSL with bash and git")
         steps = yaml.safe_load(self.text)["jobs"]["release"]["steps"]
         self.assertEqual(steps[0]["name"], "Validate version tag")
-        for tag, valid in (("v0.54.0", True), ("main", False), ("vbad ref", False), ("v../main", False)):
+        for tag, valid in (
+            ("v0.54.0", True), ("main", False), ("vbad ref", False),
+            ("v../main", False), ("v1/foo", False),
+        ):
             with self.subTest(tag=tag):
                 result = subprocess.run(
                     ["bash", "-e", "-c", steps[0]["run"]],

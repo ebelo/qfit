@@ -23,6 +23,7 @@ jobs:
       - name: Validate version tag
         run: |
           [[ "$RELEASE_TAG" == v* ]]
+          [[ "$RELEASE_TAG" != */* ]]
           git check-ref-format "refs/tags/$RELEASE_TAG"
 
       - name: Check out repository
