@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import logging
 from copy import copy
 from dataclasses import replace
@@ -42,7 +44,7 @@ class RouteSyncTask(QgsTask):
         writer_factory=None,
         on_finished: RouteSyncTaskFinishedCallback | None = None,
     ):
-        super().__init__("Sync saved Strava routes", QgsTask.Flag.CanCancel)
+        super().__init__("Sync saved Strava routes", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self._provider = provider
         self._output_path = output_path
         self._per_page = max(1, int(per_page or 1))

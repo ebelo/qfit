@@ -20,7 +20,7 @@ from qgis.core import (
 )
 
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qgis_enum_value, qt_enum_value
 from ..application.render_plan import (
     DEFAULT_RENDER_PRESET,
     RENDERER_ATLAS_PAGE,
@@ -53,7 +53,7 @@ QT_ROUND_JOIN = qt_enum_value(Qt, "PenJoinStyle", "RoundJoin")
 def build_qfit_heatmap_renderer(*, maximum_value=None):
     renderer = QgsHeatmapRenderer()
     renderer.setRadius(HEATMAP_ANALYSIS_RADIUS_M)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderUnit.RenderMapUnits)
+    renderer.setRadiusUnit(qgis_enum_value(QgsUnitTypes, "RenderUnit", "RenderMapUnits"))
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -79,7 +79,7 @@ def build_qfit_visualize_heatmap_renderer(
 ):
     renderer = QgsHeatmapRenderer()
     renderer.setRadius(radius_map_units)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderUnit.RenderMapUnits)
+    renderer.setRadiusUnit(qgis_enum_value(QgsUnitTypes, "RenderUnit", "RenderMapUnits"))
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),

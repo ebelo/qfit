@@ -197,6 +197,7 @@ class QgisScopedEnumProbeTest(unittest.TestCase):
     def test_scoped_enums_preserve_values_on_real_binding(self):
         # Imports are mandatory in the native lanes: never hide binding failures.
         from qgis import core
+        from qfit.ui.qt_enum_compat import qgis_enum_value
 
         enums = (
             ("QgsTask", "Flag", "CanCancel"),
@@ -219,12 +220,13 @@ class QgisScopedEnumProbeTest(unittest.TestCase):
         for class_name, enum_name, member_name in enums:
             with self.subTest(cls=class_name, enum=enum_name, member=member_name):
                 cls = getattr(core, class_name)
-                scoped = getattr(getattr(cls, enum_name), member_name)
+                scoped = qgis_enum_value(cls, enum_name, member_name)
                 # SIP still exposes legacy aliases in both tested bindings.
                 self.assertEqual(scoped, getattr(cls, member_name))
 
     def test_all_affected_tasks_remain_cancellable(self):
         from qgis.core import QgsApplication, QgsTask
+        from qfit.ui.qt_enum_compat import qgis_enum_value
         from tests.qgis_app import get_shared_qgis_app
         from qfit.activities.application.fetch_task import FetchTask
         from qfit.activities.application.route_sync_task import RouteSyncTask
@@ -250,7 +252,7 @@ class QgisScopedEnumProbeTest(unittest.TestCase):
         )
         for task in tasks:
             with self.subTest(task=type(task).__name__):
-                self.assertTrue(task.flags() & QgsTask.Flag.CanCancel)
+                self.assertTrue(task.flags() & qgis_enum_value(QgsTask, "Flag", "CanCancel"))
                 self.assertFalse(task.isCanceled())
                 task.cancel()
                 self.assertTrue(task.isCanceled())

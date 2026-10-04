@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -97,7 +99,7 @@ def _apply_analysis_style(layer):
     symbol_layer = symbol.symbolLayer(0)
     if symbol_layer is not None:
         symbol_layer.setDataDefinedProperty(
-            QgsSymbolLayer.Property.PropertySize, QgsProperty.fromField("marker_size")
+            qgis_enum_value(QgsSymbolLayer, "Property", "PropertySize"), QgsProperty.fromField("marker_size")
         )
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
     layer.setOpacity(0.95)

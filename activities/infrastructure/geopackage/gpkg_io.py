@@ -7,6 +7,8 @@ knowledge of layer schemas, builders, or orchestration — it only handles
 the disk-write operation.
 """
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 from qgis.core import (
     QgsCoordinateTransformContext,
     QgsProject,
@@ -57,7 +59,7 @@ def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file, *, appen
         QgsProject.instance().transformContext() if QgsProject.instance() else QgsCoordinateTransformContext(),
         options,
     )
-    if result[0] != QgsVectorFileWriter.WriterError.NoError:
+    if result[0] != qgis_enum_value(QgsVectorFileWriter, "WriterError", "NoError"):
         raise RuntimeError(
             "Failed to write layer '{name}' to {path}: {result}".format(
                 name=layer_name,

@@ -16,4 +16,4 @@ icon=icon.png
 experimental=False
 deprecated=False
 tags=strava,fitness,gis,qgis,gpx,fit,geopackage,activities
-changelog=0.54.1: Replace legacy flat PyQGIS enums with scoped enum members for QGIS 3/4 compatibility; add native enum and source regressions.
+changelog=0.54.1: Resolve scoped PyQGIS enums with older QGIS 3 fallbacks; add native enum and source regressions.

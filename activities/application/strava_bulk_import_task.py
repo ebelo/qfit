@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 from typing import Callable
 
 from qgis.core import QgsTask
@@ -24,7 +26,7 @@ class StravaBulkPreflightTask(QgsTask):
     """Validate a potentially large ZIP away from the QGIS UI thread."""
 
     def __init__(self, workflow, archive_path, on_finished=None):
-        super().__init__("Validate Strava bulk export", QgsTask.Flag.CanCancel)
+        super().__init__("Validate Strava bulk export", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self._workflow = workflow
         self._archive_path = archive_path
         self._on_finished = on_finished
@@ -56,7 +58,7 @@ class StravaBulkImportTask(QgsTask):
     """Run bounded archive parsing, writes, and one final layer rebuild."""
 
     def __init__(self, workflow, request, on_finished=None):
-        super().__init__("Import Strava bulk export", QgsTask.Flag.CanCancel)
+        super().__init__("Import Strava bulk export", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self._workflow = workflow
         self._request = request
         self._on_finished = on_finished

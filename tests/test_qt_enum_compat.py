@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 
 from qfit.ui.qt_enum_compat import (
     optional_qt_enum_value,
+    qgis_enum_value,
     qt_class_enum_value,
     qt_enum_value,
 )
@@ -97,6 +98,34 @@ class QgisScopedEnumSourceTest(unittest.TestCase):
                 ):
                     violations.append(f"{path.relative_to(root)}:{node.lineno}: {node.value.id}.{node.attr}")
         self.assertEqual(violations, [], "Use scoped PyQGIS enum members: " + ", ".join(violations))
+
+
+
+class QgisEnumCompatTest(unittest.TestCase):
+    def test_resolves_older_qgis_flat_member(self):
+        self.assertEqual(qgis_enum_value(_FlatDockWidget, "DockWidgetFeature", "DockWidgetClosable"), 1)
+
+    def test_resolves_scoped_only_member(self):
+        self.assertEqual(qgis_enum_value(_NestedDockWidget, "DockWidgetFeature", "DockWidgetClosable"), 1)
+
+    def test_prefers_scoped_zero_over_legacy_alias(self):
+        class BothShapes:
+            Success = 99
+
+            class ExportResult:
+                Success = 0
+
+        self.assertEqual(qgis_enum_value(BothShapes, "ExportResult", "Success"), 0)
+
+    def test_preserves_zero_legacy_member(self):
+        class FlatOnly:
+            NoError = 0
+
+        self.assertEqual(qgis_enum_value(FlatOnly, "WriterError", "NoError"), 0)
+
+    def test_missing_member_raises(self):
+        with self.assertRaises(AttributeError):
+            qgis_enum_value(_FlatDockWidget, "DockWidgetFeature", "Missing")
 
 
 if __name__ == "__main__":

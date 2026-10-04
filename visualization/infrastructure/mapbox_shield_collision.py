@@ -1,5 +1,7 @@
 """Keep low-zoom Outdoors shield sprites in the label collision lifecycle."""
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import base64
 import binascii
 from functools import lru_cache
@@ -40,7 +42,7 @@ def _svg_wrapped_sprite(path: str) -> str:
 def _background_sprite(marker):
     from qgis.core import QgsProperty, QgsSymbolLayer
 
-    path_property = marker.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyName)
+    path_property = marker.dataDefinedProperties().property(qgis_enum_value(QgsSymbolLayer, "Property", "PropertyName"))
     if path_property.isActive():
         expression = path_property.expressionString()
         if not expression or not _INLINE_IMAGE.search(expression):
@@ -60,9 +62,9 @@ def _coupled_settings(settings, symbol):
     text_format = settings.format()
     background = text_format.background()
     background.setEnabled(True)
-    background.setType(QgsTextBackgroundSettings.ShapeType.ShapeSVG)
+    background.setType(qgis_enum_value(QgsTextBackgroundSettings, "ShapeType", "ShapeSVG"))
     background.setSvgFile(path)
-    background.setSizeType(QgsTextBackgroundSettings.SizeType.SizeFixed)
+    background.setSizeType(qgis_enum_value(QgsTextBackgroundSettings, "SizeType", "SizeFixed"))
     # ShapeSVG consumes only X; the wrapped sprite viewBox supplies its aspect
     # ratio (including for data-defined widths). Y is not a collision rectangle.
     background.setSize(QSizeF(symbol.size(), symbol.size()))
@@ -73,7 +75,7 @@ def _coupled_settings(settings, symbol):
     settings.setFormat(text_format)
     properties = settings.dataDefinedProperties()
     properties.setProperty(QgsPalLayerSettings.Property.ShapeSVGFile, path_property)
-    width = marker.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyWidth)
+    width = marker.dataDefinedProperties().property(qgis_enum_value(QgsSymbolLayer, "Property", "PropertyWidth"))
     if width.isActive():
         properties.setProperty(QgsPalLayerSettings.Property.ShapeSizeX, width)
     settings.setDataDefinedProperties(properties)

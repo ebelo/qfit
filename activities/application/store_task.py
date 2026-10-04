@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import traceback
 from typing import Callable
 
@@ -21,7 +23,7 @@ class StoreActivitiesTask(QgsTask):
         request: StoreActivitiesRequest,
         on_finished: StoreTaskFinishedCallback | None = None,
     ):
-        super().__init__("Store qfit activities", QgsTask.Flag.CanCancel)
+        super().__init__("Store qfit activities", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self._workflow = workflow
         self._request = request
         self._on_finished = on_finished
