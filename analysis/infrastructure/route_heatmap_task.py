@@ -1,4 +1,6 @@
 """Background computation only; QGIS raster widgets are created by the caller."""
+
+from qfit.ui.qt_enum_compat import qgis_enum_value
 from qgis.core import QgsTask
 
 from ..domain.route_density import HeatmapCancelled
@@ -7,7 +9,7 @@ from .route_heatmap_raster import build_route_heatmap
 
 class RouteHeatmapTask(QgsTask):
     def __init__(self, request, on_finished):
-        super().__init__("Build static route heatmap", QgsTask.CanCancel)
+        super().__init__("Build static route heatmap", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self.request = request
         self._on_finished = on_finished
         self.artifact = None

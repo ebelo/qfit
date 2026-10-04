@@ -4,6 +4,8 @@ Uses :class:`qgis.core.QgsTask` so that fetches appear in the QGIS task
 manager, show progress in the native progress bar, and can be cancelled.
 """
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import logging
 
 from qgis.core import QgsTask
@@ -57,7 +59,7 @@ class FetchTask(QgsTask):
         on_finished=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
     ):
-        super().__init__("Sync activities", QgsTask.CanCancel)
+        super().__init__("Sync activities", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self._provider = provider
         self._per_page = per_page
         self._max_pages = max_pages

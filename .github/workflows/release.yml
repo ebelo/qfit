@@ -49,11 +49,12 @@ jobs:
         run: |
           python scripts/package_plugin.py --qgis-major 3
           python scripts/package_plugin.py --qgis-major 4
+          python scripts/package_plugin.py
 
       - name: Generate ZIP checksums
         run: |
           cd dist
-          sha256sum *-qgis*.zip > "qfit-${RELEASE_TAG#v}-SHA256SUMS.txt"
+          sha256sum qfit-*.zip > "qfit-${RELEASE_TAG#v}-SHA256SUMS.txt"
 
       - name: Create GitHub Release
         env:
@@ -64,7 +65,7 @@ jobs:
             exit 0
           fi
           gh release create "$RELEASE_TAG" \
-            dist/*-qgis*.zip \
+            dist/qfit-*.zip \
             dist/*-SHA256SUMS.txt \
             --draft \
             --title "$RELEASE_TAG" \

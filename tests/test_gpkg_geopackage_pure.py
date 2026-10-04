@@ -33,10 +33,11 @@ class _StubSaveVectorOptions:
 
 
 class _StubVectorFileWriter:
-    NoError = 0
+    class WriterError:
+        NoError = 0
     CreateOrOverwriteFile = 1
     CreateOrOverwriteLayer = 2
-    write_result = (NoError, "", "")
+    write_result = (WriterError.NoError, "", "")
     last_call = None
 
     @classmethod
@@ -120,7 +121,7 @@ class GpkgGeopackagePureTests(unittest.TestCase):
                 sys.modules.pop(name, None)
 
             module = importlib.import_module("qfit.activities.infrastructure.geopackage.gpkg_io")
-            _StubVectorFileWriter.write_result = (_StubVectorFileWriter.NoError, "", "")
+            _StubVectorFileWriter.write_result = (_StubVectorFileWriter.WriterError.NoError, "", "")
             module.write_layer_to_gpkg("layer", "/tmp/out.gpkg", "activity_tracks", True)
             self.assertEqual(
                 _StubVectorFileWriter.last_call["options"].actionOnExistingFile,

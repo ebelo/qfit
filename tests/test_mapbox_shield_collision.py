@@ -47,8 +47,8 @@ class ShieldCollisionTests(unittest.TestCase):
         core = MagicMock()
         core.Qgis.GeometryType.Point = 0
         core.Qgis.SymbolType.Marker = 0
-        core.QgsSymbolLayer.PropertyName = 2
-        core.QgsSymbolLayer.PropertyWidth = 9
+        core.QgsSymbolLayer.Property.PropertyName = 2
+        core.QgsSymbolLayer.Property.PropertyWidth = 9
         core.QgsPalLayerSettings.Property.ShapeSVGFile = 48
         core.QgsPalLayerSettings.Property.ShapeSizeX = 50
         core.QgsProperty.fromExpression.side_effect = lambda expression: expression

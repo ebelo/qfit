@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import json
 from dataclasses import dataclass
 import math
@@ -427,9 +429,9 @@ def build_profile_item(
 
     profile_item = QgsLayoutItemPicture(layout)
     profile_item.setId(item_id)
-    profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-    profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
-    profile_item.setResizeMode(QgsLayoutItemPicture.Zoom)
+    profile_item.attemptMove(QgsLayoutPoint(x, y, _layout_millimeters()))
+    profile_item.attemptResize(QgsLayoutSize(w, h, _layout_millimeters()))
+    profile_item.setResizeMode(qgis_enum_value(QgsLayoutItemPicture, "ResizeMode", "Zoom"))
     layout.addLayoutItem(profile_item)
     adapter = ProfileItemAdapter(item=profile_item, kind="picture")
     # Store layers so the export loop can use them for synchronous profile rendering
@@ -454,8 +456,8 @@ def build_native_profile_item(
 
     profile_item = QgsLayoutItemElevationProfile(layout)
     profile_item.setId(item_id)
-    profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-    profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+    profile_item.attemptMove(QgsLayoutPoint(x, y, _layout_millimeters()))
+    profile_item.attemptResize(QgsLayoutSize(w, h, _layout_millimeters()))
     layout.addLayoutItem(profile_item)
 
     adapter = ProfileItemAdapter(item=profile_item, kind="native")
@@ -807,3 +809,7 @@ def build_native_profile_inputs(
 
     request = build_native_profile_request(curve, config=request_config)
     return curve, request
+
+
+def _layout_millimeters():
+    return qgis_enum_value(QgsUnitTypes, "LayoutUnit", "LayoutMillimeters")

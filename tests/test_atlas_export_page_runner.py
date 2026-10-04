@@ -33,7 +33,8 @@ class _FakeRect:
 
 
 class _FakeLayoutExporter:
-    Success = 0
+    class ExportResult:
+        Success = 0
 
 
 def _install_qgis_stub():

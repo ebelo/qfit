@@ -29,6 +29,7 @@ jobs:
         run: |
           python scripts/package_plugin.py --qgis-major 3
           python scripts/package_plugin.py --qgis-major 4
+          python scripts/package_plugin.py
 
       - name: Build artifact metadata
         id: artifact
@@ -49,6 +50,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.name }}
-          path: dist/*-qgis*.zip
+          path: dist/qfit-*.zip
           if-no-files-found: error
           retention-days: 14

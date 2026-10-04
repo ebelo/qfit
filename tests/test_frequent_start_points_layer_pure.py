@@ -120,7 +120,8 @@ class _FakeVectorLayer:
 
 
 class _FakeSymbolLayer:
-    PropertySize = "size"
+    class Property:
+        PropertySize = "size"
 
     def __init__(self):
         self.data_defined = {}
@@ -268,7 +269,7 @@ class TestFrequentStartPointsLayerPure(unittest.TestCase):
         self.assertTrue(layer.repainted)
         symbol_layer = layer.renderer.symbol.symbolLayer(0)
         self.assertEqual(
-            symbol_layer.data_defined[_FakeSymbolLayer.PropertySize],
+            symbol_layer.data_defined[_FakeSymbolLayer.Property.PropertySize],
             "field:marker_size",
         )
 

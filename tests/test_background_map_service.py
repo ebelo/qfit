@@ -862,7 +862,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             symbol = rule.symbol()
             self.assertEqual(symbol.symbolLayerCount(), 1)
             stroke = symbol.symbolLayer(0)
-            prop = stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth)
+            prop = stroke.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth)
             self.assertTrue(prop.isActive(), "A fixed width erases class/zoom hierarchy")
             expression = QgsExpression(prop.asExpression())
             self.assertIn("class", expression.referencedColumns())
@@ -986,8 +986,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         symbol = next(r.symbol() for r in after if r.styleName() == "admin-0-boundary-bg")
         self.assertFalse(next(r.symbol() for r in before if r.styleName() == "admin-0-boundary-bg")
                          .dataDefinedProperties().hasActiveProperties())
-        width = QgsExpression(symbol.symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).asExpression())
-        opacity = QgsExpression(symbol.dataDefinedProperties().property(QgsSymbol.PropertyOpacity).asExpression())
+        width = QgsExpression(symbol.symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth).asExpression())
+        opacity = QgsExpression(symbol.dataDefinedProperties().property(QgsSymbol.Property.PropertyOpacity).asExpression())
         baseline_symbol = next(r.symbol() for r in before if r.styleName() == "admin-0-boundary-bg")
         fields = QgsFields()
         fields.append(QgsField("disputed"))
@@ -1070,14 +1070,14 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             expected = before_stroke.properties()
             if name == "admin-0-boundary":
                 expected["use_custom_dash"] = "0"
-                self.assertTrue(after_stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).isActive())
+                self.assertTrue(after_stroke.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth).isActive())
             else:
                 self.assertEqual(after_stroke.dataDefinedProperties().hasActiveProperties(), before_stroke.dataDefinedProperties().hasActiveProperties())
             self.assertEqual(after_stroke.properties(), expected)
 
         rule = candidate["admin-0-boundary"]
         stroke = rule.symbol().symbolLayer(0)
-        expression = QgsExpression(stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).asExpression())
+        expression = QgsExpression(stroke.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth).asExpression())
         for zoom in (0, 2.9, 3, 3.1, 5, 7.9, 8, 8.1, 10, 11.9, 12, 12.1, 18, 24):
             scope = QgsExpressionContextScope()
             scope.setVariable("vector_tile_zoom", zoom)
@@ -2816,7 +2816,7 @@ class ApplyMapboxGlStyleMockTests(unittest.TestCase):
 
         # Wire up converter to return Success so the renderer/labeling branch runs.
         success_sentinel = object()
-        _qstub.QgsMapBoxGlStyleConverter.Success = success_sentinel
+        _qstub.QgsMapBoxGlStyleConverter.Result.Success = success_sentinel
         _qstub.QgsMapBoxGlStyleConverter.return_value.convert.return_value = success_sentinel
 
         mock_renderer = MagicMock()

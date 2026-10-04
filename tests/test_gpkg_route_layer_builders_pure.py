@@ -19,7 +19,8 @@ class _FakePoint:
 
 
 class _FakeWkbTypes:
-    PointZ = 1001
+    class Type:
+        PointZ = 1001
 
 
 class _FakePointXY:

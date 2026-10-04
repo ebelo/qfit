@@ -1,5 +1,7 @@
 """QGIS background adapter for metadata-only activity name refresh."""
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import logging
 
 from qgis.core import QgsTask
@@ -13,7 +15,7 @@ class ActivityNameRefreshTask(QgsTask):
     is_name_refresh = True
 
     def __init__(self, provider, output_path, activity_ids=(), *, on_finished=None):
-        super().__init__("Refresh Strava activity names", QgsTask.CanCancel)
+        super().__init__("Refresh Strava activity names", qgis_enum_value(QgsTask, "Flag", "CanCancel"))
         self.provider = provider
         self.output_path = output_path
         self.activity_ids = activity_ids

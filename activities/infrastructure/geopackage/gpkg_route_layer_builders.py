@@ -7,6 +7,8 @@ compact JSON for joins to spatial route sample points.  Profile samples also
 keep the provider identity so consumers do not need to rely on layer order.
 """
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import json
 
 from qgis.core import (
@@ -329,7 +331,7 @@ def _padded_z_point(lon, lat):
     return QgsPoint(
         float(lon),
         float(lat),
-        wkbType=QgsWkbTypes.PointZ,
+        wkbType=qgis_enum_value(QgsWkbTypes, "Type", "PointZ"),
     )
 
 

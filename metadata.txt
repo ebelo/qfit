@@ -1,11 +1,12 @@
 [general]
 name=qfit
 qgisMinimumVersion=3.28
+qgisMaximumVersion=4.99
 description=Explore fitness data spatially in QGIS
-version=0.54.0
+version=0.54.1
 author=Emmanuel Belo
 email=emmanuel.nicolas.belo@gmail.com
-about=qfit imports and visualizes fitness activity data in QGIS, starting with Strava and expanding toward broader FIT/GPX workflows.
+about=qfit imports and visualizes fitness activity data in QGIS, starting with Strava and expanding toward broader FIT/GPX workflows. Strava API synchronization requires a Strava account and API credentials; bulk-file import does not require API access. Optional Mapbox backgrounds require a Mapbox access token. Static route heatmaps require NumPy in the QGIS Python environment. FIT/PDF dependencies (fitdecode and pypdf) are bundled. See the homepage for setup and usage.
 license=GPL-2.0-or-later
 copyright=(C) Emmanuel Belo
 tracker=https://github.com/ebelo/qfit/issues
@@ -15,3 +16,4 @@ icon=icon.png
 experimental=False
 deprecated=False
 tags=strava,fitness,gis,qgis,gpx,fit,geopackage,activities
+changelog=0.54.1: Resolve scoped PyQGIS enums with older QGIS 3 fallbacks; add native enum and source regressions.

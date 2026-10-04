@@ -19,7 +19,8 @@ from tests import _path  # noqa: F401
 class _FakeQgsTask:
     """Minimal stand-in for QgsTask used in unit tests."""
 
-    CanCancel = 1
+    class Flag:
+        CanCancel = 1
 
     def __init__(self, description, flags=0):
         self._cancelled = False

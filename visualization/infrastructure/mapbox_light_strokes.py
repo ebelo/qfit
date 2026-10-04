@@ -1,5 +1,7 @@
 """Source-backed Light strokes, independent of native converter versions."""
 
+from qfit.ui.qt_enum_compat import qgis_enum_value
+
 import math
 
 from ...mapbox_config import _is_mapbox_light_style
@@ -79,7 +81,7 @@ def apply_light_road_widths(renderer, source_style: dict) -> int:
     widths = _source_widths(source_style)
     if not widths:
         return 0
-    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer, QgsSymbolLayer
+    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer
 
     styles = list(renderer.styles())
     changed = 0
@@ -91,9 +93,9 @@ def apply_light_road_widths(renderer, source_style: dict) -> int:
         stroke = symbol.symbolLayer(0)
         if not isinstance(stroke, QgsSimpleLineSymbolLayer) or stroke.widthUnit() != Qgis.RenderUnit.Millimeters:
             continue
-        if stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).isActive():
+        if stroke.dataDefinedProperties().property(_stroke_width_property()).isActive():
             continue
-        stroke.setDataDefinedProperty(QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_width_expression(width)))
+        stroke.setDataDefinedProperty(_stroke_width_property(), QgsProperty.fromExpression(_width_expression(width)))
         changed += 1
     if changed:
         renderer.setStyles(styles)
@@ -133,7 +135,7 @@ def apply_light_national_boundary_stroke(renderer, source_style: dict) -> int:
     """
     if not _has_solid_national_boundary(source_style):
         return 0
-    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer, QgsSymbolLayer
+    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer
     from qgis.PyQt.QtCore import Qt
 
     styles = list(renderer.styles())
@@ -155,7 +157,7 @@ def apply_light_national_boundary_stroke(renderer, source_style: dict) -> int:
             continue
         stroke.setUseCustomDashPattern(False)
         stroke.setDataDefinedProperty(
-            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_NATIONAL_BOUNDARY_EXPRESSION)
+            _stroke_width_property(), QgsProperty.fromExpression(_NATIONAL_BOUNDARY_EXPRESSION)
         )
         changed += 1
     if changed:
@@ -209,7 +211,7 @@ def _has_national_background(style):
 
 
 def _has_repaired_ordinary_core(styles):
-    from qgis.core import Qgis, QgsSimpleLineSymbolLayer, QgsSymbolLayer
+    from qgis.core import Qgis, QgsSimpleLineSymbolLayer
     from qgis.PyQt.QtCore import Qt
 
     cores = [rule for rule in styles if rule.styleName() == "admin-0-boundary"]
@@ -223,7 +225,7 @@ def _has_repaired_ordinary_core(styles):
             or stroke.widthUnit() != Qgis.RenderUnit.Millimeters
             or stroke.useCustomDashPattern() or stroke.penStyle() != Qt.PenStyle.SolidLine):
         return False
-    width = stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth)
+    width = stroke.dataDefinedProperties().property(_stroke_width_property())
     return width.isActive() and width.asExpression() == _NATIONAL_BOUNDARY_EXPRESSION
 
 
@@ -244,7 +246,7 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
     """
     if not _has_national_background(source_style):
         return 0
-    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer, QgsSymbol, QgsSymbolLayer
+    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer, QgsSymbol
     from qgis.PyQt.QtCore import Qt
 
     styles = list(renderer.styles())
@@ -264,12 +266,12 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
                 or stroke.dataDefinedProperties().hasActiveProperties()):
             continue
         stroke.setDataDefinedProperty(
-            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(
+            _stroke_width_property(), QgsProperty.fromExpression(
                 _ordinary_background_expression(_NATIONAL_BACKGROUND_WIDTH, stroke.width())
             )
         )
         symbol.setDataDefinedProperty(
-            QgsSymbol.PropertyOpacity, QgsProperty.fromExpression(
+            qgis_enum_value(QgsSymbol, "Property", "PropertyOpacity"), QgsProperty.fromExpression(
                 _ordinary_background_expression(_NATIONAL_BACKGROUND_OPACITY, symbol.opacity() * 100)
             )
         )
@@ -277,3 +279,9 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
     if changed:
         renderer.setStyles(styles)
     return changed
+
+
+def _stroke_width_property():
+    from qgis.core import QgsSymbolLayer
+
+    return qgis_enum_value(QgsSymbolLayer, "Property", "PropertyStrokeWidth")
