@@ -329,7 +329,7 @@ def _padded_z_point(lon, lat):
     return QgsPoint(
         float(lon),
         float(lat),
-        wkbType=QgsWkbTypes.PointZ,
+        wkbType=QgsWkbTypes.Type.PointZ,
     )
 
 

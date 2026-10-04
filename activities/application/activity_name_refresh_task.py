@@ -13,7 +13,7 @@ class ActivityNameRefreshTask(QgsTask):
     is_name_refresh = True
 
     def __init__(self, provider, output_path, activity_ids=(), *, on_finished=None):
-        super().__init__("Refresh Strava activity names", QgsTask.CanCancel)
+        super().__init__("Refresh Strava activity names", QgsTask.Flag.CanCancel)
         self.provider = provider
         self.output_path = output_path
         self.activity_ids = activity_ids

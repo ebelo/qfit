@@ -91,9 +91,9 @@ def apply_light_road_widths(renderer, source_style: dict) -> int:
         stroke = symbol.symbolLayer(0)
         if not isinstance(stroke, QgsSimpleLineSymbolLayer) or stroke.widthUnit() != Qgis.RenderUnit.Millimeters:
             continue
-        if stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).isActive():
+        if stroke.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth).isActive():
             continue
-        stroke.setDataDefinedProperty(QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_width_expression(width)))
+        stroke.setDataDefinedProperty(QgsSymbolLayer.Property.PropertyStrokeWidth, QgsProperty.fromExpression(_width_expression(width)))
         changed += 1
     if changed:
         renderer.setStyles(styles)
@@ -155,7 +155,7 @@ def apply_light_national_boundary_stroke(renderer, source_style: dict) -> int:
             continue
         stroke.setUseCustomDashPattern(False)
         stroke.setDataDefinedProperty(
-            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_NATIONAL_BOUNDARY_EXPRESSION)
+            QgsSymbolLayer.Property.PropertyStrokeWidth, QgsProperty.fromExpression(_NATIONAL_BOUNDARY_EXPRESSION)
         )
         changed += 1
     if changed:
@@ -223,7 +223,7 @@ def _has_repaired_ordinary_core(styles):
             or stroke.widthUnit() != Qgis.RenderUnit.Millimeters
             or stroke.useCustomDashPattern() or stroke.penStyle() != Qt.PenStyle.SolidLine):
         return False
-    width = stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth)
+    width = stroke.dataDefinedProperties().property(QgsSymbolLayer.Property.PropertyStrokeWidth)
     return width.isActive() and width.asExpression() == _NATIONAL_BOUNDARY_EXPRESSION
 
 
@@ -264,12 +264,12 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
                 or stroke.dataDefinedProperties().hasActiveProperties()):
             continue
         stroke.setDataDefinedProperty(
-            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(
+            QgsSymbolLayer.Property.PropertyStrokeWidth, QgsProperty.fromExpression(
                 _ordinary_background_expression(_NATIONAL_BACKGROUND_WIDTH, stroke.width())
             )
         )
         symbol.setDataDefinedProperty(
-            QgsSymbol.PropertyOpacity, QgsProperty.fromExpression(
+            QgsSymbol.Property.PropertyOpacity, QgsProperty.fromExpression(
                 _ordinary_background_expression(_NATIONAL_BACKGROUND_OPACITY, symbol.opacity() * 100)
             )
         )

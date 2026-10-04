@@ -53,7 +53,7 @@ QT_ROUND_JOIN = qt_enum_value(Qt, "PenJoinStyle", "RoundJoin")
 def build_qfit_heatmap_renderer(*, maximum_value=None):
     renderer = QgsHeatmapRenderer()
     renderer.setRadius(HEATMAP_ANALYSIS_RADIUS_M)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderUnit.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -79,7 +79,7 @@ def build_qfit_visualize_heatmap_renderer(
 ):
     renderer = QgsHeatmapRenderer()
     renderer.setRadius(radius_map_units)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderUnit.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),

@@ -97,7 +97,7 @@ def _apply_analysis_style(layer):
     symbol_layer = symbol.symbolLayer(0)
     if symbol_layer is not None:
         symbol_layer.setDataDefinedProperty(
-            QgsSymbolLayer.PropertySize, QgsProperty.fromField("marker_size")
+            QgsSymbolLayer.Property.PropertySize, QgsProperty.fromField("marker_size")
         )
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
     layer.setOpacity(0.95)

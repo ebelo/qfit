@@ -57,7 +57,7 @@ class FetchTask(QgsTask):
         on_finished=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
     ):
-        super().__init__("Sync activities", QgsTask.CanCancel)
+        super().__init__("Sync activities", QgsTask.Flag.CanCancel)
         self._provider = provider
         self._per_page = per_page
         self._max_pages = max_pages

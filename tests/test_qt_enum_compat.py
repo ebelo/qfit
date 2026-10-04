@@ -1,3 +1,5 @@
+import ast
+from pathlib import Path
 import unittest
 
 from tests import _path  # noqa: F401
@@ -60,6 +62,41 @@ class QtClassEnumCompatTest(unittest.TestCase):
     def test_class_enum_raises_for_missing_member(self):
         with self.assertRaises(AttributeError):
             qt_class_enum_value(_NestedDockWidget, "DockWidgetFeature", "NoDock")
+
+
+class QgisScopedEnumSourceTest(unittest.TestCase):
+    def test_shipped_source_does_not_use_flagged_flat_qgis_enums(self):
+        from qfit.scripts.package_plugin import should_include
+
+        root = Path(__file__).resolve().parents[1]
+        flagged = {
+            "QgsTask": {"CanCancel"},
+            "QgsSymbolLayer": {
+                "PropertyName", "PropertySize", "PropertyStrokeWidth", "PropertyWidth",
+            },
+            "QgsWkbTypes": {"PointZ"},
+            "QgsVectorFileWriter": {"NoError"},
+            "QgsLayoutItemPicture": {"Zoom"},
+            "QgsUnitTypes": {"LayoutMillimeters", "RenderMapUnits"},
+            "QgsLayoutExporter": {"Success"},
+            "QgsLayoutItemMap": {"Fixed"},
+            "QgsTextBackgroundSettings": {"ShapeSVG", "SizeFixed"},
+            "QgsSymbol": {"PropertyOpacity"},
+            "QgsMapBoxGlStyleConverter": {"Success"},
+        }
+        violations = []
+        for path in root.rglob("*.py"):
+            if not should_include(path) or "vendor" in path.relative_to(root).parts:
+                continue
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if (
+                    isinstance(node, ast.Attribute)
+                    and isinstance(node.value, ast.Name)
+                    and node.attr in flagged.get(node.value.id, ())
+                ):
+                    violations.append(f"{path.relative_to(root)}:{node.lineno}: {node.value.id}.{node.attr}")
+        self.assertEqual(violations, [], "Use scoped PyQGIS enum members: " + ", ".join(violations))
 
 
 if __name__ == "__main__":

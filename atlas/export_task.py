@@ -447,8 +447,8 @@ def _add_label(
     h_align = QT_ALIGN_RIGHT if align_right else QT_ALIGN_LEFT
     label.setHAlign(h_align)
     label.setVAlign(QT_ALIGN_TOP if v_align_top else QT_ALIGN_VCENTER)
-    label.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-    label.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+    label.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
+    label.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
     layout.addLayoutItem(label)
     return label
 
@@ -517,7 +517,7 @@ def build_atlas_layout(
     if page_collection.pageCount() > 0:
         page = page_collection.page(0)
         page.setPageSize(
-            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
+            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutUnit.LayoutMillimeters)
         )
 
     # -- Atlas setup -------------------------------------------------------
@@ -544,13 +544,13 @@ def build_atlas_layout(
     map_item = QgsLayoutItemMap(layout)
     map_item.setLayers(visible_layers)
     map_item.setKeepLayerSet(True)
-    map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutMillimeters))
-    map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
+    map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
+    map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
     # Use Fixed mode: we set the map extent explicitly per page from the stored
     # center_x_3857/center_y_3857/extent_width_m/extent_height_m fields so that
     # QGIS atlas auto-fit cannot distort or shift the precomputed page extents.
     map_item.setAtlasDriven(True)
-    map_item.setAtlasScalingMode(QgsLayoutItemMap.Fixed)
+    map_item.setAtlasScalingMode(QgsLayoutItemMap.AtlasScalingMode.Fixed)
     map_item.setCrs(QgsCoordinateReferenceSystem(_DEFAULT_PROFILE_CRS_AUTH_ID))
 
     # Disable tile border rendering on visible vector tile layers (debug overlay)
@@ -812,7 +812,7 @@ def build_cover_layout(
     if page_collection.pageCount() > 0:
         page = page_collection.page(0)
         page.setPageSize(
-            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
+            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutUnit.LayoutMillimeters)
         )
 
     def _join_cover_parts(parts: list[str]) -> str:
@@ -933,10 +933,10 @@ def build_cover_layout(
             except AttributeError:
                 logger.debug("Cover map frame disabling unavailable", exc_info=True)
             cover_map.attemptMove(
-                QgsLayoutPoint(cover_map_x, hero_map_top, QgsUnitTypes.LayoutMillimeters)
+                QgsLayoutPoint(cover_map_x, hero_map_top, QgsUnitTypes.LayoutUnit.LayoutMillimeters)
             )
             cover_map.attemptResize(
-                QgsLayoutSize(cover_map_size, cover_map_size, QgsUnitTypes.LayoutMillimeters)
+                QgsLayoutSize(cover_map_size, cover_map_size, QgsUnitTypes.LayoutUnit.LayoutMillimeters)
             )
             cover_map.setCrs(QgsCoordinateReferenceSystem(_DEFAULT_PROFILE_CRS_AUTH_ID))
             cover_map.setExtent(map_extent)
@@ -1067,7 +1067,7 @@ def build_toc_layout(
     if page_collection.pageCount() > 0:
         page = page_collection.page(0)
         page.setPageSize(
-            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
+            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutUnit.LayoutMillimeters)
         )
 
     content_width = PAGE_WIDTH_MM - 2 * MARGIN_MM
@@ -1090,8 +1090,8 @@ def build_toc_layout(
     sep_y = title_y + title_h + 2.0
     sep_label = QgsLayoutItemLabel(layout)
     sep_label.setText("")
-    sep_label.attemptMove(QgsLayoutPoint(MARGIN_MM, sep_y, QgsUnitTypes.LayoutMillimeters))
-    sep_label.attemptResize(QgsLayoutSize(content_width, 0.3, QgsUnitTypes.LayoutMillimeters))
+    sep_label.attemptMove(QgsLayoutPoint(MARGIN_MM, sep_y, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
+    sep_label.attemptResize(QgsLayoutSize(content_width, 0.3, QgsUnitTypes.LayoutUnit.LayoutMillimeters))
     sep_label.setBackgroundColor(QColor(180, 180, 180))
     sep_label.setBackgroundEnabled(True)
     layout.addLayoutItem(sep_label)
@@ -1152,7 +1152,7 @@ class AtlasExportTask(QgsTask):
         background_enabled: bool = False,
         profile_plot_style=None,
     ):
-        super().__init__("Export qfit atlas PDF", QgsTask.CanCancel)
+        super().__init__("Export qfit atlas PDF", QgsTask.Flag.CanCancel)
         self._atlas_layer = atlas_layer
         self._output_path = output_path
         self._atlas_title = atlas_title

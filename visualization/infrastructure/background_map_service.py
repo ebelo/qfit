@@ -705,7 +705,7 @@ class BackgroundMapService:
             self._apply_sprite_resources_to_context(ctx, sprite_resources)
             converter = QgsMapBoxGlStyleConverter()
             result = converter.convert(style_definition, ctx)
-            if result == QgsMapBoxGlStyleConverter.Success:
+            if result == QgsMapBoxGlStyleConverter.Result.Success:
                 renderer = converter.renderer()
                 labeling = converter.labeling()
                 if labeling is not None:

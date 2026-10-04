@@ -511,14 +511,14 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
 
         visualize_renderer.setRadius.assert_called_once_with(123.0)
         visualize_renderer.setRadiusUnit.assert_called_once_with(
-            module_globals["QgsUnitTypes"].RenderMapUnits
+            module_globals["QgsUnitTypes"].RenderUnit.RenderMapUnits
         )
         visualize_renderer.setMaximumValue.assert_called_once_with(25.0)
         analysis_renderer.setRadius.assert_called_once_with(
             module_globals["HEATMAP_ANALYSIS_RADIUS_M"]
         )
         analysis_renderer.setRadiusUnit.assert_called_once_with(
-            module_globals["QgsUnitTypes"].RenderMapUnits
+            module_globals["QgsUnitTypes"].RenderUnit.RenderMapUnits
         )
         analysis_renderer.setMaximumValue.assert_called_once_with(6.0)
 

@@ -95,7 +95,7 @@ class AtlasPageExportRunner:
 
                 page_path = f"{self.runtime.output_path}.page_{page_index}.pdf"
                 page_result = self.runtime.exporter.exportToPdf(page_path, self.runtime.settings)
-                if page_result != QgsLayoutExporter.Success:
+                if page_result != QgsLayoutExporter.ExportResult.Success:
                     return (
                         page_paths,
                         f"PDF export failed on page {page_index + 1} "

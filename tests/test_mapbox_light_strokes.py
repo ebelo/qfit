@@ -79,7 +79,7 @@ class LightRoadWidthTests(unittest.TestCase):
         native = SimpleNamespace(
             Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
             QgsSimpleLineSymbolLayer=Stroke,
-            QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsSymbolLayer=SimpleNamespace(Property=SimpleNamespace(PropertyStrokeWidth=44)),
             QgsProperty=SimpleNamespace(fromExpression=lambda expression: expression),
             QgsExpression=SimpleNamespace(quotedValue=lambda value: repr(value)),
         )
@@ -158,7 +158,7 @@ class LightNationalBoundaryTests(unittest.TestCase):
         renderer.styles.return_value = rules
         native = SimpleNamespace(
             Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
-            QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(Property=SimpleNamespace(PropertyStrokeWidth=44)),
             QgsProperty=SimpleNamespace(fromExpression=lambda expression: expression),
         )
         qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
@@ -249,8 +249,8 @@ class LightNationalBackgroundTests(unittest.TestCase):
         native = SimpleNamespace(
             Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
             QgsSimpleLineSymbolLayer=Stroke,
-            QgsSymbol=SimpleNamespace(PropertyOpacity=0),
-            QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsSymbol=SimpleNamespace(Property=SimpleNamespace(PropertyOpacity=0)),
+            QgsSymbolLayer=SimpleNamespace(Property=SimpleNamespace(PropertyStrokeWidth=44)),
             QgsProperty=SimpleNamespace(fromExpression=lambda value: value),
         )
         qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
@@ -289,7 +289,7 @@ class LightNationalBackgroundTests(unittest.TestCase):
         line.dataDefinedProperties().property().asExpression.return_value = strokes._NATIONAL_BOUNDARY_EXPRESSION
         core.symbol().symbolLayer.return_value = line
         native = SimpleNamespace(Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
-                                 QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44))
+                                 QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(Property=SimpleNamespace(PropertyStrokeWidth=44)))
         qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
         with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}):
             self.assertTrue(strokes._has_repaired_ordinary_core([core]))

@@ -7,7 +7,8 @@ from tests import _path  # noqa: F401
 
 
 class _FakeQgsTask:
-    CanCancel = 1
+    class Flag:
+        CanCancel = 1
 
     def __init__(self, description="", flags=0):
         self._cancelled = False
@@ -30,15 +31,15 @@ def _install_qgis_stub():
     qgis_core.QgsPrintLayout = layout_cls
     qgis_core.QgsLayoutItemMap = MagicMock()
     qgis_core.QgsLayoutItemMap.Auto = 1
-    qgis_core.QgsLayoutItemMap.Fixed = 0
+    qgis_core.QgsLayoutItemMap.AtlasScalingMode.Fixed = 0
     picture_cls = MagicMock()
-    picture_cls.Zoom = 0
+    picture_cls.ResizeMode.Zoom = 0
     qgis_core.QgsLayoutItemPicture = picture_cls
     qgis_core.QgsLayoutPoint = MagicMock()
     qgis_core.QgsLayoutSize = MagicMock()
     qgis_core.QgsLayoutItemLabel = MagicMock()
     qgis_core.QgsUnitTypes = MagicMock()
-    qgis_core.QgsUnitTypes.LayoutMillimeters = 0
+    qgis_core.QgsUnitTypes.LayoutUnit.LayoutMillimeters = 0
     qgis_core.QgsUnitTypes.RenderMillimeters = 1
     qgis_core.QgsGeometry = MagicMock()
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
@@ -47,7 +48,7 @@ def _install_qgis_stub():
     qgis_core.QgsProfileRequest = MagicMock()
     qgis_core.QgsProfilePlotRenderer = MagicMock()
     qgis_core.QgsLayoutExporter = MagicMock()
-    qgis_core.QgsLayoutExporter.Success = 0
+    qgis_core.QgsLayoutExporter.ExportResult.Success = 0
     qgis_core.QgsAtlasComposition = MagicMock()
     qgis_core.QgsHeatmapRenderer = MagicMock()
     qgis_core.QgsStyle = MagicMock()

@@ -7,7 +7,7 @@ from .route_heatmap_raster import build_route_heatmap
 
 class RouteHeatmapTask(QgsTask):
     def __init__(self, request, on_finished):
-        super().__init__("Build static route heatmap", QgsTask.CanCancel)
+        super().__init__("Build static route heatmap", QgsTask.Flag.CanCancel)
         self.request = request
         self._on_finished = on_finished
         self.artifact = None

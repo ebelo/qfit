@@ -21,7 +21,8 @@ from tests import _path  # noqa: F401
 
 
 class _FakeQgsTask:
-    CanCancel = 1
+    class Flag:
+        CanCancel = 1
 
     def __init__(self, description="", flags=0):
         self._cancelled = False
@@ -45,7 +46,7 @@ def _make_qgis_stub():
     qgis_core.QgsPrintLayout = layout_cls
     qgis_core.QgsLayoutItemMap = MagicMock()
     qgis_core.QgsLayoutItemMap.Auto = 1
-    qgis_core.QgsLayoutItemMap.Fixed = 0
+    qgis_core.QgsLayoutItemMap.AtlasScalingMode.Fixed = 0
     qgis_core.QgsCoordinateReferenceSystem = MagicMock(return_value=MagicMock())
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
@@ -53,14 +54,14 @@ def _make_qgis_stub():
     qgis_core.QgsProfileRequest = MagicMock()
     qgis_core.QgsGeometry = MagicMock()
     pic_cls = MagicMock()
-    pic_cls.Zoom = 0
+    pic_cls.ResizeMode.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
     qgis_core.QgsLayoutPoint = MagicMock()
     qgis_core.QgsLayoutSize = MagicMock()
     qgis_core.QgsLayoutExporter = MagicMock()
-    qgis_core.QgsLayoutExporter.Success = 0
+    qgis_core.QgsLayoutExporter.ExportResult.Success = 0
     qgis_core.QgsUnitTypes = MagicMock()
-    qgis_core.QgsUnitTypes.LayoutMillimeters = 0
+    qgis_core.QgsUnitTypes.LayoutUnit.LayoutMillimeters = 0
     qgis_core.QgsUnitTypes.RenderMillimeters = 1
     qgis_core.QgsAtlasComposition = MagicMock()
     qgis_core.QgsHeatmapRenderer = MagicMock()
@@ -188,7 +189,7 @@ def _make_atlas_mock(feature_count=3):
     layout_mock.items.return_value = []  # no map items → extent override skipped
 
     exporter_cls_mock = MagicMock()
-    exporter_cls_mock.Success = 0
+    exporter_cls_mock.ExportResult.Success = 0
     exporter_instance = MagicMock()
     # per-page exportToPdf(path, settings) → Success int
     exporter_instance.exportToPdf.return_value = 0
@@ -3543,7 +3544,7 @@ class TestExportCoverPage(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -3568,7 +3569,7 @@ class TestExportCoverPage(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -3980,7 +3981,7 @@ class TestExportTocPage(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_toc_layout", return_value=toc_layout), \
@@ -4003,7 +4004,7 @@ class TestExportTocPage(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_toc_layout", return_value=toc_layout), \
@@ -4434,7 +4435,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout) as build_mock, \
@@ -4464,7 +4465,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -4509,7 +4510,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -4588,7 +4589,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout) as build_mock, \
@@ -4632,7 +4633,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -4659,7 +4660,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -4689,7 +4690,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
@@ -4716,7 +4717,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout) as build_mock, \
@@ -4742,7 +4743,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout) as build_mock, \
@@ -4770,7 +4771,7 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         exporter_cls = MagicMock()
         exporter_cls.return_value = exporter_instance
-        exporter_cls.Success = 0
+        exporter_cls.ExportResult.Success = 0
         exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \

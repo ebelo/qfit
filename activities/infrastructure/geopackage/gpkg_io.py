@@ -57,7 +57,7 @@ def write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file, *, appen
         QgsProject.instance().transformContext() if QgsProject.instance() else QgsCoordinateTransformContext(),
         options,
     )
-    if result[0] != QgsVectorFileWriter.NoError:
+    if result[0] != QgsVectorFileWriter.WriterError.NoError:
         raise RuntimeError(
             "Failed to write layer '{name}' to {path}: {result}".format(
                 name=layer_name,

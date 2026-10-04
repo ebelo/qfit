@@ -49,7 +49,7 @@ def export_cover_page(
         exporter = layout_exporter_cls(cover_layout)
         settings = _build_pdf_export_settings(layout_exporter_cls)
         result = exporter.exportToPdf(cover_path, settings)
-        if result != layout_exporter_cls.Success:
+        if result != layout_exporter_cls.ExportResult.Success:
             return None
         return cover_path
     except (RuntimeError, OSError):
@@ -78,7 +78,7 @@ def export_toc_page(
         exporter = layout_exporter_cls(toc_layout)
         settings = _build_pdf_export_settings(layout_exporter_cls)
         result = exporter.exportToPdf(toc_path, settings)
-        if result != layout_exporter_cls.Success:
+        if result != layout_exporter_cls.ExportResult.Success:
             return None
         return toc_path
     except (RuntimeError, OSError):

@@ -2589,14 +2589,14 @@ class QgisSmokeTests(unittest.TestCase):
                         blank_path = str(Path(tmp) / "profile-blank.png")
                         bound_pdf_path = str(Path(tmp) / "profile-bound.pdf")
                         blank_pdf_path = str(Path(tmp) / "profile-blank.pdf")
-                        if exporter.exportToImage(bound_path, image_settings) != QgsLayoutExporter.Success:
+                        if exporter.exportToImage(bound_path, image_settings) != QgsLayoutExporter.ExportResult.Success:
                             raise RuntimeError("Bound profile image export failed")
-                        if exporter.exportToPdf(bound_pdf_path, pdf_settings) != QgsLayoutExporter.Success:
+                        if exporter.exportToPdf(bound_pdf_path, pdf_settings) != QgsLayoutExporter.ExportResult.Success:
                             raise RuntimeError("Bound profile PDF export failed")
                         profile_adapter.clear_profile()
-                        if exporter.exportToImage(blank_path, image_settings) != QgsLayoutExporter.Success:
+                        if exporter.exportToImage(blank_path, image_settings) != QgsLayoutExporter.ExportResult.Success:
                             raise RuntimeError("Blank profile image export failed")
-                        if exporter.exportToPdf(blank_pdf_path, pdf_settings) != QgsLayoutExporter.Success:
+                        if exporter.exportToPdf(blank_pdf_path, pdf_settings) != QgsLayoutExporter.ExportResult.Success:
                             raise RuntimeError("Blank profile PDF export failed")
 
                         print(

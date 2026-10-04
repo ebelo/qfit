@@ -42,7 +42,7 @@ class RouteSyncTask(QgsTask):
         writer_factory=None,
         on_finished: RouteSyncTaskFinishedCallback | None = None,
     ):
-        super().__init__("Sync saved Strava routes", QgsTask.CanCancel)
+        super().__init__("Sync saved Strava routes", QgsTask.Flag.CanCancel)
         self._provider = provider
         self._output_path = output_path
         self._per_page = max(1, int(per_page or 1))

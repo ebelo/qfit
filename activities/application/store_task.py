@@ -21,7 +21,7 @@ class StoreActivitiesTask(QgsTask):
         request: StoreActivitiesRequest,
         on_finished: StoreTaskFinishedCallback | None = None,
     ):
-        super().__init__("Store qfit activities", QgsTask.CanCancel)
+        super().__init__("Store qfit activities", QgsTask.Flag.CanCancel)
         self._workflow = workflow
         self._request = request
         self._on_finished = on_finished

@@ -42,7 +42,7 @@ class BuildWorkflowTests(unittest.TestCase):
     def test_builds_and_uploads_qgis_major_packages(self):
         self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
         self.assertIn("scripts/package_plugin.py --qgis-major 4", self.text)
-        self.assertIn("dist/*-qgis*.zip", self.text)
+        self.assertIn("dist/qfit-*.zip", self.text)
 
 
 class ReleaseWorkflowTests(unittest.TestCase):
@@ -123,10 +123,11 @@ class ReleaseWorkflowTests(unittest.TestCase):
                 )
                 self.assertEqual(result.returncode == 0, valid)
 
-    def test_releases_qgis_major_packages(self):
+    def test_releases_qgis_major_and_repository_packages(self):
         self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
         self.assertIn("scripts/package_plugin.py --qgis-major 4", self.text)
-        self.assertIn("dist/*-qgis*.zip", self.text)
+        self.assertIn("dist/qfit-*.zip", self.text)
+        self.assertIn("python scripts/package_plugin.py\n", self.text)
 
     def test_release_checksum_generation_and_attachment(self):
         if os.name == "nt" or not all(shutil.which(tool) for tool in ("bash", "sha256sum")):
@@ -142,6 +143,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
                 f"qfit-1.2.3-qgis{major}.zip": f"package {major}".encode()
                 for major in (3, 4)
             }
+            packages["qfit-1.2.3.zip"] = b"dual-version repository package"
             for name, payload in packages.items():
                 (dist / name).write_bytes(payload)
             env = {**os.environ, "RELEASE_TAG": "v1.2.3"}

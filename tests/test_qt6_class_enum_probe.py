@@ -11,6 +11,7 @@ This probe runs unconditionally (no skip guard) so that import-surface
 Qt enum failures are caught immediately on both Qt 5 and Qt 6.
 """
 
+import os
 import unittest
 
 from tests import _path  # noqa: F401
@@ -189,6 +190,70 @@ class QtModuleEnumProbeTest(unittest.TestCase):
                     f"Qt.{member_name} not found as flat or "
                     f"Qt.{enum_name}.{member_name}",
                 )
+
+
+@unittest.skipUnless(os.environ.get("QFIT_REQUIRE_QGIS") == "1", "Native PyQGIS enum probe")
+class QgisScopedEnumProbeTest(unittest.TestCase):
+    def test_scoped_enums_preserve_values_on_real_binding(self):
+        # Imports are mandatory in the native lanes: never hide binding failures.
+        from qgis import core
+
+        enums = (
+            ("QgsTask", "Flag", "CanCancel"),
+            ("QgsSymbolLayer", "Property", "PropertySize"),
+            ("QgsWkbTypes", "Type", "PointZ"),
+            ("QgsVectorFileWriter", "WriterError", "NoError"),
+            ("QgsLayoutItemPicture", "ResizeMode", "Zoom"),
+            ("QgsUnitTypes", "LayoutUnit", "LayoutMillimeters"),
+            ("QgsLayoutExporter", "ExportResult", "Success"),
+            ("QgsLayoutItemMap", "AtlasScalingMode", "Fixed"),
+            ("QgsSymbolLayer", "Property", "PropertyName"),
+            ("QgsTextBackgroundSettings", "ShapeType", "ShapeSVG"),
+            ("QgsTextBackgroundSettings", "SizeType", "SizeFixed"),
+            ("QgsSymbolLayer", "Property", "PropertyWidth"),
+            ("QgsSymbolLayer", "Property", "PropertyStrokeWidth"),
+            ("QgsSymbol", "Property", "PropertyOpacity"),
+            ("QgsUnitTypes", "RenderUnit", "RenderMapUnits"),
+            ("QgsMapBoxGlStyleConverter", "Result", "Success"),
+        )
+        for class_name, enum_name, member_name in enums:
+            with self.subTest(cls=class_name, enum=enum_name, member=member_name):
+                cls = getattr(core, class_name)
+                scoped = getattr(getattr(cls, enum_name), member_name)
+                # SIP still exposes legacy aliases in both tested bindings.
+                self.assertEqual(scoped, getattr(cls, member_name))
+
+    def test_all_affected_tasks_remain_cancellable(self):
+        from qgis.core import QgsApplication, QgsTask
+        from tests.qgis_app import get_shared_qgis_app
+        from qfit.activities.application.fetch_task import FetchTask
+        from qfit.activities.application.route_sync_task import RouteSyncTask
+        from qfit.activities.application.store_task import StoreActivitiesTask
+        from qfit.activities.application.activity_name_refresh_task import ActivityNameRefreshTask
+        from qfit.activities.application.strava_bulk_import_task import (
+            StravaBulkPreflightTask, StravaBulkImportTask,
+        )
+        from qfit.analysis.infrastructure.route_heatmap_task import RouteHeatmapTask
+        from qfit.atlas.export_task import AtlasExportTask
+
+        get_shared_qgis_app(QgsApplication)
+        # Construct only: no tasks are submitted, no network/database work runs.
+        tasks = (
+            FetchTask(None, 200, 0, None, None, True, 0),
+            RouteSyncTask(provider=None, output_path="unused.gpkg"),
+            StoreActivitiesTask(None, None),
+            ActivityNameRefreshTask(None, "unused.gpkg"),
+            StravaBulkPreflightTask(None, "unused.zip"),
+            StravaBulkImportTask(None, None),
+            RouteHeatmapTask(None, None),
+            AtlasExportTask(None, "unused.pdf"),
+        )
+        for task in tasks:
+            with self.subTest(task=type(task).__name__):
+                self.assertTrue(task.flags() & QgsTask.Flag.CanCancel)
+                self.assertFalse(task.isCanceled())
+                task.cancel()
+                self.assertTrue(task.isCanceled())
 
 
 if __name__ == "__main__":
