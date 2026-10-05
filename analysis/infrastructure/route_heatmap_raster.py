@@ -108,6 +108,12 @@ def _publish_artifact(artifact_dir, destination, key, cancelled):
         try:
             pointer.write_text(json.dumps({"generation": generation}))
             os.replace(pointer, destination / CURRENT_GENERATION)
+        except OSError:
+            # No reader can discover this generation until its pointer is
+            # published. Return it to scratch so caller cleanup cannot leak
+            # a full unreachable raster generation after publication failure.
+            replacement.rename(artifact_dir)
+            raise
         finally:
             pointer.unlink(missing_ok=True)
         manifest = json.loads((replacement / MANIFEST_NAME).read_text())

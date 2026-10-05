@@ -136,6 +136,20 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
         self.assertIsNotNone(repaired)
         self.assertNotEqual(Path(repaired.path).parent, destination)
 
+    def test_failed_pointer_publication_returns_unpublished_generation_to_scratch(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        (destination / 'manifest.sha256').write_text('invalid')
+        original = {p.name: p.read_bytes() for p in destination.iterdir()}
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        with patch('qfit.analysis.infrastructure.route_heatmap_raster.os.replace',
+                   side_effect=PermissionError('pointer unavailable')):
+            with self.assertRaises(PermissionError):
+                _publish_artifact(candidate, destination, 'key', lambda: False)
+        self.assertEqual(original, {p.name: p.read_bytes() for p in destination.iterdir()})
+        self.assertTrue((candidate / 'heatmap.vrt').is_file())
+
     def test_invalid_generation_pointer_and_cancel_leave_old_files_untouched(self):
         destination = self.root / 'key'
         self._artifact(destination)
