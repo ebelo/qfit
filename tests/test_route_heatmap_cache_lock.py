@@ -50,6 +50,20 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
             with self.assertRaises(TimeoutError):
                 waiting.__enter__()
 
+    def test_empty_lock_file_contention_waits_without_writing_locked_byte(self):
+        path = self.root / 'empty.lock'
+        with open(path, 'a+b') as held:
+            self.assertTrue(_try_lock(held))
+            try:
+                with self.assertRaises(TimeoutError):
+                    with publication_lock(path, lambda: False, timeout=0):
+                        self.fail('Contender acquired an already held lock')
+            finally:
+                _unlock(held)
+        self.assertEqual(path.stat().st_size, 0)
+        with publication_lock(path, lambda: False):
+            pass
+
     def test_windows_backend_busy_success_unlock_and_real_io_errors(self):
         backend = SimpleNamespace(locking=Mock(), LK_NBLCK=1, LK_UNLCK=2)
         handle = Mock()
