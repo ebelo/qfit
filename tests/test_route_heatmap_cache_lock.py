@@ -54,10 +54,10 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
         path = self.root / 'empty.lock'
         with open(path, 'a+b') as held:
             self.assertTrue(_try_lock(held))
+            contended = publication_lock(path, lambda: False, timeout=0)
             try:
                 with self.assertRaises(TimeoutError):
-                    with publication_lock(path, lambda: False, timeout=0):
-                        self.fail('Contender acquired an already held lock')
+                    contended.__enter__()
             finally:
                 _unlock(held)
         self.assertEqual(path.stat().st_size, 0)
