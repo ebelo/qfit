@@ -15,7 +15,9 @@ route availability), not selected QGIS features or the visible map extent.
   colour range are computed once for the complete selection.
 - Pan, zoom, source-layer visibility and canvas clipping never rebuild the density
   or refit its colour range. Pixel resampling still changes with scale; bilinear zoom-in resampling softens
-  the fixed-grid pixel edges.
+  the fixed-grid pixel edges. Global non-nodata raster statistics are recorded
+  during the background tile build, avoiding a default UI-thread statistics scan
+  over the sparse mosaic and keeping VRT checksums stable on layer closure.
 - Run again after changing filters or importing/changing tracks. Computation runs
   in a cancellable background task; the button becomes **Cancel heatmap**.
   The previous result remains until a successful replacement. Changed selections
@@ -25,6 +27,9 @@ route availability), not selected QGIS features or the visible map extent.
   the matching selection). A cache hit still reads selected tracks and verifies
   cached file hashes and a separate manifest checksum; it is not a zero-I/O
   operation. Publication/repair is serialized per cache key across QGIS sessions.
+  Repairs publish a new generation without removing files held by an existing
+  QGIS layer or saved project. Cancelling a worker keeps its task reservation
+  until completion, so rapid analysis changes cannot overlap heatmap workers.
   Tiny lock files remain in the cache; the operating system releases locks when
   a worker/process exits. Waiting for publication is cancellable and time-limited.
 

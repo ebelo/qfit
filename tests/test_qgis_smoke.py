@@ -2387,6 +2387,54 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_heatmap_mode_changes_keep_worker_reserved_until_completion(self):
+        import threading
+        from qfit.analysis.domain.route_density import HeatmapCancelled
+        dock = QfitDockWidget(self.iface)
+        release = threading.Event()
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                dock.cache.base_path = Path(tmp) / "cache"
+                dock.dateFromEdit.setDate(QDate(2026, 1, 1))
+                dock.dateToEdit.setDate(QDate(2026, 12, 31))
+                output = self._write_sample_gpkg(tmp)
+                dock.activities_layer, dock.starts_layer, dock.points_layer, dock.atlas_layer = dock.layer_gateway.load_output_layers(output)
+                dock.analysisModeComboBox.setCurrentText("Heatmap")
+                started = threading.Event()
+                def controlled(request, cancelled, progress):
+                    started.set()
+                    if not release.wait(5):
+                        raise RuntimeError("Test did not release worker")
+                    if cancelled():
+                        raise HeatmapCancelled()
+                    return None
+                with patch("qfit.analysis.infrastructure.route_heatmap_task.build_route_heatmap", side_effect=controlled) as build:
+                    dock._apply_analysis_configuration()
+                    self.assertTrue(started.wait(3))
+                    worker = dock._heatmap_task
+                    dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+                    dock._apply_analysis_configuration()
+                    self.assertIs(dock._heatmap_task, worker)
+                    self.assertTrue(worker.isCanceled())
+                    other_layer = dock.analysis_layer
+                    self.assertIsNotNone(other_layer)
+                    dock.analysisModeComboBox.setCurrentText("Heatmap")
+                    self.assertIn("Cancelling", dock._apply_analysis_configuration())
+                    self.assertIs(dock._heatmap_task, worker)
+                    self.assertEqual(build.call_count, 1)
+                    self.assertTrue(dock._local_first_dock_composition.analysis_content.run_analysis_button.isEnabled())
+                    release.set()
+                    self._wait_for_heatmap(dock)
+                    self.assertIs(dock.analysis_layer, other_layer)
+                    dock._apply_analysis_configuration()
+                    self._wait_for_heatmap(dock)
+                    self.assertEqual(build.call_count, 2)
+        finally:
+            release.set()
+            dock.cancel_background_tasks()
+            dock.close()
+            dock.deleteLater()
+
     def test_offscreen_profile_chart_export_contains_rendered_curve(self):
         """Bound profile exports should differ visibly from the same chart when cleared."""
         script = textwrap.dedent(

@@ -41,10 +41,9 @@ def publication_lock(path, cancelled, timeout=30):
     # Leave the tiny lock file in place: deleting it would permit separate
     # processes to lock different inodes for the same cache key.
     with open(path, "a+b") as handle:
-        handle.seek(0, 2)
-        if not handle.tell():
-            handle.write(b"\0")
-            handle.flush()
+        # Windows byte-range locks may extend past EOF. Do not initialize a
+        # byte before acquiring the lock: another worker can lock that byte
+        # between our size check and flush, making initialization fail EACCES.
         deadline = time.monotonic() + timeout
         check_cancelled(cancelled)
         while not _try_lock(handle):

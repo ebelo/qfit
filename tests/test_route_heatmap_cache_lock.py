@@ -50,6 +50,20 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
             with self.assertRaises(TimeoutError):
                 waiting.__enter__()
 
+    def test_empty_lock_file_contention_waits_without_writing_locked_byte(self):
+        path = self.root / 'empty.lock'
+        with open(path, 'a+b') as held:
+            self.assertTrue(_try_lock(held))
+            contended = publication_lock(path, lambda: False, timeout=0)
+            try:
+                with self.assertRaises(TimeoutError):
+                    contended.__enter__()
+            finally:
+                _unlock(held)
+        self.assertEqual(path.stat().st_size, 0)
+        with publication_lock(path, lambda: False):
+            pass
+
     def test_windows_backend_busy_success_unlock_and_real_io_errors(self):
         backend = SimpleNamespace(locking=Mock(), LK_NBLCK=1, LK_UNLCK=2)
         handle = Mock()
@@ -101,10 +115,61 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
             worker.join(timeout=3)
             self.assertFalse(worker.is_alive())
         self.assertEqual(errors, [])
-        self.assertEqual(sum(value is None for value in results), 1)
+        self.assertEqual(sum(value is not None and not value.reused for value in results), 1)
         self.assertEqual(sum(value is not None and value.reused for value in results), 1)
         self.assertIsNotNone(_cached_artifact(destination, 'key'))
-        self.assertEqual((destination/'heatmap.vrt').read_bytes(), b'immutable-heatmap.vrt')
+        self.assertEqual(Path(_cached_artifact(destination, 'key').path).read_bytes(), b'immutable-heatmap.vrt')
+
+    def test_repair_does_not_delete_files_held_by_a_raster_reader(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        (destination / 'manifest.sha256').unlink()
+        original = {p.name: p.read_bytes() for p in destination.iterdir()}
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        with patch('shutil.rmtree',
+                   side_effect=PermissionError('WinError 32: reader holds tile')):
+            _publish_artifact(candidate, destination, 'key', lambda: False)
+        for name, contents in original.items():
+            self.assertEqual((destination / name).read_bytes(), contents)
+        repaired = _cached_artifact(destination, 'key')
+        self.assertIsNotNone(repaired)
+        self.assertNotEqual(Path(repaired.path).parent, destination)
+
+    def test_failed_pointer_publication_returns_unpublished_generation_to_scratch(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        (destination / 'manifest.sha256').write_text('invalid')
+        original = {p.name: p.read_bytes() for p in destination.iterdir()}
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        with patch('qfit.analysis.infrastructure.route_heatmap_raster.os.replace',
+                   side_effect=PermissionError('pointer unavailable')):
+            with self.assertRaises(PermissionError):
+                _publish_artifact(candidate, destination, 'key', lambda: False)
+        self.assertEqual(original, {p.name: p.read_bytes() for p in destination.iterdir()})
+        self.assertTrue((candidate / 'heatmap.vrt').is_file())
+
+    def test_invalid_generation_pointer_and_cancel_leave_old_files_untouched(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        for value in ('../escape', '/absolute', 123, 'generation-../escape'):
+            with self.subTest(value=value):
+                (destination / 'current.json').write_text(json.dumps({'generation': value}))
+                self.assertIsNone(_cached_artifact(destination, 'key'))
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        before = {p.name: p.read_bytes() for p in destination.iterdir()}
+        with self.assertRaises(HeatmapCancelled):
+            _publish_artifact(candidate, destination, 'key', lambda: True)
+        self.assertEqual(before, {p.name: p.read_bytes() for p in destination.iterdir()})
+
+    def test_cache_validation_remains_cancellable_between_file_hashes(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        cancelled = Mock(side_effect=(False, False, True))
+        with self.assertRaises(HeatmapCancelled):
+            _cached_artifact(destination, 'key', cancelled)
 
     def test_metadata_edits_and_missing_checksum_never_reuse_cache(self):
         destination = self.root / 'key'
