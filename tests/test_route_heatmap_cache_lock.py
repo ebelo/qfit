@@ -153,8 +153,9 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
     def test_cache_validation_remains_cancellable_between_file_hashes(self):
         destination = self.root / 'key'
         self._artifact(destination)
+        cancelled = Mock(side_effect=(False, False, True))
         with self.assertRaises(HeatmapCancelled):
-            _cached_artifact(destination, 'key', Mock(side_effect=(False, False, True)))
+            _cached_artifact(destination, 'key', cancelled)
 
     def test_metadata_edits_and_missing_checksum_never_reuse_cache(self):
         destination = self.root / 'key'

@@ -16,6 +16,7 @@ from .route_heatmap_source import projected_crs, projected_parts, snapshot_track
 
 MAX_TILES = 4096
 HEATMAP_VRT_NAME = "heatmap.vrt"
+MANIFEST_NAME = "manifest.json"
 CURRENT_GENERATION = "current.json"
 
 
@@ -77,7 +78,7 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
                     "maximum": maximum, "parameters": asdict(request.parameters), "files": files,
                     "tile_count": len(paths), "maximum_visits": visits}
         manifest_bytes = json.dumps(manifest, sort_keys=True).encode()
-        (artifact_dir / "manifest.json").write_bytes(manifest_bytes)
+        (artifact_dir / MANIFEST_NAME).write_bytes(manifest_bytes)
         (artifact_dir / "manifest.sha256").write_text(hashlib.sha256(manifest_bytes).hexdigest())
         check_cancelled(cancelled)
         destination = cache / key
@@ -109,7 +110,7 @@ def _publish_artifact(artifact_dir, destination, key, cancelled):
             os.replace(pointer, destination / CURRENT_GENERATION)
         finally:
             pointer.unlink(missing_ok=True)
-        manifest = json.loads((replacement / "manifest.json").read_text())
+        manifest = json.loads((replacement / MANIFEST_NAME).read_text())
         return RouteHeatmapArtifact(str(replacement / HEATMAP_VRT_NAME), key,
                                     manifest["activity_count"], manifest["crs"], manifest["maximum"])
 
@@ -128,7 +129,7 @@ def _cached_artifact(directory, key, cancelled=lambda: False):
     try:
         check_cancelled(cancelled)
         directory = _current_directory(directory)
-        manifest_bytes = (directory / "manifest.json").read_bytes()
+        manifest_bytes = (directory / MANIFEST_NAME).read_bytes()
         if hashlib.sha256(manifest_bytes).hexdigest() != (directory / "manifest.sha256").read_text():
             return None
         manifest = json.loads(manifest_bytes)
@@ -268,13 +269,17 @@ def _write_tiles(tiles, parameters, directory, crs, cancelled, progress, statist
             raise ValueError("Could not write the heatmap raster")
         # GDAL BuildOverviews does not support MAX on all supported runtimes.
         # Populate allocated overview bands explicitly, preserving narrow routes.
-        for overview_index, factor in enumerate((2, 4, 8, 16)):
-            side = parameters.tile_size // factor
-            pooled = pixels.reshape(side, factor, side, factor).max(axis=(1, 3))
-            if band.GetOverview(overview_index).WriteArray(pooled) != 0:
-                raise ValueError("Could not write the heatmap overview")
+        _write_peak_overviews(band, pixels, parameters.tile_size)
         band = None
         dataset = None
         paths.append(path)
         progress(60 + 35 * (index + 1) / len(candidates))
     return maximum, paths
+
+
+def _write_peak_overviews(band, pixels, tile_size):
+    for overview_index, factor in enumerate((2, 4, 8, 16)):
+        side = tile_size // factor
+        pooled = pixels.reshape(side, factor, side, factor).max(axis=(1, 3))
+        if band.GetOverview(overview_index).WriteArray(pooled) != 0:
+            raise ValueError("Could not write the heatmap overview")
