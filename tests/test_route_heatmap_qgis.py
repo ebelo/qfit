@@ -59,7 +59,9 @@ class RouteHeatmapQgisTests(unittest.TestCase):
         tile.unlink()
         repaired = build_route_heatmap(self.request)
         self.assertFalse(repaired.reused)
-        self.assertTrue(tile.exists())
+        self.assertFalse(tile.exists())  # Old generations are never rewritten.
+        self.assertTrue((Path(repaired.path).parent / tile.name).exists())
+        self.assertTrue(build_route_heatmap(self.request).reused)
         from osgeo import ogr
         source = ogr.Open(self.source, 1)
         layer = source.GetLayerByName("activity_tracks")
@@ -72,6 +74,44 @@ class RouteHeatmapQgisTests(unittest.TestCase):
         layer = None
         source = None
         self.assertNotEqual(artifact.cache_key, build_route_heatmap(self.request).cache_key)
+
+    def test_loading_and_closing_layer_preserves_cache_and_reuses_result(self):
+        artifact = build_route_heatmap(self.request)
+        directory = Path(artifact.path).parent
+        original = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in directory.iterdir()}
+        layer = create_route_heatmap_layer(artifact)
+        self.assertTrue(layer.isValid())
+        layer = None  # GDAL flushes derived statistics on provider close.
+        self.assertEqual(original, {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in directory.iterdir()})
+        self.assertTrue(build_route_heatmap(self.request).reused)
+
+    def test_repair_preserves_open_raster_and_publishes_new_generation(self):
+        artifact = build_route_heatmap(self.request)
+        directory = Path(artifact.path).parent
+        layer = create_route_heatmap_layer(artifact)
+        tile = next(directory.glob("*.tif"))
+        reader = gdal.Open(str(tile))
+        original_pixels = reader.ReadAsArray()
+        original_vrt = Path(artifact.path).read_bytes()
+        (directory / "manifest.sha256").write_text("invalid checksum")
+        repaired = build_route_heatmap(self.request)
+        self.assertFalse(repaired.reused)
+        self.assertNotEqual(repaired.path, artifact.path)
+        self.assertTrue(np.array_equal(original_pixels, reader.ReadAsArray()))
+        self.assertEqual(original_vrt, Path(artifact.path).read_bytes())
+        self.assertTrue(layer.isValid())
+        self.assertEqual(build_route_heatmap(self.request).path, repaired.path)
+        self.assertTrue(build_route_heatmap(self.request).reused)
+        # Statistics describe non-nodata density, not a sampled sparse extent.
+        arrays = [gdal.Open(str(p)).ReadAsArray() for p in Path(repaired.path).parent.glob("*.tif")]
+        values = np.concatenate([a[a > 0].astype("float64") for a in arrays])
+        dataset = gdal.Open(repaired.path)
+        stats = dataset.GetRasterBand(1).GetStatistics(False, False)
+        self.assertTrue(np.allclose(stats, [values.min(), values.max(), values.mean(), values.std()]))
+        dataset = None
+        reader = None
+        layer = None
+        self.assertTrue(build_route_heatmap(self.request).reused)
 
     def test_multiple_activity_types_select_stored_routes_with_or(self):
         from osgeo import ogr

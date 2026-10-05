@@ -21,6 +21,9 @@ class _Band:
         self.main = main
         self.pixels = None
 
+    def SetStatistics(self, minimum, maximum, mean, deviation):
+        self.statistics = (minimum, maximum, mean, deviation)
+
     def SetNoDataValue(self, value):
         self.dataset.nodata = value
 
@@ -70,7 +73,7 @@ class _RasterBackend:
 
     def BuildVRT(self, path, paths, **kwargs):
         Path(path).write_text(json.dumps([Path(p).name for p in paths]))
-        return SimpleNamespace(FlushCache=lambda: None)
+        return SimpleNamespace(FlushCache=lambda: None, GetRasterBand=lambda n: _Band(None))
 
 
 class RouteHeatmapEngineTests(unittest.TestCase):
@@ -241,7 +244,9 @@ class RouteHeatmapEngineTests(unittest.TestCase):
             directory = Path(artifact.path).parent
             next(directory.glob("*.tif")).write_bytes(b"corrupted")
             self.assertIsNone(_cached_artifact(directory, key))
-            self.assertFalse(build_route_heatmap(self.request).reused)
+            repaired = build_route_heatmap(self.request)
+            self.assertFalse(repaired.reused)
+            directory = Path(repaired.path).parent
             with self.assertRaises(HeatmapCancelled):
                 build_route_heatmap(self.request, lambda: True)
         self.assertFalse(any(p.name.startswith("heatmap-work-") for p in Path(self.request.cache_dir).iterdir()))

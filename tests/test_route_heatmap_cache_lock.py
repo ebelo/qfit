@@ -101,10 +101,46 @@ class RouteHeatmapCacheLockTests(unittest.TestCase):
             worker.join(timeout=3)
             self.assertFalse(worker.is_alive())
         self.assertEqual(errors, [])
-        self.assertEqual(sum(value is None for value in results), 1)
+        self.assertEqual(sum(value is not None and not value.reused for value in results), 1)
         self.assertEqual(sum(value is not None and value.reused for value in results), 1)
         self.assertIsNotNone(_cached_artifact(destination, 'key'))
-        self.assertEqual((destination/'heatmap.vrt').read_bytes(), b'immutable-heatmap.vrt')
+        self.assertEqual(Path(_cached_artifact(destination, 'key').path).read_bytes(), b'immutable-heatmap.vrt')
+
+    def test_repair_does_not_delete_files_held_by_a_raster_reader(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        (destination / 'manifest.sha256').unlink()
+        original = {p.name: p.read_bytes() for p in destination.iterdir()}
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        with patch('shutil.rmtree',
+                   side_effect=PermissionError('WinError 32: reader holds tile')):
+            _publish_artifact(candidate, destination, 'key', lambda: False)
+        for name, contents in original.items():
+            self.assertEqual((destination / name).read_bytes(), contents)
+        repaired = _cached_artifact(destination, 'key')
+        self.assertIsNotNone(repaired)
+        self.assertNotEqual(Path(repaired.path).parent, destination)
+
+    def test_invalid_generation_pointer_and_cancel_leave_old_files_untouched(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        for value in ('../escape', '/absolute', 123, 'generation-../escape'):
+            with self.subTest(value=value):
+                (destination / 'current.json').write_text(json.dumps({'generation': value}))
+                self.assertIsNone(_cached_artifact(destination, 'key'))
+        candidate = self.root / 'candidate'
+        self._artifact(candidate)
+        before = {p.name: p.read_bytes() for p in destination.iterdir()}
+        with self.assertRaises(HeatmapCancelled):
+            _publish_artifact(candidate, destination, 'key', lambda: True)
+        self.assertEqual(before, {p.name: p.read_bytes() for p in destination.iterdir()})
+
+    def test_cache_validation_remains_cancellable_between_file_hashes(self):
+        destination = self.root / 'key'
+        self._artifact(destination)
+        with self.assertRaises(HeatmapCancelled):
+            _cached_artifact(destination, 'key', Mock(side_effect=(False, False, True)))
 
     def test_metadata_edits_and_missing_checksum_never_reuse_cache(self):
         destination = self.root / 'key'

@@ -2,10 +2,12 @@
 import hashlib
 import json
 import math
-import shutil
+import os
+import re
 import tempfile
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from uuid import uuid4
 
 from ..application.route_heatmap import RouteHeatmapArtifact
 from ..domain.route_density import activity_cells, check_cancelled, tile_cell
@@ -14,6 +16,33 @@ from .route_heatmap_source import projected_crs, projected_parts, snapshot_track
 
 MAX_TILES = 4096
 HEATMAP_VRT_NAME = "heatmap.vrt"
+CURRENT_GENERATION = "current.json"
+
+
+@dataclass
+class _DensityStatistics:
+    count: int = 0
+    minimum: float = math.inf
+    maximum: float = 0.0
+    total: float = 0.0
+    squares: float = 0.0
+
+    def add(self, density):
+        # Zero is nodata. Accumulate while each bounded tile is already in RAM,
+        # rather than sampling the potentially world-sized sparse VRT in QGIS.
+        values = density[density > 0].astype("float64")
+        if not values.size:
+            return
+        self.count += values.size
+        self.minimum = min(self.minimum, float(values.min()))
+        self.maximum = max(self.maximum, float(values.max()))
+        self.total += float(values.sum())
+        self.squares += float((values * values).sum())
+
+    def write(self, band):
+        mean = self.total / self.count
+        deviation = math.sqrt(max(0.0, self.squares / self.count - mean * mean))
+        band.SetStatistics(self.minimum, self.maximum, mean, deviation)
 
 
 def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value: None):
@@ -24,7 +53,7 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
         snapshot, key, source_crs, bounds, count = snapshot_tracks(request, work, cancelled)
         if not count:
             return None
-        cached = _cached_artifact(cache / key, key)
+        cached = _cached_artifact(cache / key, key, cancelled)
         if cached is not None:
             check_cancelled(cancelled)
             return cached
@@ -32,13 +61,15 @@ def build_route_heatmap(request, cancelled=lambda: False, progress=lambda value:
         tiles, visits = _count_tiles(request, work, snapshot, source_crs, target_crs, count, cancelled, progress)
         artifact_dir = work / "result"
         artifact_dir.mkdir()
-        maximum, paths = _write_tiles(tiles, request.parameters, artifact_dir, target_crs, cancelled, progress)
+        statistics = _DensityStatistics()
+        maximum, paths = _write_tiles(tiles, request.parameters, artifact_dir, target_crs, cancelled, progress, statistics)
         if not paths:
             return None
         from osgeo import gdal
         vrt = gdal.BuildVRT(str(artifact_dir / HEATMAP_VRT_NAME), [str(p) for p in paths], srcNodata=0, VRTNodata=0)
         if vrt is None:
             raise ValueError("Could not build the heatmap mosaic")
+        statistics.write(vrt.GetRasterBand(1))
         vrt.FlushCache()
         vrt = None
         files = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in artifact_dir.iterdir()}
@@ -61,17 +92,42 @@ def _publish_artifact(artifact_dir, destination, key, cancelled):
     with publication_lock(destination.parent / (key + ".lock"), cancelled):
         # Recheck under the cross-process lock, including repairs. A second
         # worker must never remove a replacement already published by the first.
-        concurrent = _cached_artifact(destination, key)
+        concurrent = _cached_artifact(destination, key, cancelled)
         if concurrent is not None:
             return concurrent
-        if destination.exists():
-            shutil.rmtree(destination)
-        artifact_dir.rename(destination)
-    return None
+        if not destination.exists():
+            artifact_dir.rename(destination)
+            return None
+        # Never remove published files: QGIS providers, renderer clones or saved
+        # projects may retain readers even after the dock switches analysis.
+        generation = "generation-" + uuid4().hex
+        replacement = destination / generation
+        artifact_dir.rename(replacement)
+        pointer = destination / ("current-" + uuid4().hex + ".tmp")
+        try:
+            pointer.write_text(json.dumps({"generation": generation}))
+            os.replace(pointer, destination / CURRENT_GENERATION)
+        finally:
+            pointer.unlink(missing_ok=True)
+        manifest = json.loads((replacement / "manifest.json").read_text())
+        return RouteHeatmapArtifact(str(replacement / HEATMAP_VRT_NAME), key,
+                                    manifest["activity_count"], manifest["crs"], manifest["maximum"])
 
 
-def _cached_artifact(directory, key):
+def _current_directory(directory):
+    pointer = directory / CURRENT_GENERATION
+    if not pointer.exists():
+        return directory
+    generation = json.loads(pointer.read_text())["generation"]
+    if not isinstance(generation, str) or re.fullmatch(r"generation-[0-9a-f]{32}", generation) is None:
+        raise ValueError("Invalid heatmap cache generation")
+    return directory / generation
+
+
+def _cached_artifact(directory, key, cancelled=lambda: False):
     try:
+        check_cancelled(cancelled)
+        directory = _current_directory(directory)
         manifest_bytes = (directory / "manifest.json").read_bytes()
         if hashlib.sha256(manifest_bytes).hexdigest() != (directory / "manifest.sha256").read_text():
             return None
@@ -84,6 +140,7 @@ def _cached_artifact(directory, key):
         if manifest["activity_count"] <= 0 or not math.isfinite(manifest["maximum"]) or manifest["maximum"] <= 0:
             return None
         for filename, digest in files.items():
+            check_cancelled(cancelled)
             if Path(filename).name != filename or hashlib.sha256((directory / filename).read_bytes()).hexdigest() != digest:
                 return None
         return RouteHeatmapArtifact(str(directory / HEATMAP_VRT_NAME), key, manifest["activity_count"],
@@ -178,7 +235,7 @@ def _smooth_tile(tile, tiles, parameters):
     return canvas.astype("float32")
 
 
-def _write_tiles(tiles, parameters, directory, crs, cancelled, progress):
+def _write_tiles(tiles, parameters, directory, crs, cancelled, progress, statistics=None):
     import numpy as np
     from osgeo import gdal
 
@@ -192,6 +249,8 @@ def _write_tiles(tiles, parameters, directory, crs, cancelled, progress):
             continue
         if len(paths) >= MAX_TILES:
             raise ValueError(f"Heatmap exceeds the budget of {MAX_TILES:,} non-empty density tiles; narrow the activity filters")
+        if statistics is not None:
+            statistics.add(density)
         maximum = max(maximum, float(density.max()))
         path = directory / f"tile-{tile[0]}-{tile[1]}.tif"
         dataset = gdal.GetDriverByName("GTiff").Create(str(path), parameters.tile_size, parameters.tile_size, 1,

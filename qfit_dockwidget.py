@@ -1665,7 +1665,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _refresh_heatmap_controls(self):
         task = getattr(self, "_heatmap_task", None)
         composition = getattr(self, "_local_first_dock_composition", None)
-        if task is not None and composition is not None:
+        if task is not None and composition is not None and self.analysisModeComboBox.currentText() == "Heatmap":
             button = composition.analysis_content.run_analysis_button
             button.setText("Cancel heatmap")
             button.setEnabled(True)
@@ -1818,7 +1818,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         heatmap_task = getattr(self, "_heatmap_task", None)
         if heatmap_task is not None:
             heatmap_task.cancel()
-            self._heatmap_task = None
+            # Cancellation is cooperative. Keep the reservation until finished
+            # so mode changes/restarts cannot overlap a still-running worker.
         project = QgsProject.instance()
         analysis_removed = False
         if self.analysis_layer is not None:
